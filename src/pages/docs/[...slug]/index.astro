@@ -1,0 +1,13 @@
+---
+import type { APIRoute } from 'astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+export async function GET(context: { params: Promise<{ slug: string[] }> }) {
+  const docs = await getCollection('docs');
+  // Redirect ke halaman pertama jika tidak ada slug
+  if (!Object.keys(Astro.params).length) {
+    const firstDoc = docs.find(d => d.id.includes('getting-started'));
+    return context.redirect(firstDoc ? `/docs/${firstDoc.id}/` : '/docs/core-api/getting-started/');
+  }
+  return new Response('Docs route', { status: 200 });
+}

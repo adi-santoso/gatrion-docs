@@ -1,0 +1,20 @@
+{
+  "name": "gatrion_docs",
+  "version": "2.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "devDependencies": {
+    "@astrojs/mdx": "^7.0.5",
+    "@astrojs/tailwind": "^6.0.2",
+    "@tailwindcss/typography": "^0.5.20",
+    "astro": "^7.1.6",
+    "autoprefixer": "^10.5.4",
+    "postcss": "^8.5.25",
+    "tailwindcss": "^3.4.19"
+  }
+}

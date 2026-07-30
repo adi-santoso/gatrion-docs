@@ -1,0 +1,59 @@
+---
+title: "Getting Started"
+project: "Core API"
+description: "Panduan instalasi, konfigurasi, dan menjalankan Core API pertama kali."
+---
+
+# Getting Started
+
+Welcome to **Core API** documentation — the backend that powers all Gatrion services. In less than 5 minutes, you'll have a running server locally.
+
+## Prerequisites
+
+Ensure you have:
+
+- **Node.js** ≥ 18 (check with `node -v`)
+- **PostgreSQL** ≥ 15
+- **Redis** ≥ 7
+
+## Installation
+
+Clone and install dependencies:
+
+```bash
+git clone https://github.com/gatrion/core-api.git
+cd core-api
+npm install
+cp .env.example .env
+```
+
+<Tailwind>
+  <!-- Placeholder to test Tailwind in MDX -->
+</Tailwind>
+
+<Callout type="info">
+  **Tip:** Use `nvm use` to match the Node version defined in `.nvmrc`.
+</Callout>
+
+## Running the server
+
+Start your database via Docker, then start development server:
+
+```bash
+docker compose up -d
+npm run db:migrate
+npm run dev
+```
+
+If successful, the API will be available at `http://localhost:8000` with output:
+
+```
+✓ Database connected (postgres@localhost:5432)
+✓ Redis connected
+✓ Server listening on http://localhost:8000
+```
+
+## Next steps
+
+- [Authentication & JWT](#authentication-jwt)
+- [API Reference](#api-reference)

@@ -1,0 +1,43 @@
+---
+import type { APIRoute } from 'astro';
+import { getCollection } from 'astro:content';
+import HubLayout from '../layouts/HubLayout.astro';
+import Sidebar from '../components/Sidebar.astro';
+import CommandPalette from '../components/CommandPalette.astro';
+import MarkdownContent from '../components/MarkdownContent.astro';
+
+let mdxContent;
+try {
+  const docs = await getCollection('changelog');
+  mdxContent = docs[0]?.body;
+} catch {}
+
+const title = 'Changelog · Gatrion Docs';
+---
+
+<div class="relative mx-auto max-w-3xl px-5 py-14">
+  <div class="text-center">
+    <span class="inline-flex items-center gap-1.5 rounded-full bg-violet-500/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-violet-500 ring-1 ring-inset ring-violet-500/20">Release Notes</span>
+    <h1 class="mt-4 text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-white">Changelog</h1>
+    <p class="mx-auto mt-3 max-w-md text-[15px] leading-relaxed text-zinc-500 dark:text-zinc-400">Riwayat pembaruan seluruh project Gatrion.</p>
+  </div>
+
+  <div class="relative mt-12">
+    <div class="absolute left-[7px] top-2 bottom-2 w-px bg-gradient-to-b from-violet-500/40 via-zinc-200 to-transparent dark:via-white/[.08]"></div>
+    <div class="space-y-12">
+      {mdxContent ? (
+        <article class="animate-fade-up relative pl-10 [animation-delay:.1s]">
+          <span class="absolute left-0 top-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-violet-500 ring-4 ring-violet-500/15"></span>
+          <MarkdownContent content={mdxContent} />
+        </article>
+      ) : (
+        <p>No changelog found.</p>
+      )}
+    </div>
+  </div>
+
+  <footer class="mt-16 flex flex-col items-center justify-between gap-3 border-t border-zinc-200 pt-8 text-xs text-zinc-400 sm:flex-row dark:border-white/[.06]">
+    <p>© 2025 Gatrion — internal documentation hub</p>
+    <a href="/" class="hover:text-zinc-900 dark:hover:text-white">← Kembali ke Hub</a>
+  </footer>
+</div>

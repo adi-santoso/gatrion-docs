@@ -1,0 +1,33 @@
+---
+title: "Changelog"
+project: "Global"
+description: "Riwayat pembaruan seluruh project Gatrion."
+---
+
+# Changelog
+
+Riwayat pembaruan seluruh project Gatrion. Filter berdasarkan project di bawah.
+
+## Core API — v2.4.0 (Feb 12, 2025)
+
+**New:** Webhook Engine v2 dengan retry otomatis & signature verification.
+
+- **BARU** Endpoint `POST /webhooks` untuk registrasi webhook
+- **BARU** Retry eksponensial hingga 5x saat gagal
+- **UBAH** Rate limit dinaikkan ke 1000 req/menit
+- **BREAKING** Field `user_id` kini bertipe string, bukan integer
+
+## Web Dashboard — v1.9.2 (Feb 5, 2025)
+
+**New:** Dark mode & ekspor laporan CSV/PDF.
+
+- **BARU** Toggle dark/light mode di seluruh aplikasi
+- **BARU** Ekspor laporan ke CSV & PDF
+- **FIX** Grafik analitik tidak update realtime
+
+## Mobile SDK — v0.8.0 (Jan 30, 2025)
+
+**New:** Dukungan React Native selain Flutter.
+
+- **BARU** Package `@gatrion/react-native`
+- **FIX** Memory leak pada listener event
