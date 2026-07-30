@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Changelog · Gatrion Docs</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: {
+        fontFamily: {
+          sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+        },
+        animation: { 'fade-up': 'fadeUp .6s cubic-bezier(.16,1,.3,1) both', 'scale-in': 'scaleIn .25s cubic-bezier(.16,1,.3,1) both' },
+        keyframes: {
+          fadeUp: { from: { opacity: 0, transform: 'translateY(16px)' }, to: { opacity: 1, transform: 'translateY(0)' } },
+          scaleIn: { from: { opacity: 0, transform: 'scale(.96) translateY(8px)' }, to: { opacity: 1, transform: 'scale(1) translateY(0)' } },
+        },
+      } },
+    };
+    (function () { if (localStorage.getItem('theme') !== 'light') document.documentElement.classList.add('dark'); })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    ::selection { background: rgba(139,92,246,.35); }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-thumb { background: rgba(120,120,140,.3); border-radius: 99px; }
+    .glow-orb { position: absolute; border-radius: 9999px; filter: blur(90px); pointer-events: none; }
+  </style>
+</head>
+
+<body class="min-h-screen bg-[#fafafa] font-sans text-zinc-600 antialiased dark:bg-[#09090b] dark:text-zinc-400">
+
+  <div class="pointer-events-none fixed inset-0 overflow-hidden">
+    <div class="glow-orb left-1/2 top-[-160px] h-[360px] w-[600px] -translate-x-1/2 bg-violet-500/15 dark:bg-violet-600/15"></div>
+  </div>
+
+  <!-- ============ NAVBAR ============ -->
+  <header class="sticky top-0 z-40 border-b border-zinc-200/60 bg-[#fafafa]/70 backdrop-blur-xl dark:border-white/[.06] dark:bg-[#09090b]/70">
+    <div class="mx-auto flex h-[60px] max-w-3xl items-center gap-4 px-5">
+      <a href="index.html" class="flex items-center gap-2.5">
+        <span class="relative flex h-7 w-7 items-center justify-center">
+          <span class="absolute inset-0 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-600 opacity-90"></span>
+          <span class="absolute inset-0 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-600 blur-md opacity-40"></span>
+          <span class="relative text-sm font-extrabold text-white">G</span>
+        </span>
+        <span class="text-[15px] font-bold tracking-tight text-zinc-900 dark:text-white">gatrion<span class="text-zinc-400 dark:text-zinc-600">/</span><span class="bg-gradient-to-r from-violet-500 to-fuchsia-500 bg-clip-text text-transparent">docs</span></span>
+      </a>
+      <div class="flex-1"></div>
+      <button onclick="openPalette()" class="flex h-9 w-9 items-center justify-center rounded-full text-zinc-500 transition hover:bg-zinc-100 dark:hover:bg-white/[.06]" aria-label="Cari">
+        <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/></svg>
+      </button>
+      <button id="themeToggle" class="flex h-9 w-9 items-center justify-center rounded-full text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-white/[.06] dark:hover:text-white" aria-label="Ganti tema">
+        <svg id="iconSun" class="hidden h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.36 6.36l-1.42-1.42M7.05 7.05L5.64 5.64m12.72 0l-1.42 1.42M7.05 16.95l-1.41 1.41M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        <svg id="iconMoon" class="hidden h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="relative mx-auto max-w-3xl px-5 py-14">
+
+    <!-- Header -->
+    <div class="animate-fade-up text-center">
+      <span class="inline-flex items-center gap-1.5 rounded-full bg-violet-500/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-violet-500 ring-1 ring-inset ring-violet-500/20">Release Notes</span>
+      <h1 class="mt-4 text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-white">Changelog</h1>
+      <p class="mx-auto mt-3 max-w-md text-[15px] leading-relaxed text-zinc-500 dark:text-zinc-400">Riwayat pembaruan seluruh project Gatrion. Filter berdasarkan project di bawah.</p>
+    </div>
+
+    <!-- Filter project -->
+    <div class="animate-fade-up mt-8 flex flex-wrap justify-center gap-2 [animation-delay:.05s]">
+      <button data-filter="all" class="cl-chip rounded-full bg-zinc-900 px-3.5 py-1.5 text-xs font-medium text-white transition dark:bg-white dark:text-zinc-900">Semua</button>
+      <button data-filter="core-api" class="cl-chip rounded-full border border-zinc-200 px-3.5 py-1.5 text-xs font-medium text-zinc-500 transition hover:border-zinc-400 dark:border-white/[.08] dark:hover:border-white/[.2]">Core API</button>
+      <button data-filter="dashboard" class="cl-chip rounded-full border border-zinc-200 px-3.5 py-1.5 text-xs font-medium text-zinc-500 transition hover:border-zinc-400 dark:border-white/[.08] dark:hover:border-white/[.2]">Web Dashboard</button>
+      <button data-filter="sdk" class="cl-chip rounded-full border border-zinc-200 px-3.5 py-1.5 text-xs font-medium text-zinc-500 transition hover:border-zinc-400 dark:border-white/[.08] dark:hover:border-white/[.2]">Mobile SDK</button>
+    </div>
+
+    <!-- ===== TIMELINE ===== -->
+    <div class="relative mt-12">
+      <!-- garis vertikal -->
+      <div class="absolute left-[7px] top-2 bottom-2 w-px bg-gradient-to-b from-violet-500/40 via-zinc-200 to-transparent dark:via-white/[.08]"></div>
+
+      <div class="space-y-12" id="timeline">
+
+        <!-- ENTRY -->
+        <article data-project="core-api" class="cl-entry animate-fade-up relative pl-10 [animation-delay:.1s]">
+          <span class="absolute left-0 top-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-violet-500 ring-4 ring-violet-500/15"></span>
+          <div class="flex flex-wrap items-center gap-3">
+            <span class="rounded-lg bg-violet-500/10 px-2.5 py-1 font-mono text-sm font-bold text-violet-600 dark:text-violet-400">v2.4.0</span>
+            <span class="rounded-md bg-zinc-100 px-2 py-0.5 text-[11px] font-medium text-zinc-500 dark:bg-white/[.06]">Core API</span>
+            <time class="text-[13px] text-zinc-400">12 Februari 2025</time>
+          </div>
+          <h2 class="mt-3 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">Webhook Engine v2</h2>
+          <p class="mt-2 leading-relaxed">Sistem webhook baru dengan retry otomatis dan signature verification untuk keamanan lebih baik.</p>
+          <ul class="mt-4 space-y-2 text-[14px]">
+            <li class="flex items-start gap-2.5"><span class="mt-0.5 shrink-0 rounded bg-emerald-500/10 px-1.5 py-px text-[10px] font-bold text-emerald-500">BARU</span> Endpoint <code class="rounded bg-zinc-100 px-1.5 py-0.5 font-mono text-[12px] text-violet-600 dark:bg-white/[.06] dark:text-violet-300">POST /webhooks</code> untuk registrasi.</li>
+            <li class="flex items-start gap-2.5"><span class="mt-0.5 shrink-0 rounded bg-emerald-500/10 px-1.5 py-px text-[10px] font-bold text-emerald-500">BARU</span> Retry eksponensial hingga 5x saat gagal.</li>
+            <li class="flex items-start gap-2.5"><span class="mt-0.5 shrink-0 rounded bg-sky-500/10 px-1.5 py-px text-[10px] font-bold text-sky-500">UBAH</span> Rate limit dinaikkan ke 1000 req/menit.</li>
+            <li class="flex items-start gap-2.5"><span class="mt-0.5 shrink-0 rounded bg-rose-500/10 px-1.5 py-px text-[10px] font-bold text-rose-500">BREAKING</span> Field <code class="rounded bg-zinc-100 px-1.5 py-0.5 font-mono text-[12px] text-rose-500 dark:bg-white/[.06]">user_id</code> kini bertipe string, bukan integer.</li>
+          </ul>
+        </article>
+
+        <!-- ENTRY -->
+        <article data-project="dashboard" class="cl-entry animate-fade-up relative pl-10 [animation-delay:.15s]">
+          <span class="absolute left-0 top-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-cyan-500 ring-4 ring-cyan-500/15"></span>
+          <div class="flex flex-wrap items-center gap-3">
+            <span class="rounded-lg bg-cyan-500/10 px-2.5 py-1 font-mono text-sm font-bold text-cyan-600 dark:text-cyan-400">v1.9.2</span>
+            <span class="rounded-md bg-zinc-100 px-2 py-0.5 text-[11px] font-medium text-zinc-500 dark:bg-white/[.06]">Web Dashboard</span>
+            <time class="text-[13px] text-zinc-400">5 Februari 2025</time>
+          </div>
+          <h2 class="mt-3 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">Dark mode & ekspor laporan</h2>
+          <p class="mt-2 leading-relaxed">Peningkatan UX besar dengan dukungan tema gelap dan ekspor data.</p>
+          <ul class="mt-4 space-y-2 text-[14px]">
+            <li class="flex items-start gap-2.5"><span class="mt-0.5 shrink-0 rounded bg-emerald-500/10 px-1.5 py-px text-[10px] font-bold text-emerald-500">BARU</span> Toggle dark/light mode di seluruh aplikasi.</li>
+            <li class="flex items-start gap-2.5"><span class="mt-0.5 shrink-0 rounded bg-emerald-500/10 px-1.5 py-px text-[10px] font-bold text-emerald-500">BARU</span> Ekspor laporan ke CSV & PDF.</li>
+            <li class="flex items-start gap-2.5"><span class="mt-0.5 shrink-0 rounded bg-amber-500/10 px-1.5 py-px text-[10px] font-bold text-amber-500">FIX</span> Grafik analitik tidak update realtime.</li>
+          </ul>
+        </article>
+
+        <!-- ENTRY -->
+        <article data-project="sdk" class="cl-entry animate-fade-up relative pl-10 [animation-delay:.2s]">
+          <span class="absolute left-0 top-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-fuchsia-500 ring-4 ring-fuchsia-500/15"></span>
+          <div class="flex flex-wrap items-center gap-3">
+            <span class="rounded-lg bg-fuchsia-500/10 px-2.5 py-1 font-mono text-sm font-bold text-fuchsia-600 dark:text-fuchsia-400">v0.8.0</span>
+            <span class="rounded-md bg-zinc-100 px-2 py-0.5 text-[11px] font-medium text-zinc-500 dark:bg-white/[.06]">Mobile SDK</span>
+            <span class="rounded-md bg-amber-500/10 px-2 py-0.5 text-[11px] font-medium text-amber-600 dark:text-amber-400">Beta</span>
+            <time class="text-[13px] text-zinc-400">30 Januari 2025</time>
+          </div>
+          <h2 class="mt-3 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">Dukungan React Native</h2>
+          <p class="mt-2 leading-relaxed">SDK kini tersedia untuk React Native selain Flutter.</p>
+          <ul class="mt-4 space-y-2 text-[14px]">
+            <li class="flex items-start gap-2.5"><span class="mt-0.5 shrink-0 rounded bg-emerald-500/10 px-1.5 py-px text-[10px] font-bold text-emerald-500">BARU</span> Package <code class="rounded bg-zinc-100 px-1.5 py-0.5 font-mono text-[12px] text-violet-600 dark:bg-white/[.06] dark:text-violet-300">@gatrion/react-native</code>.</li>
+            <li class="flex items-start gap-2.5"><span class="mt-0.5 shrink-0 rounded bg-amber-500/10 px-1.5 py-px text-[10px] font-bold text-amber-500">FIX</span> Memory leak pada listener event.</li>
+          </ul>
+        </article>
+
+        <!-- ENTRY -->
+        <article data-project="core-api" class="cl-entry animate-fade-up relative pl-10 [animation-delay:.25s]">
+          <span class="absolute left-0 top-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-zinc-400 ring-4 ring-zinc-400/15"></span>
+          <div class="flex flex-wrap items-center gap-3">
+            <span class="rounded-lg bg-zinc-500/10 px-2.5 py-1 font-mono text-sm font-bold text-zinc-500">v2.3.1</span>
+            <span class="rounded-md bg-zinc-100 px-2 py-0.5 text-[11px] font-medium text-zinc-500 dark:bg-white/[.06]">Core API</span>
+            <time class="text-[13px] text-zinc-400">28 Januari 2025</time>
+          </div>
+          <h2 class="mt-3 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">Patch keamanan</h2>
+          <ul class="mt-4 space-y-2 text-[14px]">
+            <li class="flex items-start gap-2.5"><span class="mt-0.5 shrink-0 rounded bg-amber-500/10 px-1.5 py-px text-[10px] font-bold text-amber-500">FIX</span> Perbaikan bug rate limiting yang salah hitung.</li>
+            <li class="flex items-start gap-2.5"><span class="mt-0.5 shrink-0 rounded bg-amber-500/10 px-1.5 py-px text-[10px] font-bold text-amber-500">FIX</span> Update dependency dengan kerentanan CVE.</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+
+    <footer class="mt-16 flex flex-col items-center justify-between gap-3 border-t border-zinc-200 py-8 text-xs text-zinc-400 sm:flex-row dark:border-white/[.06]">
+      <p>© 2025 Gatrion — internal documentation hub</p>
+      <a href="index.html" class="hover:text-zinc-900 dark:hover:text-white">← Kembali ke Hub</a>
+    </footer>
+  </main>
+
+  <!-- ============ COMMAND PALETTE ============ -->
+  <div id="palette" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-zinc-950/40 backdrop-blur-sm dark:bg-zinc-950/60" onclick="closePalette()"></div>
+    <div class="animate-scale-in relative mx-auto mt-[12vh] w-[92%] max-w-xl overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-2xl dark:border-white/[.1] dark:bg-[#111113]">
+      <div class="flex items-center gap-3 border-b border-zinc-100 px-4 dark:border-white/[.06]">
+        <svg class="h-4 w-4 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/></svg>
+        <input id="paletteInput" type="text" placeholder="Ketik untuk mencari halaman..." class="w-full bg-transparent py-4 text-sm text-zinc-900 placeholder-zinc-400 outline-none dark:text-white" autocomplete="off" />
+        <kbd class="rounded-md border border-zinc-200 px-1.5 py-0.5 font-mono text-[10px] text-zinc-400 dark:border-white/[.1]">esc</kbd>
+      </div>
+      <div id="paletteResults" class="max-h-[320px] overflow-y-auto p-2"></div>
+      <div class="flex items-center gap-4 border-t border-zinc-100 px-4 py-2.5 text-[11px] text-zinc-400 dark:border-white/[.06]">
+        <span class="flex items-center gap-1"><kbd class="rounded border border-zinc-200 px-1 font-mono dark:border-white/[.1]">↑↓</kbd> navigasi</span>
+        <span class="flex items-center gap-1"><kbd class="rounded border border-zinc-200 px-1 font-mono dark:border-white/[.1]">↵</kbd> buka</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const html = document.documentElement, iconSun = document.getElementById('iconSun'), iconMoon = document.getElementById('iconMoon');
+    function syncIcon(){ const d = html.classList.contains('dark'); iconSun.classList.toggle('hidden', !d); iconMoon.classList.toggle('hidden', d); }
+    syncIcon();
+    document.getElementById('themeToggle').addEventListener('click', () => { html.classList.toggle('dark'); localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light'); syncIcon(); });
+
+    // Filter changelog
+    document.querySelectorAll('.cl-chip').forEach(chip => chip.addEventListener('click', () => {
+      document.querySelectorAll('.cl-chip').forEach(c => c.className = 'cl-chip rounded-full border border-zinc-200 px-3.5 py-1.5 text-xs font-medium text-zinc-500 transition hover:border-zinc-400 dark:border-white/[.08] dark:hover:border-white/[.2]');
+      chip.className = 'cl-chip rounded-full bg-zinc-900 px-3.5 py-1.5 text-xs font-medium text-white transition dark:bg-white dark:text-zinc-900';
+      const f = chip.dataset.filter;
+      document.querySelectorAll('.cl-entry').forEach(e => e.style.display = (f === 'all' || e.dataset.project === f) ? '' : 'none');
+    }));
+
+    const PAGES = [
+      { title: 'Hub — Semua Project', project: 'Home', url: 'index.html', icon: '🏠' },
+      { title: 'Core API — Overview', project: 'Core API', url: 'project-overview.html', icon: '📊' },
+      { title: 'Getting Started', project: 'Core API', url: 'docs-core-api.html', icon: '⚡' },
+      { title: 'API Reference', project: 'Core API', url: 'api-reference.html', icon: '🧩' },
+      { title: 'Changelog', project: 'Global', url: 'changelog.html', icon: '🗒️' },
+    ];
+    const palette = document.getElementById('palette'), paletteInput = document.getElementById('paletteInput'), paletteResults = document.getElementById('paletteResults');
+    let selIndex = 0, filtered = PAGES;
+    function renderResults(){
+      if(!filtered.length){ paletteResults.innerHTML = '<p class="px-4 py-8 text-center text-sm text-zinc-400">Tidak ada hasil.</p>'; return; }
+      paletteResults.innerHTML = filtered.map((p,i)=>`<a href="${p.url}" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition ${i===selIndex?'bg-violet-500/10 text-violet-600 dark:text-violet-300':'text-zinc-600 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-white/[.04]'}"><span class="text-base">${p.icon}</span><span class="flex-1 font-medium">${p.title}</span><span class="rounded-md bg-zinc-100 px-2 py-0.5 text-[10px] font-medium text-zinc-400 dark:bg-white/[.06]">${p.project}</span></a>`).join('');
+    }
+    function openPalette(){ palette.classList.remove('hidden'); paletteInput.value=''; filtered=PAGES; selIndex=0; renderResults(); setTimeout(()=>paletteInput.focus(),30); }
+    function closePalette(){ palette.classList.add('hidden'); }
+    paletteInput.addEventListener('input', () => { const q = paletteInput.value.toLowerCase(); filtered = PAGES.filter(p => (p.title+' '+p.project).toLowerCase().includes(q)); selIndex = 0; renderResults(); });
+    document.addEventListener('keydown', (e) => {
+      if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){ e.preventDefault(); palette.classList.contains('hidden')?openPalette():closePalette(); }
+      if(palette.classList.contains('hidden')) return;
+      if(e.key==='Escape') closePalette();
+      if(e.key==='ArrowDown'){ e.preventDefault(); selIndex=Math.min(selIndex+1,filtered.length-1); renderResults(); }
+      if(e.key==='ArrowUp'){ e.preventDefault(); selIndex=Math.max(selIndex-1,0); renderResults(); }
+      if(e.key==='Enter'&&filtered[selIndex]) window.location.href=filtered[selIndex].url;
+    });
+  </script>
+</body>
+</html>

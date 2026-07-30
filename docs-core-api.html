@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Getting Started — Core API · Gatrion Docs</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+          },
+          animation: {
+            'fade-up': 'fadeUp .5s cubic-bezier(.16,1,.3,1) both',
+            'scale-in': 'scaleIn .25s cubic-bezier(.16,1,.3,1) both',
+          },
+          keyframes: {
+            fadeUp: { from: { opacity: 0, transform: 'translateY(12px)' }, to: { opacity: 1, transform: 'translateY(0)' } },
+            scaleIn: { from: { opacity: 0, transform: 'scale(.96) translateY(8px)' }, to: { opacity: 1, transform: 'scale(1) translateY(0)' } },
+          },
+        },
+      },
+    };
+    (function () {
+      const saved = localStorage.getItem('theme');
+      if (saved !== 'light') document.documentElement.classList.add('dark');
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    ::selection { background: rgba(139,92,246,.35); }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-thumb { background: rgba(120,120,140,.3); border-radius: 99px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(120,120,140,.5); }
+    .toc-active { color: rgb(167 139 250) !important; }
+    html:not(.dark) .toc-active { color: rgb(124 58 237) !important; }
+  </style>
+</head>
+
+<body class="min-h-screen bg-[#fafafa] font-sans text-zinc-600 antialiased dark:bg-[#09090b] dark:text-zinc-400">
+
+  <!-- ============ NAVBAR ============ -->
+  <header class="sticky top-0 z-40 border-b border-zinc-200/60 bg-[#fafafa]/70 backdrop-blur-xl dark:border-white/[.06] dark:bg-[#09090b]/70">
+    <div class="mx-auto flex h-[60px] max-w-[1440px] items-center gap-3 px-4 sm:px-6">
+      <button id="menuBtn" class="flex h-9 w-9 items-center justify-center rounded-full text-zinc-500 transition hover:bg-zinc-100 lg:hidden dark:hover:bg-white/[.06]" aria-label="Buka menu">
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+
+      <a href="index.html" class="flex items-center gap-2.5">
+        <span class="relative flex h-7 w-7 items-center justify-center">
+          <span class="absolute inset-0 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-600 opacity-90"></span>
+          <span class="absolute inset-0 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-600 blur-md opacity-40"></span>
+          <span class="relative text-sm font-extrabold text-white">G</span>
+        </span>
+        <span class="hidden text-[15px] font-bold tracking-tight text-zinc-900 sm:block dark:text-white">gatrion<span class="text-zinc-400 dark:text-zinc-600">/</span><span class="bg-gradient-to-r from-violet-500 to-fuchsia-500 bg-clip-text text-transparent">docs</span></span>
+      </a>
+
+      <div class="flex-1"></div>
+
+      <button onclick="openPalette()" class="hidden items-center gap-2.5 rounded-full border border-zinc-200 bg-white/60 py-1.5 pl-4 pr-2 text-[13px] text-zinc-400 shadow-sm transition hover:border-zinc-300 sm:flex dark:border-white/[.08] dark:bg-white/[.03] dark:hover:border-white/[.16]">
+        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/></svg>
+        Cari apapun...
+        <kbd class="rounded-md border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 font-mono text-[10px] text-zinc-400 dark:border-white/[.08] dark:bg-white/[.04]">⌘K</kbd>
+      </button>
+      <button onclick="openPalette()" class="flex h-9 w-9 items-center justify-center rounded-full text-zinc-500 transition hover:bg-zinc-100 sm:hidden dark:hover:bg-white/[.06]" aria-label="Cari">
+        <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/></svg>
+      </button>
+
+      <button id="themeToggle" class="flex h-9 w-9 items-center justify-center rounded-full text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-white/[.06] dark:hover:text-white" aria-label="Ganti tema">
+        <svg id="iconSun" class="hidden h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.36 6.36l-1.42-1.42M7.05 7.05L5.64 5.64m12.72 0l-1.42 1.42M7.05 16.95l-1.41 1.41M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        <svg id="iconMoon" class="hidden h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div id="overlay" class="fixed inset-0 z-40 hidden bg-zinc-950/50 backdrop-blur-sm lg:hidden"></div>
+
+  <div class="mx-auto flex max-w-[1440px]">
+
+    <!-- ============ SIDEBAR ============ -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 flex w-[280px] -translate-x-full flex-col border-r border-zinc-200/60 bg-[#fafafa] transition-transform duration-300 lg:sticky lg:top-[60px] lg:z-0 lg:h-[calc(100vh-60px)] lg:translate-x-0 lg:bg-transparent dark:border-white/[.06] dark:bg-[#09090b] dark:lg:bg-transparent">
+
+      <!-- ===== PROJECT SWITCHER ===== -->
+      <div class="relative border-b border-zinc-200/60 p-4 dark:border-white/[.06]">
+        <div class="mb-3 flex items-center justify-between lg:hidden">
+          <span class="text-sm font-bold text-zinc-900 dark:text-white">Menu</span>
+          <button id="closeBtn" class="flex h-8 w-8 items-center justify-center rounded-full text-zinc-500 hover:bg-zinc-100 dark:hover:bg-white/[.06]" aria-label="Tutup">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <button id="switcherBtn" class="flex w-full items-center gap-3 rounded-xl border border-zinc-200 bg-white p-3 text-left shadow-sm transition hover:border-violet-300 dark:border-white/[.08] dark:bg-white/[.03] dark:hover:border-violet-500/40">
+          <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500/15 to-fuchsia-500/15 text-violet-500 ring-1 ring-inset ring-violet-500/20">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/></svg>
+          </span>
+          <span class="min-w-0 flex-1">
+            <span class="block truncate text-sm font-bold text-zinc-900 dark:text-white">Core API</span>
+            <span class="block font-mono text-[11px] text-zinc-400">v2.4.0 · Stabil</span>
+          </span>
+          <svg class="h-4 w-4 shrink-0 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 9l4-4 4 4m0 6l-4 4-4-4"/></svg>
+        </button>
+
+        <!-- Dropdown switcher -->
+        <div id="switcherMenu" class="animate-scale-in absolute left-4 right-4 top-full z-10 mt-2 hidden overflow-hidden rounded-xl border border-zinc-200 bg-white p-1.5 shadow-xl dark:border-white/[.1] dark:bg-[#141416]">
+          <p class="px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-widest text-zinc-400">Ganti Project</p>
+          <a href="docs-core-api.html" class="flex items-center gap-2.5 rounded-lg bg-violet-500/10 px-3 py-2 text-sm font-semibold text-violet-600 dark:text-violet-300">
+            <span class="h-1.5 w-1.5 rounded-full bg-violet-500"></span> Core API
+            <svg class="ml-auto h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+          </a>
+          <a href="#" class="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-zinc-600 transition hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-white/[.05]"><span class="h-1.5 w-1.5 rounded-full bg-cyan-500"></span> Web Dashboard</a>
+          <a href="#" class="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-zinc-600 transition hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-white/[.05]"><span class="h-1.5 w-1.5 rounded-full bg-fuchsia-500"></span> Mobile SDK</a>
+          <a href="#" class="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-zinc-600 transition hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-white/[.05]"><span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span> Payment Service</a>
+          <a href="#" class="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-zinc-600 transition hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-white/[.05]"><span class="h-1.5 w-1.5 rounded-full bg-orange-500"></span> CLI Tools</a>
+          <a href="#" class="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-zinc-600 transition hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-white/[.05]"><span class="h-1.5 w-1.5 rounded-full bg-rose-500"></span> Design System</a>
+          <div class="mx-1.5 my-1 border-t border-zinc-100 dark:border-white/[.06]"></div>
+          <a href="index.html" class="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-zinc-500 transition hover:bg-zinc-50 dark:hover:bg-white/[.05]">
+            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1h3a1 1 0 001-1V10"/></svg>
+            Kembali ke Hub
+          </a>
+        </div>
+      </div>
+
+      <!-- ===== NAV MENU (hanya project aktif) ===== -->
+      <nav class="flex-1 space-y-6 overflow-y-auto p-4 text-[13.5px]">
+        <div>
+          <p class="mb-1.5 px-3 text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-600">Memulai</p>
+          <ul class="space-y-px">
+            <li><a href="docs-core-api.html" class="flex items-center gap-2 rounded-lg bg-violet-500/10 px-3 py-[7px] font-semibold text-violet-600 dark:text-violet-300">
+              <span class="h-1 w-1 rounded-full bg-violet-500"></span> Getting Started</a></li>
+            <li><a href="#instalasi" class="block rounded-lg px-3 py-[7px] text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-white/[.05] dark:hover:text-white">Instalasi</a></li>
+            <li><a href="#" class="block rounded-lg px-3 py-[7px] text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-white/[.05] dark:hover:text-white">Struktur Project</a></li>
+            <li><a href="#" class="block rounded-lg px-3 py-[7px] text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-white/[.05] dark:hover:text-white">Konfigurasi</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <p class="mb-1.5 px-3 text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-600">Panduan</p>
+          <ul class="space-y-px">
+            <li><a href="#" class="block rounded-lg px-3 py-[7px] text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-white/[.05] dark:hover:text-white">Autentikasi & JWT</a></li>
+            <li><a href="#" class="block rounded-lg px-3 py-[7px] text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-white/[.05] dark:hover:text-white">Database & Migrasi</a></li>
+            <li><a href="#" class="block rounded-lg px-3 py-[7px] text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-white/[.05] dark:hover:text-white">Error Handling</a></li>
+            <li><a href="#" class="block rounded-lg px-3 py-[7px] text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-white/[.05] dark:hover:text-white">Testing</a></li>
+            <li><a href="#" class="block rounded-lg px-3 py-[7px] text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-white/[.05] dark:hover:text-white">Deployment</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <p class="mb-1.5 px-3 text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-600">API Reference</p>
+          <ul class="space-y-px">
+            <li><a href="#" class="flex items-center justify-between rounded-lg px-3 py-[7px] text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-white/[.05] dark:hover:text-white">
+              Users <span class="rounded-md bg-emerald-500/10 px-1.5 py-px font-mono text-[10px] font-bold text-emerald-500">GET</span></a></li>
+            <li><a href="#" class="flex items-center justify-between rounded-lg px-3 py-[7px] text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-white/[.05] dark:hover:text-white">
+              Orders <span class="rounded-md bg-sky-500/10 px-1.5 py-px font-mono text-[10px] font-bold text-sky-500">POST</span></a></li>
+            <li><a href="#" class="flex items-center justify-between rounded-lg px-3 py-[7px] text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-white/[.05] dark:hover:text-white">
+              Payments <span class="rounded-md bg-amber-500/10 px-1.5 py-px font-mono text-[10px] font-bold text-amber-500">PUT</span></a></li>
+            <li><a href="#" class="block rounded-lg px-3 py-[7px] text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-white/[.05] dark:hover:text-white">Webhooks</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <p class="mb-1.5 px-3 text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-600">Lainnya</p>
+          <ul class="space-y-px">
+            <li><a href="#" class="block rounded-lg px-3 py-[7px] text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-white/[.05] dark:hover:text-white">Changelog</a></li>
+            <li><a href="#" class="block rounded-lg px-3 py-[7px] text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-white/[.05] dark:hover:text-white">FAQ</a></li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- ============ KONTEN ============ -->
+    <main class="min-w-0 flex-1 px-5 py-10 sm:px-10 lg:px-14">
+      <div class="mx-auto max-w-[46rem]">
+
+        <!-- Breadcrumb -->
+        <nav class="animate-fade-up mb-5 flex items-center gap-2 text-[13px]">
+          <a href="index.html" class="text-zinc-400 transition hover:text-zinc-900 dark:hover:text-white">Hub</a>
+          <svg class="h-3 w-3 text-zinc-300 dark:text-zinc-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+          <a href="docs-core-api.html" class="text-zinc-400 transition hover:text-zinc-900 dark:hover:text-white">Core API</a>
+          <svg class="h-3 w-3 text-zinc-300 dark:text-zinc-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+          <span class="font-medium text-zinc-700 dark:text-zinc-200">Getting Started</span>
+        </nav>
+
+        <div class="animate-fade-up [animation-delay:.05s]">
+          <span class="inline-flex items-center gap-1.5 rounded-full bg-violet-500/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-violet-500 ring-1 ring-inset ring-violet-500/20">Memulai</span>
+          <h1 class="mt-4 text-3xl font-extrabold tracking-tight text-zinc-900 sm:text-[2.6rem] sm:leading-[1.15] dark:text-white">Getting Started</h1>
+          <p class="mt-4 text-[17px] leading-relaxed text-zinc-500 dark:text-zinc-400">Core API adalah backbone dari seluruh layanan Gatrion. Panduan ini membawamu dari nol sampai server berjalan di lokal — kurang dari 5 menit.</p>
+        </div>
+
+        <article class="mt-10 space-y-12">
+
+          <!-- Section: Prasyarat -->
+          <section class="animate-fade-up [animation-delay:.1s]">
+            <h2 id="prasyarat" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+              <a href="#prasyarat" class="flex items-center gap-2">Prasyarat <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+            </h2>
+            <p class="mt-3 leading-relaxed">Pastikan tools berikut sudah terpasang sebelum lanjut:</p>
+            <div class="mt-4 grid gap-2.5 sm:grid-cols-3">
+              <div class="rounded-xl border border-zinc-200 bg-white/60 p-4 dark:border-white/[.07] dark:bg-white/[.02]">
+                <p class="font-mono text-[13px] font-semibold text-zinc-900 dark:text-white">node ≥ 18</p>
+                <p class="mt-1 text-xs text-zinc-400">Runtime utama</p>
+              </div>
+              <div class="rounded-xl border border-zinc-200 bg-white/60 p-4 dark:border-white/[.07] dark:bg-white/[.02]">
+                <p class="font-mono text-[13px] font-semibold text-zinc-900 dark:text-white">postgres ≥ 15</p>
+                <p class="mt-1 text-xs text-zinc-400">Database</p>
+              </div>
+              <div class="rounded-xl border border-zinc-200 bg-white/60 p-4 dark:border-white/[.07] dark:bg-white/[.02]">
+                <p class="font-mono text-[13px] font-semibold text-zinc-900 dark:text-white">redis ≥ 7</p>
+                <p class="mt-1 text-xs text-zinc-400">Cache & queue</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- Section: Instalasi -->
+          <section class="animate-fade-up [animation-delay:.15s]">
+            <h2 id="instalasi" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+              <a href="#instalasi" class="flex items-center gap-2">Instalasi <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+            </h2>
+            <p class="mt-3 leading-relaxed">Kloning repositori dan instal seluruh dependensi:</p>
+
+            <!-- Code block modern -->
+            <div class="mt-4 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-white/[.08] dark:bg-[#0d0d10]">
+              <div class="flex items-center gap-2 border-b border-zinc-100 px-4 py-2.5 dark:border-white/[.06]">
+                <span class="h-2.5 w-2.5 rounded-full bg-red-400/80"></span>
+                <span class="h-2.5 w-2.5 rounded-full bg-amber-400/80"></span>
+                <span class="h-2.5 w-2.5 rounded-full bg-emerald-400/80"></span>
+                <span class="ml-2 font-mono text-[11px] text-zinc-400">terminal</span>
+                <button class="copy-btn ml-auto flex items-center gap-1.5 rounded-md px-2 py-1 text-[11px] font-medium text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-white/[.06] dark:hover:text-white">
+                  <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  Copy
+                </button>
+              </div>
+              <pre class="overflow-x-auto p-5 text-[13px] leading-7"><code class="font-mono"><span class="text-zinc-500"># kloning & masuk direktori</span>
+<span class="text-violet-500 dark:text-violet-400">git</span> <span class="text-zinc-800 dark:text-zinc-200">clone https://github.com/gatrion/core-api.git</span>
+<span class="text-violet-500 dark:text-violet-400">cd</span> <span class="text-zinc-800 dark:text-zinc-200">core-api</span>
+
+<span class="text-zinc-500"># instal dependensi & salin env</span>
+<span class="text-violet-500 dark:text-violet-400">npm</span> <span class="text-zinc-800 dark:text-zinc-200">install</span>
+<span class="text-violet-500 dark:text-violet-400">cp</span> <span class="text-zinc-800 dark:text-zinc-200">.env.example .env</span></code></pre>
+            </div>
+
+            <!-- Callout -->
+            <div class="mt-5 flex gap-3.5 rounded-2xl border border-violet-500/20 bg-violet-500/[.06] p-4.5 px-5 py-4">
+              <svg class="mt-0.5 h-5 w-5 shrink-0 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <div class="text-sm leading-relaxed">
+                <p class="font-semibold text-violet-600 dark:text-violet-300">Tips</p>
+                <p class="mt-0.5 text-zinc-600 dark:text-zinc-400">Gunakan <code class="rounded-md bg-violet-500/10 px-1.5 py-0.5 font-mono text-[12px] text-violet-600 dark:text-violet-300">nvm use</code> — file <code class="rounded-md bg-violet-500/10 px-1.5 py-0.5 font-mono text-[12px] text-violet-600 dark:text-violet-300">.nvmrc</code> sudah tersedia di root project.</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- Section: Menjalankan -->
+          <section class="animate-fade-up [animation-delay:.2s]">
+            <h2 id="menjalankan" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+              <a href="#menjalankan" class="flex items-center gap-2">Menjalankan Server <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+            </h2>
+            <p class="mt-3 leading-relaxed">Jalankan database via Docker, lalu start development server:</p>
+
+            <div class="mt-4 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-white/[.08] dark:bg-[#0d0d10]">
+              <div class="flex items-center gap-2 border-b border-zinc-100 px-4 py-2.5 dark:border-white/[.06]">
+                <span class="h-2.5 w-2.5 rounded-full bg-red-400/80"></span>
+                <span class="h-2.5 w-2.5 rounded-full bg-amber-400/80"></span>
+                <span class="h-2.5 w-2.5 rounded-full bg-emerald-400/80"></span>
+                <span class="ml-2 font-mono text-[11px] text-zinc-400">terminal</span>
+                <button class="copy-btn ml-auto flex items-center gap-1.5 rounded-md px-2 py-1 text-[11px] font-medium text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-white/[.06] dark:hover:text-white">
+                  <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  Copy
+                </button>
+              </div>
+              <pre class="overflow-x-auto p-5 text-[13px] leading-7"><code class="font-mono"><span class="text-violet-500 dark:text-violet-400">docker</span> <span class="text-zinc-800 dark:text-zinc-200">compose up -d</span>
+<span class="text-violet-500 dark:text-violet-400">npm</span> <span class="text-zinc-800 dark:text-zinc-200">run db:migrate</span>
+<span class="text-violet-500 dark:text-violet-400">npm</span> <span class="text-zinc-800 dark:text-zinc-200">run dev</span></code></pre>
+            </div>
+
+            <p class="mt-4 leading-relaxed">Jika berhasil, API tersedia di <code class="rounded-md bg-zinc-100 px-1.5 py-0.5 font-mono text-[13px] text-violet-600 dark:bg-white/[.06] dark:text-violet-300">http://localhost:8000</code> dengan output:</p>
+
+            <div class="mt-4 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-white/[.08] dark:bg-[#0d0d10]">
+              <pre class="overflow-x-auto p-5 text-[13px] leading-7"><code class="font-mono"><span class="text-emerald-500">✓</span> <span class="text-zinc-800 dark:text-zinc-200">Database connected</span> <span class="text-zinc-500">(postgres@localhost:5432)</span>
+<span class="text-emerald-500">✓</span> <span class="text-zinc-800 dark:text-zinc-200">Redis connected</span>
+<span class="text-emerald-500">✓</span> <span class="text-zinc-800 dark:text-zinc-200">Server listening on</span> <span class="text-cyan-500 dark:text-cyan-400">http://localhost:8000</span></code></pre>
+            </div>
+          </section>
+
+          <!-- Section: Struktur -->
+          <section class="animate-fade-up [animation-delay:.25s]">
+            <h2 id="struktur" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+              <a href="#struktur" class="flex items-center gap-2">Struktur Direktori <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+            </h2>
+            <p class="mt-3 leading-relaxed">Gambaran singkat organisasi kode:</p>
+            <div class="mt-4 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-white/[.08] dark:bg-[#0d0d10]">
+              <pre class="overflow-x-auto p-5 text-[13px] leading-7"><code class="font-mono text-zinc-800 dark:text-zinc-200">core-api/
+├── src/
+│   ├── <span class="text-violet-500 dark:text-violet-400">modules/</span>     <span class="text-zinc-500"># fitur per domain (users, orders, ...)</span>
+│   ├── <span class="text-violet-500 dark:text-violet-400">common/</span>      <span class="text-zinc-500"># guard, interceptor, util bersama</span>
+│   ├── <span class="text-violet-500 dark:text-violet-400">config/</span>      <span class="text-zinc-500"># konfigurasi env & database</span>
+│   └── main.ts
+├── prisma/          <span class="text-zinc-500"># schema & migrasi</span>
+├── test/
+└── docker-compose.yml</code></pre>
+            </div>
+          </section>
+
+          <!-- Section: Selanjutnya -->
+          <section class="animate-fade-up [animation-delay:.3s]">
+            <h2 id="selanjutnya" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+              <a href="#selanjutnya" class="flex items-center gap-2">Selanjutnya <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+            </h2>
+            <div class="mt-4 grid gap-3 sm:grid-cols-2">
+              <a href="#" class="group rounded-2xl border border-zinc-200 bg-white/60 p-5 transition hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-lg hover:shadow-violet-500/5 dark:border-white/[.07] dark:bg-white/[.02] dark:hover:border-violet-500/30">
+                <p class="font-semibold text-zinc-900 transition group-hover:text-violet-600 dark:text-white dark:group-hover:text-violet-400">Autentikasi & JWT →</p>
+                <p class="mt-1 text-[13px] text-zinc-500">Setup login, refresh token, dan role-based access.</p>
+              </a>
+              <a href="#" class="group rounded-2xl border border-zinc-200 bg-white/60 p-5 transition hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-lg hover:shadow-violet-500/5 dark:border-white/[.07] dark:bg-white/[.02] dark:hover:border-violet-500/30">
+                <p class="font-semibold text-zinc-900 transition group-hover:text-violet-600 dark:text-white dark:group-hover:text-violet-400">API Reference →</p>
+                <p class="mt-1 text-[13px] text-zinc-500">Detail seluruh endpoint, request, dan response.</p>
+              </a>
+            </div>
+          </section>
+        </article>
+
+        <!-- Prev / Next -->
+        <nav class="mt-14 flex items-center justify-between border-t border-zinc-200 pt-6 dark:border-white/[.06]">
+          <a href="index.html" class="group flex items-center gap-2 text-sm text-zinc-400 transition hover:text-zinc-900 dark:hover:text-white">
+            <svg class="h-4 w-4 transition group-hover:-translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+            Kembali ke Hub
+          </a>
+          <a href="#" class="group flex items-center gap-2 text-sm font-medium text-violet-500 transition hover:text-violet-600 dark:hover:text-violet-400">
+            Instalasi Lengkap
+            <svg class="h-4 w-4 transition group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+          </a>
+        </nav>
+
+        <footer class="mt-10 pb-6 text-xs text-zinc-400 dark:text-zinc-600">
+          <p>Terakhir diperbarui 12 Feb 2025 · <a href="#" class="underline-offset-2 hover:underline">Edit halaman ini</a></p>
+        </footer>
+      </div>
+    </main>
+
+    <!-- ============ TOC ============ -->
+    <aside class="sticky top-[60px] hidden h-[calc(100vh-60px)] w-56 shrink-0 overflow-y-auto py-10 pr-6 xl:block">
+      <p class="mb-4 text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-600">Di halaman ini</p>
+      <nav class="space-y-2.5 text-[13px]">
+        <a href="#prasyarat" class="toc-link block text-zinc-400 transition hover:text-zinc-900 dark:hover:text-white">Prasyarat</a>
+        <a href="#instalasi" class="toc-link block text-zinc-400 transition hover:text-zinc-900 dark:hover:text-white">Instalasi</a>
+        <a href="#menjalankan" class="toc-link block text-zinc-400 transition hover:text-zinc-900 dark:hover:text-white">Menjalankan Server</a>
+        <a href="#struktur" class="toc-link block text-zinc-400 transition hover:text-zinc-900 dark:hover:text-white">Struktur Direktori</a>
+        <a href="#selanjutnya" class="toc-link block text-zinc-400 transition hover:text-zinc-900 dark:hover:text-white">Selanjutnya</a>
+      </nav>
+
+      <div class="mt-8 rounded-2xl border border-zinc-200 bg-white/60 p-4 dark:border-white/[.07] dark:bg-white/[.02]">
+        <p class="text-[13px] font-semibold text-zinc-900 dark:text-white">Butuh bantuan?</p>
+        <p class="mt-1 text-xs leading-relaxed text-zinc-400">Tanya di channel <span class="font-mono text-violet-500">#eng-core-api</span> atau buat issue di repo.</p>
+      </div>
+    </aside>
+  </div>
+
+  <!-- ============ COMMAND PALETTE ============ -->
+  <div id="palette" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-zinc-950/40 backdrop-blur-sm dark:bg-zinc-950/60" onclick="closePalette()"></div>
+    <div class="animate-scale-in relative mx-auto mt-[12vh] w-[92%] max-w-xl overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-2xl dark:border-white/[.1] dark:bg-[#111113]">
+      <div class="flex items-center gap-3 border-b border-zinc-100 px-4 dark:border-white/[.06]">
+        <svg class="h-4 w-4 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/></svg>
+        <input id="paletteInput" type="text" placeholder="Ketik untuk mencari halaman..." class="w-full bg-transparent py-4 text-sm text-zinc-900 placeholder-zinc-400 outline-none dark:text-white" autocomplete="off" />
+        <kbd class="rounded-md border border-zinc-200 px-1.5 py-0.5 font-mono text-[10px] text-zinc-400 dark:border-white/[.1]">esc</kbd>
+      </div>
+      <div id="paletteResults" class="max-h-[320px] overflow-y-auto p-2"></div>
+      <div class="flex items-center gap-4 border-t border-zinc-100 px-4 py-2.5 text-[11px] text-zinc-400 dark:border-white/[.06]">
+        <span class="flex items-center gap-1"><kbd class="rounded border border-zinc-200 px-1 font-mono dark:border-white/[.1]">↑↓</kbd> navigasi</span>
+        <span class="flex items-center gap-1"><kbd class="rounded border border-zinc-200 px-1 font-mono dark:border-white/[.1]">↵</kbd> buka</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== Theme =====
+    const html = document.documentElement;
+    const iconSun = document.getElementById('iconSun');
+    const iconMoon = document.getElementById('iconMoon');
+    function syncIcon() {
+      const dark = html.classList.contains('dark');
+      iconSun.classList.toggle('hidden', !dark);
+      iconMoon.classList.toggle('hidden', dark);
+    }
+    syncIcon();
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+      syncIcon();
+    });
+
+    // ===== Sidebar mobile =====
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    document.getElementById('menuBtn').addEventListener('click', () => { sidebar.classList.remove('-translate-x-full'); overlay.classList.remove('hidden'); });
+    document.getElementById('closeBtn').addEventListener('click', () => { sidebar.classList.add('-translate-x-full'); overlay.classList.add('hidden'); });
+    overlay.addEventListener('click', () => { sidebar.classList.add('-translate-x-full'); overlay.classList.add('hidden'); });
+
+    // ===== Project switcher =====
+    const switcherBtn = document.getElementById('switcherBtn');
+    const switcherMenu = document.getElementById('switcherMenu');
+    switcherBtn.addEventListener('click', (e) => { e.stopPropagation(); switcherMenu.classList.toggle('hidden'); });
+    document.addEventListener('click', (e) => { if (!switcherMenu.contains(e.target)) switcherMenu.classList.add('hidden'); });
+
+    // ===== Copy buttons =====
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const code = btn.closest('div').parentElement.querySelector('code').innerText;
+        navigator.clipboard.writeText(code).then(() => {
+          const orig = btn.innerHTML;
+          btn.innerHTML = '<svg class="h-3 w-3 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Tersalin';
+          setTimeout(() => btn.innerHTML = orig, 1500);
+        });
+      });
+    });
+
+    // ===== TOC scroll spy =====
+    const tocLinks = document.querySelectorAll('.toc-link');
+    const sections = [...tocLinks].map(l => document.querySelector(l.getAttribute('href')));
+    const spy = new IntersectionObserver((entries) => {
+      entries.forEach(en => {
+        if (en.isIntersecting) {
+          tocLinks.forEach(l => l.classList.toggle('toc-active', l.getAttribute('href') === '#' + en.target.id));
+        }
+      });
+    }, { rootMargin: '-70px 0px -70% 0px' });
+    sections.forEach(s => s && spy.observe(s));
+
+    // ===== Command palette =====
+    const PAGES = [
+      { title: 'Hub — Semua Project', project: 'Home', url: 'index.html', icon: '🏠' },
+      { title: 'Getting Started', project: 'Core API', url: 'docs-core-api.html', icon: '⚡' },
+      { title: 'Instalasi', project: 'Core API', url: 'docs-core-api.html#instalasi', icon: '📦' },
+      { title: 'Menjalankan Server', project: 'Core API', url: 'docs-core-api.html#menjalankan', icon: '🚀' },
+      { title: 'Struktur Direktori', project: 'Core API', url: 'docs-core-api.html#struktur', icon: '📁' },
+      { title: 'Autentikasi & JWT', project: 'Core API', url: '#', icon: '🔐' },
+      { title: 'Endpoint Users', project: 'Core API', url: '#', icon: '🧩' },
+      { title: 'Setup Project', project: 'Web Dashboard', url: '#', icon: '🖥️' },
+      { title: 'Instalasi SDK Flutter', project: 'Mobile SDK', url: '#', icon: '📱' },
+      { title: 'Integrasi Midtrans', project: 'Payment Service', url: '#', icon: '💳' },
+      { title: 'Token Warna', project: 'Design System', url: '#', icon: '🎨' },
+      { title: 'Perintah Deploy', project: 'CLI Tools', url: '#', icon: '⌨️' },
+    ];
+    const palette = document.getElementById('palette');
+    const paletteInput = document.getElementById('paletteInput');
+    const paletteResults = document.getElementById('paletteResults');
+    let selIndex = 0, filtered = PAGES;
+
+    function renderResults() {
+      if (!filtered.length) {
+        paletteResults.innerHTML = '<p class="px-4 py-8 text-center text-sm text-zinc-400">Tidak ada hasil.</p>';
+        return;
+      }
+      paletteResults.innerHTML = filtered.map((p, i) => `
+        <a href="${p.url}" data-i="${i}" class="palette-item flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition ${i === selIndex ? 'bg-violet-500/10 text-violet-600 dark:text-violet-300' : 'text-zinc-600 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-white/[.04]'}">
+          <span class="text-base">${p.icon}</span>
+          <span class="flex-1 font-medium">${p.title}</span>
+          <span class="rounded-md bg-zinc-100 px-2 py-0.5 text-[10px] font-medium text-zinc-400 dark:bg-white/[.06]">${p.project}</span>
+        </a>`).join('');
+    }
+    function openPalette() {
+      palette.classList.remove('hidden');
+      paletteInput.value = ''; filtered = PAGES; selIndex = 0;
+      renderResults();
+      setTimeout(() => paletteInput.focus(), 30);
+    }
+    function closePalette() { palette.classList.add('hidden'); }
+
+    paletteInput.addEventListener('input', () => {
+      const q = paletteInput.value.toLowerCase();
+      filtered = PAGES.filter(p => (p.title + ' ' + p.project).toLowerCase().includes(q));
+      selIndex = 0; renderResults();
+    });
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); palette.classList.contains('hidden') ? openPalette() : closePalette(); }
+      if (palette.classList.contains('hidden')) return;
+      if (e.key === 'Escape') closePalette();
+      if (e.key === 'ArrowDown') { e.preventDefault(); selIndex = Math.min(selIndex + 1, filtered.length - 1); renderResults(); }
+      if (e.key === 'ArrowUp') { e.preventDefault(); selIndex = Math.max(selIndex - 1, 0); renderResults(); }
+      if (e.key === 'Enter' && filtered[selIndex]) { window.location.href = filtered[selIndex].url; }
+    });
+  </script>
+</body>
+</html>

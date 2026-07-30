@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gatrion Docs — Documentation Hub</title>
+  <meta name="description" content="Pusat dokumentasi seluruh project Gatrion." />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+          },
+          animation: {
+            'fade-up': 'fadeUp .6s cubic-bezier(.16,1,.3,1) both',
+            'fade-in': 'fadeIn .4s ease both',
+            'scale-in': 'scaleIn .25s cubic-bezier(.16,1,.3,1) both',
+          },
+          keyframes: {
+            fadeUp: { from: { opacity: 0, transform: 'translateY(16px)' }, to: { opacity: 1, transform: 'translateY(0)' } },
+            fadeIn: { from: { opacity: 0 }, to: { opacity: 1 } },
+            scaleIn: { from: { opacity: 0, transform: 'scale(.96) translateY(8px)' }, to: { opacity: 1, transform: 'scale(1) translateY(0)' } },
+          },
+        },
+      },
+    };
+    (function () {
+      const saved = localStorage.getItem('theme');
+      // dark-first: default dark kecuali user pilih light
+      if (saved !== 'light') document.documentElement.classList.add('dark');
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    ::selection { background: rgba(139,92,246,.35); }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-thumb { background: rgba(120,120,140,.3); border-radius: 99px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(120,120,140,.5); }
+
+    /* Grid pattern halus di background */
+    .bg-grid {
+      background-image: linear-gradient(rgba(120,120,160,.06) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(120,120,160,.06) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, black 40%, transparent 100%);
+    }
+    .dark .bg-grid {
+      background-image: linear-gradient(rgba(148,163,184,.05) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(148,163,184,.05) 1px, transparent 1px);
+    }
+    /* Glow orb */
+    .glow-orb {
+      position: absolute; border-radius: 9999px; filter: blur(90px); pointer-events: none;
+    }
+    /* Kartu dengan border gradient saat hover */
+    .card-glow { position: relative; transition: transform .35s cubic-bezier(.16,1,.3,1), box-shadow .35s, border-color .35s; }
+    .card-glow:hover { transform: translateY(-4px); }
+    .dark .card-glow:hover { box-shadow: 0 20px 50px -12px rgba(139,92,246,.18); }
+    .card-glow:hover { box-shadow: 0 20px 50px -12px rgba(139,92,246,.22); }
+  </style>
+</head>
+
+<body class="min-h-screen bg-[#fafafa] font-sans text-zinc-600 antialiased dark:bg-[#09090b] dark:text-zinc-400">
+
+  <!-- Glow background -->
+  <div class="pointer-events-none fixed inset-0 overflow-hidden">
+    <div class="glow-orb left-1/2 top-[-180px] h-[420px] w-[720px] -translate-x-1/2 bg-violet-500/20 dark:bg-violet-600/20"></div>
+    <div class="glow-orb right-[-120px] top-[240px] h-[300px] w-[300px] bg-cyan-400/10 dark:bg-cyan-500/10"></div>
+  </div>
+  <div class="bg-grid pointer-events-none fixed inset-0"></div>
+
+  <!-- ============ NAVBAR ============ -->
+  <header class="sticky top-0 z-40 border-b border-zinc-200/60 bg-[#fafafa]/70 backdrop-blur-xl dark:border-white/[.06] dark:bg-[#09090b]/70">
+    <div class="mx-auto flex h-[60px] max-w-6xl items-center gap-4 px-5">
+      <a href="index.html" class="flex items-center gap-2.5">
+        <span class="relative flex h-7 w-7 items-center justify-center">
+          <span class="absolute inset-0 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-600 opacity-90"></span>
+          <span class="absolute inset-0 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-600 blur-md opacity-40"></span>
+          <span class="relative text-sm font-extrabold text-white">G</span>
+        </span>
+        <span class="text-[15px] font-bold tracking-tight text-zinc-900 dark:text-white">gatrion<span class="text-zinc-400 dark:text-zinc-600">/</span><span class="bg-gradient-to-r from-violet-500 to-fuchsia-500 bg-clip-text text-transparent">docs</span></span>
+      </a>
+
+      <nav class="ml-6 hidden items-center gap-1 text-sm md:flex">
+        <a href="index.html" class="rounded-full px-3.5 py-1.5 font-medium text-zinc-900 dark:text-white">Projects</a>
+        <a href="#" class="rounded-full px-3.5 py-1.5 text-zinc-500 transition hover:text-zinc-900 dark:hover:text-white">Changelog</a>
+        <a href="#" class="rounded-full px-3.5 py-1.5 text-zinc-500 transition hover:text-zinc-900 dark:hover:text-white">Tim</a>
+      </nav>
+
+      <div class="flex-1"></div>
+
+      <!-- Search trigger -->
+      <button onclick="openPalette()" class="hidden items-center gap-2.5 rounded-full border border-zinc-200 bg-white/60 py-1.5 pl-4 pr-2 text-[13px] text-zinc-400 shadow-sm transition hover:border-zinc-300 sm:flex dark:border-white/[.08] dark:bg-white/[.03] dark:hover:border-white/[.16]">
+        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/></svg>
+        Cari apapun...
+        <kbd class="rounded-md border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 font-mono text-[10px] text-zinc-400 dark:border-white/[.08] dark:bg-white/[.04]">⌘K</kbd>
+      </button>
+      <button onclick="openPalette()" class="flex h-9 w-9 items-center justify-center rounded-full text-zinc-500 transition hover:bg-zinc-100 sm:hidden dark:hover:bg-white/[.06]" aria-label="Cari">
+        <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/></svg>
+      </button>
+
+      <!-- Theme toggle -->
+      <button id="themeToggle" class="flex h-9 w-9 items-center justify-center rounded-full text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-white/[.06] dark:hover:text-white" aria-label="Ganti tema">
+        <svg id="iconSun" class="hidden h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.36 6.36l-1.42-1.42M7.05 7.05L5.64 5.64m12.72 0l-1.42 1.42M7.05 16.95l-1.41 1.41M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        <svg id="iconMoon" class="hidden h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============ HERO ============ -->
+  <section class="relative mx-auto max-w-6xl px-5 pb-4 pt-20 text-center sm:pt-28">
+    <div class="animate-fade-up">
+      <span class="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white/60 px-3.5 py-1 text-xs font-medium text-zinc-500 backdrop-blur dark:border-white/[.08] dark:bg-white/[.03] dark:text-zinc-400">
+        <span class="relative flex h-1.5 w-1.5">
+          <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+        </span>
+        6 project terdokumentasi · terakhir update hari ini
+      </span>
+    </div>
+
+    <h1 class="animate-fade-up mx-auto mt-6 max-w-2xl text-4xl font-extrabold leading-[1.1] tracking-tight text-zinc-900 [animation-delay:.08s] sm:text-6xl dark:text-white">
+      Semua dokumentasi,<br />
+      <span class="bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-400 bg-clip-text text-transparent">satu tempat.</span>
+    </h1>
+
+    <p class="animate-fade-up mx-auto mt-5 max-w-lg text-base leading-relaxed text-zinc-500 [animation-delay:.16s] sm:text-lg dark:text-zinc-400">
+      Knowledge base internal untuk seluruh project Gatrion. Pilih project di bawah, atau tekan <kbd class="rounded-md border border-zinc-300 bg-white px-1.5 py-0.5 font-mono text-xs dark:border-white/[.1] dark:bg-white/[.05]">⌘K</kbd> untuk lompat ke halaman mana pun.
+    </p>
+
+    <!-- Search besar -->
+    <div class="animate-fade-up mx-auto mt-8 max-w-xl [animation-delay:.24s]">
+      <button onclick="openPalette()" class="group flex w-full items-center gap-3 rounded-2xl border border-zinc-200 bg-white/80 px-5 py-4 text-left shadow-lg shadow-zinc-200/50 backdrop-blur transition hover:border-violet-300 dark:border-white/[.08] dark:bg-white/[.04] dark:shadow-black/20 dark:hover:border-violet-500/40">
+        <svg class="h-5 w-5 text-zinc-400 transition group-hover:text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/></svg>
+        <span class="flex-1 text-[15px] text-zinc-400">Cari docs, panduan, API reference...</span>
+        <span class="hidden gap-1 sm:flex">
+          <kbd class="rounded-md border border-zinc-200 bg-zinc-50 px-2 py-1 font-mono text-[11px] text-zinc-400 dark:border-white/[.08] dark:bg-white/[.04]">Ctrl</kbd>
+          <kbd class="rounded-md border border-zinc-200 bg-zinc-50 px-2 py-1 font-mono text-[11px] text-zinc-400 dark:border-white/[.08] dark:bg-white/[.04]">K</kbd>
+        </span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ============ GRID PROJECT ============ -->
+  <section class="relative mx-auto max-w-6xl px-5 py-14">
+    <div class="mb-6 flex items-end justify-between">
+      <div>
+        <h2 class="text-lg font-bold tracking-tight text-zinc-900 dark:text-white">Semua Project</h2>
+        <p class="mt-0.5 text-sm text-zinc-500">Dikelompokkan berdasarkan kategori</p>
+      </div>
+      <!-- Filter chips -->
+      <div class="hidden gap-1.5 sm:flex" id="filterChips">
+        <button data-filter="all" class="chip rounded-full bg-zinc-900 px-3.5 py-1.5 text-xs font-medium text-white transition dark:bg-white dark:text-zinc-900">Semua</button>
+        <button data-filter="backend" class="chip rounded-full border border-zinc-200 px-3.5 py-1.5 text-xs font-medium text-zinc-500 transition hover:border-zinc-400 dark:border-white/[.08] dark:hover:border-white/[.2]">Backend</button>
+        <button data-filter="frontend" class="chip rounded-full border border-zinc-200 px-3.5 py-1.5 text-xs font-medium text-zinc-500 transition hover:border-zinc-400 dark:border-white/[.08] dark:hover:border-white/[.2]">Frontend</button>
+        <button data-filter="tooling" class="chip rounded-full border border-zinc-200 px-3.5 py-1.5 text-xs font-medium text-zinc-500 transition hover:border-zinc-400 dark:border-white/[.08] dark:hover:border-white/[.2]">Tooling</button>
+      </div>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" id="projectGrid">
+
+      <!-- Core API -->
+      <a href="docs-core-api.html" data-category="backend" class="card-glow group animate-fade-up rounded-2xl border border-zinc-200 bg-white/80 p-6 backdrop-blur [animation-delay:.05s] dark:border-white/[.07] dark:bg-white/[.03] dark:hover:border-violet-500/30 hover:border-violet-300">
+        <div class="flex items-start justify-between">
+          <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/15 to-fuchsia-500/15 text-violet-500 ring-1 ring-inset ring-violet-500/20">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/></svg>
+          </span>
+          <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-semibold text-emerald-600 ring-1 ring-inset ring-emerald-500/20 dark:text-emerald-400">
+            <span class="h-1 w-1 rounded-full bg-emerald-500"></span> Stabil
+          </span>
+        </div>
+        <h3 class="mt-4 font-bold tracking-tight text-zinc-900 transition group-hover:text-violet-600 dark:text-white dark:group-hover:text-violet-400">Core API</h3>
+        <p class="mt-1.5 text-[13px] leading-relaxed text-zinc-500">REST API utama — autentikasi, users, orders, dan payment gateway.</p>
+        <div class="mt-5 flex items-center justify-between border-t border-zinc-100 pt-4 text-xs text-zinc-400 dark:border-white/[.05]">
+          <span class="font-mono">v2.4.0 · 24 halaman</span>
+          <span class="flex items-center gap-1 font-medium text-violet-500 opacity-0 transition group-hover:opacity-100">Buka docs <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></span>
+        </div>
+      </a>
+
+      <!-- Web Dashboard -->
+      <a href="#" data-category="frontend" class="card-glow group animate-fade-up rounded-2xl border border-zinc-200 bg-white/80 p-6 backdrop-blur [animation-delay:.1s] dark:border-white/[.07] dark:bg-white/[.03] dark:hover:border-cyan-500/30 hover:border-cyan-300">
+        <div class="flex items-start justify-between">
+          <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500/15 to-blue-500/15 text-cyan-500 ring-1 ring-inset ring-cyan-500/20">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          </span>
+          <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-semibold text-emerald-600 ring-1 ring-inset ring-emerald-500/20 dark:text-emerald-400">
+            <span class="h-1 w-1 rounded-full bg-emerald-500"></span> Stabil
+          </span>
+        </div>
+        <h3 class="mt-4 font-bold tracking-tight text-zinc-900 transition group-hover:text-cyan-600 dark:text-white dark:group-hover:text-cyan-400">Web Dashboard</h3>
+        <p class="mt-1.5 text-[13px] leading-relaxed text-zinc-500">Admin panel React — manajemen konten, analitik, dan laporan.</p>
+        <div class="mt-5 flex items-center justify-between border-t border-zinc-100 pt-4 text-xs text-zinc-400 dark:border-white/[.05]">
+          <span class="font-mono">v1.9.2 · 18 halaman</span>
+          <span class="flex items-center gap-1 font-medium text-cyan-500 opacity-0 transition group-hover:opacity-100">Buka docs <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></span>
+        </div>
+      </a>
+
+      <!-- Mobile SDK -->
+      <a href="#" data-category="frontend" class="card-glow group animate-fade-up rounded-2xl border border-zinc-200 bg-white/80 p-6 backdrop-blur [animation-delay:.15s] dark:border-white/[.07] dark:bg-white/[.03] dark:hover:border-fuchsia-500/30 hover:border-fuchsia-300">
+        <div class="flex items-start justify-between">
+          <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-fuchsia-500/15 to-pink-500/15 text-fuchsia-500 ring-1 ring-inset ring-fuchsia-500/20">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+          </span>
+          <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 px-2.5 py-1 text-[11px] font-semibold text-amber-600 ring-1 ring-inset ring-amber-500/20 dark:text-amber-400">
+            <span class="h-1 w-1 rounded-full bg-amber-500"></span> Beta
+          </span>
+        </div>
+        <h3 class="mt-4 font-bold tracking-tight text-zinc-900 transition group-hover:text-fuchsia-600 dark:text-white dark:group-hover:text-fuchsia-400">Mobile SDK</h3>
+        <p class="mt-1.5 text-[13px] leading-relaxed text-zinc-500">SDK Flutter & React Native untuk integrasi layanan Gatrion.</p>
+        <div class="mt-5 flex items-center justify-between border-t border-zinc-100 pt-4 text-xs text-zinc-400 dark:border-white/[.05]">
+          <span class="font-mono">v0.8.0 · 12 halaman</span>
+          <span class="flex items-center gap-1 font-medium text-fuchsia-500 opacity-0 transition group-hover:opacity-100">Buka docs <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></span>
+        </div>
+      </a>
+
+      <!-- Payment Service -->
+      <a href="#" data-category="backend" class="card-glow group animate-fade-up rounded-2xl border border-zinc-200 bg-white/80 p-6 backdrop-blur [animation-delay:.2s] dark:border-white/[.07] dark:bg-white/[.03] dark:hover:border-emerald-500/30 hover:border-emerald-300">
+        <div class="flex items-start justify-between">
+          <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500/15 to-teal-500/15 text-emerald-500 ring-1 ring-inset ring-emerald-500/20">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+          </span>
+          <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-semibold text-emerald-600 ring-1 ring-inset ring-emerald-500/20 dark:text-emerald-400">
+            <span class="h-1 w-1 rounded-full bg-emerald-500"></span> Stabil
+          </span>
+        </div>
+        <h3 class="mt-4 font-bold tracking-tight text-zinc-900 transition group-hover:text-emerald-600 dark:text-white dark:group-hover:text-emerald-400">Payment Service</h3>
+        <p class="mt-1.5 text-[13px] leading-relaxed text-zinc-500">Microservice pembayaran — Midtrans, Xendit, dan virtual account.</p>
+        <div class="mt-5 flex items-center justify-between border-t border-zinc-100 pt-4 text-xs text-zinc-400 dark:border-white/[.05]">
+          <span class="font-mono">v3.1.0 · 15 halaman</span>
+          <span class="flex items-center gap-1 font-medium text-emerald-500 opacity-0 transition group-hover:opacity-100">Buka docs <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></span>
+        </div>
+      </a>
+
+      <!-- CLI Tools -->
+      <a href="#" data-category="tooling" class="card-glow group animate-fade-up rounded-2xl border border-zinc-200 bg-white/80 p-6 backdrop-blur [animation-delay:.25s] dark:border-white/[.07] dark:bg-white/[.03] dark:hover:border-orange-500/30 hover:border-orange-300">
+        <div class="flex items-start justify-between">
+          <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500/15 to-amber-500/15 text-orange-500 ring-1 ring-inset ring-orange-500/20">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          </span>
+          <span class="inline-flex items-center gap-1.5 rounded-full bg-zinc-500/10 px-2.5 py-1 text-[11px] font-semibold text-zinc-500 ring-1 ring-inset ring-zinc-500/20">
+            <span class="h-1 w-1 rounded-full bg-zinc-400"></span> Draft
+          </span>
+        </div>
+        <h3 class="mt-4 font-bold tracking-tight text-zinc-900 transition group-hover:text-orange-600 dark:text-white dark:group-hover:text-orange-400">CLI Tools</h3>
+        <p class="mt-1.5 text-[13px] leading-relaxed text-zinc-500">Command line internal — scaffolding, deploy, dan migrasi database.</p>
+        <div class="mt-5 flex items-center justify-between border-t border-zinc-100 pt-4 text-xs text-zinc-400 dark:border-white/[.05]">
+          <span class="font-mono">v0.3.0 · 6 halaman</span>
+          <span class="flex items-center gap-1 font-medium text-orange-500 opacity-0 transition group-hover:opacity-100">Buka docs <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></span>
+        </div>
+      </a>
+
+      <!-- Design System -->
+      <a href="#" data-category="frontend" class="card-glow group animate-fade-up rounded-2xl border border-zinc-200 bg-white/80 p-6 backdrop-blur [animation-delay:.3s] dark:border-white/[.07] dark:bg-white/[.03] dark:hover:border-rose-500/30 hover:border-rose-300">
+        <div class="flex items-start justify-between">
+          <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500/15 to-red-500/15 text-rose-500 ring-1 ring-inset ring-rose-500/20">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>
+          </span>
+          <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-semibold text-emerald-600 ring-1 ring-inset ring-emerald-500/20 dark:text-emerald-400">
+            <span class="h-1 w-1 rounded-full bg-emerald-500"></span> Stabil
+          </span>
+        </div>
+        <h3 class="mt-4 font-bold tracking-tight text-zinc-900 transition group-hover:text-rose-600 dark:text-white dark:group-hover:text-rose-400">Design System</h3>
+        <p class="mt-1.5 text-[13px] leading-relaxed text-zinc-500">Komponen UI, token warna, tipografi, dan pedoman aksesibilitas.</p>
+        <div class="mt-5 flex items-center justify-between border-t border-zinc-100 pt-4 text-xs text-zinc-400 dark:border-white/[.05]">
+          <span class="font-mono">v2.0.0 · 31 halaman</span>
+          <span class="flex items-center gap-1 font-medium text-rose-500 opacity-0 transition group-hover:opacity-100">Buka docs <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============ QUICK LINKS ============ -->
+  <section class="relative mx-auto max-w-6xl px-5 pb-20">
+    <div class="grid gap-3 rounded-2xl border border-zinc-200 bg-white/60 p-3 backdrop-blur sm:grid-cols-3 dark:border-white/[.07] dark:bg-white/[.02]">
+      <a href="docs-core-api.html" class="group flex items-center gap-3.5 rounded-xl p-4 transition hover:bg-zinc-50 dark:hover:bg-white/[.04]">
+        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-500/10 text-violet-500">
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        </span>
+        <div>
+          <p class="text-sm font-semibold text-zinc-900 dark:text-white">Mulai Cepat</p>
+          <p class="text-xs text-zinc-500">Setup pertama kali dalam 5 menit</p>
+        </div>
+      </a>
+      <a href="#" class="group flex items-center gap-3.5 rounded-xl p-4 transition hover:bg-zinc-50 dark:hover:bg-white/[.04]">
+        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-cyan-500/10 text-cyan-500">
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+        </span>
+        <div>
+          <p class="text-sm font-semibold text-zinc-900 dark:text-white">Konvensi Kode</p>
+          <p class="text-xs text-zinc-500">Standar penulisan di semua project</p>
+        </div>
+      </a>
+      <a href="#" class="group flex items-center gap-3.5 rounded-xl p-4 transition hover:bg-zinc-50 dark:hover:bg-white/[.04]">
+        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-500">
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"/></svg>
+        </span>
+        <div>
+          <p class="text-sm font-semibold text-zinc-900 dark:text-white">Infrastruktur</p>
+          <p class="text-xs text-zinc-500">Server, CI/CD, dan monitoring</p>
+        </div>
+      </a>
+    </div>
+
+    <footer class="mt-14 flex flex-col items-center justify-between gap-3 border-t border-zinc-200 pt-8 text-xs text-zinc-400 sm:flex-row dark:border-white/[.06]">
+      <p>© 2025 Gatrion — internal documentation hub</p>
+      <p class="font-mono">dibuat dengan HTML + Tailwind</p>
+    </footer>
+  </section>
+
+  <!-- ============ COMMAND PALETTE (⌘K) ============ -->
+  <div id="palette" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-zinc-950/40 backdrop-blur-sm dark:bg-zinc-950/60" onclick="closePalette()"></div>
+    <div class="animate-scale-in relative mx-auto mt-[12vh] w-[92%] max-w-xl overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-2xl dark:border-white/[.1] dark:bg-[#111113]">
+      <div class="flex items-center gap-3 border-b border-zinc-100 px-4 dark:border-white/[.06]">
+        <svg class="h-4 w-4 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/></svg>
+        <input id="paletteInput" type="text" placeholder="Ketik untuk mencari halaman..." class="w-full bg-transparent py-4 text-sm text-zinc-900 placeholder-zinc-400 outline-none dark:text-white" autocomplete="off" />
+        <kbd class="rounded-md border border-zinc-200 px-1.5 py-0.5 font-mono text-[10px] text-zinc-400 dark:border-white/[.1]">esc</kbd>
+      </div>
+      <div id="paletteResults" class="max-h-[320px] overflow-y-auto p-2"></div>
+      <div class="flex items-center gap-4 border-t border-zinc-100 px-4 py-2.5 text-[11px] text-zinc-400 dark:border-white/[.06]">
+        <span class="flex items-center gap-1"><kbd class="rounded border border-zinc-200 px-1 font-mono dark:border-white/[.1]">↑↓</kbd> navigasi</span>
+        <span class="flex items-center gap-1"><kbd class="rounded border border-zinc-200 px-1 font-mono dark:border-white/[.1]">↵</kbd> buka</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== Theme =====
+    const html = document.documentElement;
+    const iconSun = document.getElementById('iconSun');
+    const iconMoon = document.getElementById('iconMoon');
+    function syncIcon() {
+      const dark = html.classList.contains('dark');
+      iconSun.classList.toggle('hidden', !dark);
+      iconMoon.classList.toggle('hidden', dark);
+    }
+    syncIcon();
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+      syncIcon();
+    });
+
+    // ===== Filter chips =====
+    document.querySelectorAll('.chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('.chip').forEach(c => {
+          c.className = 'chip rounded-full border border-zinc-200 px-3.5 py-1.5 text-xs font-medium text-zinc-500 transition hover:border-zinc-400 dark:border-white/[.08] dark:hover:border-white/[.2]';
+        });
+        chip.className = 'chip rounded-full bg-zinc-900 px-3.5 py-1.5 text-xs font-medium text-white transition dark:bg-white dark:text-zinc-900';
+        const f = chip.dataset.filter;
+        document.querySelectorAll('#projectGrid > a').forEach(card => {
+          card.style.display = (f === 'all' || card.dataset.category === f) ? '' : 'none';
+        });
+      });
+    });
+
+    // ===== Command palette =====
+    // Index halaman — hardcode, tambah entri di sini setiap kali buat halaman baru
+    const PAGES = [
+      { title: 'Hub — Semua Project', project: 'Home', url: 'index.html', icon: '🏠' },
+      { title: 'Getting Started', project: 'Core API', url: 'docs-core-api.html', icon: '⚡' },
+      { title: 'Instalasi', project: 'Core API', url: 'docs-core-api.html#instalasi', icon: '📦' },
+      { title: 'Autentikasi', project: 'Core API', url: '#', icon: '🔐' },
+      { title: 'Endpoint Users', project: 'Core API', url: '#', icon: '🧩' },
+      { title: 'Webhooks', project: 'Core API', url: '#', icon: '🔔' },
+      { title: 'Setup Project', project: 'Web Dashboard', url: '#', icon: '🖥️' },
+      { title: 'Manajemen State', project: 'Web Dashboard', url: '#', icon: '🗂️' },
+      { title: 'Instalasi SDK Flutter', project: 'Mobile SDK', url: '#', icon: '📱' },
+      { title: 'Integrasi Midtrans', project: 'Payment Service', url: '#', icon: '💳' },
+      { title: 'Token Warna', project: 'Design System', url: '#', icon: '🎨' },
+      { title: 'Perintah Deploy', project: 'CLI Tools', url: '#', icon: '⌨️' },
+    ];
+    const palette = document.getElementById('palette');
+    const paletteInput = document.getElementById('paletteInput');
+    const paletteResults = document.getElementById('paletteResults');
+    let selIndex = 0, filtered = PAGES;
+
+    function renderResults() {
+      if (!filtered.length) {
+        paletteResults.innerHTML = '<p class="px-4 py-8 text-center text-sm text-zinc-400">Tidak ada hasil.</p>';
+        return;
+      }
+      paletteResults.innerHTML = filtered.map((p, i) => `
+        <a href="${p.url}" data-i="${i}" class="palette-item flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition ${i === selIndex ? 'bg-violet-500/10 text-violet-600 dark:text-violet-300' : 'text-zinc-600 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-white/[.04]'}">
+          <span class="text-base">${p.icon}</span>
+          <span class="flex-1 font-medium">${p.title}</span>
+          <span class="rounded-md bg-zinc-100 px-2 py-0.5 text-[10px] font-medium text-zinc-400 dark:bg-white/[.06]">${p.project}</span>
+        </a>`).join('');
+    }
+    function openPalette() {
+      palette.classList.remove('hidden');
+      paletteInput.value = ''; filtered = PAGES; selIndex = 0;
+      renderResults();
+      setTimeout(() => paletteInput.focus(), 30);
+    }
+    function closePalette() { palette.classList.add('hidden'); }
+
+    paletteInput.addEventListener('input', () => {
+      const q = paletteInput.value.toLowerCase();
+      filtered = PAGES.filter(p => (p.title + ' ' + p.project).toLowerCase().includes(q));
+      selIndex = 0; renderResults();
+    });
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); palette.classList.contains('hidden') ? openPalette() : closePalette(); }
+      if (palette.classList.contains('hidden')) return;
+      if (e.key === 'Escape') closePalette();
+      if (e.key === 'ArrowDown') { e.preventDefault(); selIndex = Math.min(selIndex + 1, filtered.length - 1); renderResults(); }
+      if (e.key === 'ArrowUp') { e.preventDefault(); selIndex = Math.max(selIndex - 1, 0); renderResults(); }
+      if (e.key === 'Enter' && filtered[selIndex]) { window.location.href = filtered[selIndex].url; }
+    });
+  </script>
+</body>
+</html>
