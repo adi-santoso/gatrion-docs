@@ -1,0 +1,132 @@
+---
+title: "Changelog"
+project: "Core API"
+category: "Lainnya"
+description: "Riwayat perubahan dan update terbaru Core API. Semua versi dengan detail fitur, improvement, dan bug fixes."
+---
+
+import Callout from '../../../components/Callout.astro';
+import NextSteps from '../../../components/NextSteps.astro';
+import NextStepCard from '../../../components/NextStepCard.astro';
+
+<section class="animate-fade-up [animation-delay:.1s]">
+<h2 id="v2-4-0" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#v2-4-0" class="flex items-center gap-2">v2.4.0 <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<p class="mt-2 text-sm text-zinc-400">Released: 30 Januari 2025</p>
+
+<div class="mt-4 space-y-4">
+  <div>
+    <p class="flex items-center gap-2 text-sm font-semibold text-emerald-500">✨ New Features</p>
+    <ul class="mt-1 ml-6 list-disc space-y-1 text-sm text-zinc-600 dark:text-zinc-400">
+      <li>Webhook signature verification dengan HMAC-SHA256</li>
+      <li>Partial refund support untuk payments</li>
+      <li>QRIS payment method via Midtrans</li>
+    </ul>
+  </div>
+  <div>
+    <p class="flex items-center gap-2 text-sm font-semibold text-sky-500">🚀 Improvements</p>
+    <ul class="mt-1 ml-6 list-disc space-y-1 text-sm text-zinc-600 dark:text-zinc-400">
+      <li>Database query optimization hingga 40% faster</li>
+      <li>Redis connection pooling</li>
+      <li>API response compression dengan Brotli</li>
+    </ul>
+  </div>
+  <div>
+    <p class="flex items-center gap-2 text-sm font-semibold text-amber-500">🐛 Bug Fixes</p>
+    <ul class="mt-1 ml-6 list-disc space-y-1 text-sm text-zinc-600 dark:text-zinc-400">
+      <li>Fix race condition pada order creation</li>
+      <li>Fix memory leak pada JWT verification</li>
+    </ul>
+  </div>
+</div>
+</section>
+
+<section class="animate-fade-up [animation-delay:.15s]">
+<h2 id="v2-3-0" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#v2-3-0" class="flex items-center gap-2">v2.3.0 <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<p class="mt-2 text-sm text-zinc-400">Released: 15 Januari 2025</p>
+
+<div class="mt-4 space-y-4">
+  <div>
+    <p class="flex items-center gap-2 text-sm font-semibold text-emerald-500">✨ New Features</p>
+    <ul class="mt-1 ml-6 list-disc space-y-1 text-sm text-zinc-600 dark:text-zinc-400">
+      <li>Role-based access control (RBAC)</li>
+      <li>Rate limiting dengan Redis</li>
+      <li>Pagination meta response</li>
+    </ul>
+  </div>
+  <div>
+    <p class="flex items-center gap-2 text-sm font-semibold text-amber-500">🐛 Bug Fixes</p>
+    <ul class="mt-1 ml-6 list-disc space-y-1 text-sm text-zinc-600 dark:text-zinc-400">
+      <li>Fix CORS preflight request handling</li>
+      <li>Fix Prisma transaction timeout</li>
+    </ul>
+  </div>
+</div>
+</section>
+
+<section class="animate-fade-up [animation-delay:.2s]">
+<h2 id="v2-2-0" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#v2-2-0" class="flex items-center gap-2">v2.2.0 <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<p class="mt-2 text-sm text-zinc-400">Released: 30 Desember 2024</p>
+
+<div class="mt-4 space-y-4">
+  <div>
+    <p class="flex items-center gap-2 text-sm font-semibold text-emerald-500">✨ New Features</p>
+    <ul class="mt-1 ml-6 list-disc space-y-1 text-sm text-zinc-600 dark:text-zinc-400">
+      <li>Modular architecture migration</li>
+      <li>Prisma ORM integration</li>
+      <li>Health check endpoint</li>
+    </ul>
+  </div>
+  <div>
+    <p class="flex items-center gap-2 text-sm font-semibold text-red-500">⚠️ Breaking Changes</p>
+    <ul class="mt-1 ml-6 list-disc space-y-1 text-sm text-zinc-600 dark:text-zinc-400">
+      <li>Response format berubah: <code class="rounded-md bg-zinc-100 px-1.5 py-0.5 font-mono text-[12px] dark:bg-white/[.06]">data</code> sekarang di-wrap dalam <code class="rounded-md bg-zinc-100 px-1.5 py-0.5 font-mono text-[12px] dark:bg-white/[.06]">{ statusCode, data }</code></li>
+      <li>Auth header format: <code class="rounded-md bg-zinc-100 px-1.5 py-0.5 font-mono text-[12px] dark:bg-white/[.06]">Bearer</code> prefix wajib</li>
+    </ul>
+  </div>
+</div>
+</section>
+
+<section class="animate-fade-up [animation-delay:.25s]">
+<h2 id="v2-1-0" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#v2-1-0" class="flex items-center gap-2">v2.1.0 <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<p class="mt-2 text-sm text-zinc-400">Released: 15 Desember 2024</p>
+
+<div class="mt-4 space-y-4">
+  <div>
+    <p class="flex items-center gap-2 text-sm font-semibold text-emerald-500">✨ New Features</p>
+    <ul class="mt-1 ml-6 list-disc space-y-1 text-sm text-zinc-600 dark:text-zinc-400">
+      <li>JWT authentication dengan refresh token</li>
+      <li>Input validation dengan class-validator</li>
+      <li>Swagger documentation auto-generate</li>
+    </ul>
+  </div>
+</div>
+</section>
+
+<section class="animate-fade-up [animation-delay:.3s]">
+<h2 id="next-steps" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#next-steps" class="flex items-center gap-2">Selanjutnya <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<NextSteps>
+  <NextStepCard 
+    title="FAQ" 
+    description="Pertanyaan yang sering diajukan."
+    href="/docs/core-api/faq/" />
+  <NextStepCard 
+    title="Getting Started" 
+    description="Mulai dari awal."
+    href="/docs/core-api/getting-started/" />
+</NextSteps>
+</section>

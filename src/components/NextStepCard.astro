@@ -1,0 +1,13 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  href: string;
+}
+const { title, description, href } = Astro.props;
+---
+
+<a href={href} class="group rounded-2xl border border-zinc-200 bg-white/60 p-5 transition hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-lg hover:shadow-violet-500/5 dark:border-white/[.07] dark:bg-white/[.02] dark:hover:border-violet-500/30">
+  <p class="font-semibold text-zinc-900 transition group-hover:text-violet-600 dark:text-white dark:group-hover:text-violet-400">{title} →</p>
+  <p class="mt-1 text-[13px] text-zinc-500">{description}</p>
+</a>

@@ -1,0 +1,123 @@
+---
+title: "Forms"
+project: "Web Dashboard"
+category: "Components"
+description: "Komponen form dengan validation menggunakan React Hook Form dan Zod. Input, Select, Textarea, dan Checkbox."
+---
+
+import Callout from '../../../components/Callout.astro';
+import CodeBlock from '../../../components/CodeBlock.astro';
+import NextSteps from '../../../components/NextSteps.astro';
+import NextStepCard from '../../../components/NextStepCard.astro';
+
+<section class="animate-fade-up [animation-delay:.1s]">
+<h2 id="text-input" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#text-input" class="flex items-center gap-2">Text Input <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<div class="mt-4 max-w-sm">
+  <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Email</label>
+  <input type="email" placeholder="user@example.com" class="mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white" />
+  <p class="mt-1 text-xs text-zinc-500">We'll never share your email.</p>
+</div>
+
+<CodeBlock code={`import { Input } from '@/components/ui/input';
+
+<Input
+  type="email"
+  label="Email"
+  placeholder="user@example.com"
+  error={errors.email?.message}
+  {...register('email')}
+/>`} lang="bash" title="Usage" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.15s]">
+<h2 id="select" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#select" class="flex items-center gap-2">Select <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<div class="mt-4 max-w-sm">
+  <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Role</label>
+  <select class="mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white">
+    <option value="">Pilih role...</option>
+    <option value="ADMIN">Admin</option>
+    <option value="USER">User</option>
+  </select>
+</div>
+
+<CodeBlock code={`import { Select } from '@/components/ui/select';
+
+<Select
+  label="Role"
+  placeholder="Pilih role..."
+  options={[
+    { value: 'ADMIN', label: 'Admin' },
+    { value: 'USER', label: 'User' },
+  ]}
+  {...register('role')}
+/>`} lang="bash" title="Usage" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.2s]">
+<h2 id="validation" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#validation" class="flex items-center gap-2">Form Validation <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<p class="mt-3 leading-relaxed">Menggunakan <strong>React Hook Form</strong> + <strong>Zod</strong> untuk type-safe validation:</p>
+
+<CodeBlock code={`import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+
+const schema = z.object({
+  email: z.string().email('Email tidak valid'),
+  password: z.string().min(8, 'Password minimal 8 karakter'),
+  name: z.string().min(2, 'Nama minimal 2 karakter'),
+});
+
+type FormData = z.infer<typeof schema>;
+
+function UserForm() {
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = 
+    useForm<FormData>({ resolver: zodResolver(schema) });
+
+  const onSubmit = async (data: FormData) => {
+    await apiClient.post('/users', data);
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Input label="Email" error={errors.email?.message} {...register('email')} />
+      <Input label="Password" type="password" error={errors.password?.message} {...register('password')} />
+      <Input label="Name" error={errors.name?.message} {...register('name')} />
+      <Button type="submit" isLoading={isSubmitting}>Submit</Button>
+    </form>
+  );
+}`} lang="bash" title="UserForm.tsx" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.25s]">
+<h2 id="checkbox" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#checkbox" class="flex items-center gap-2">Checkbox & Radio <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`<Checkbox label="Setuju dengan syarat & ketentuan" {...register('agree')} />
+
+<RadioGroup name="plan">
+  <Radio value="free" label="Free" />
+  <Radio value="pro" label="Pro" />
+  <Radio value="enterprise" label="Enterprise" />
+</RadioGroup>`} lang="bash" title="Usage" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.3s]">
+<h2 id="next-steps" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#next-steps" class="flex items-center gap-2">Selanjutnya <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<NextSteps>
+  <NextStepCard title="Tables" description="Data tables dengan pagination." href="/docs/web-dashboard/tables/" />
+  <NextStepCard title="Charts" description="Charts dan graphs." href="/docs/web-dashboard/charts/" />
+</NextSteps>
+</section>

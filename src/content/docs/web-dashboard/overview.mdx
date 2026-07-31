@@ -1,0 +1,125 @@
+---
+title: "Overview"
+project: "Web Dashboard"
+category: "Memulai"
+description: "Web Dashboard adalah frontend admin untuk mengelola seluruh sistem Gatrion. Interface modern dengan React dan TypeScript."
+---
+
+import Callout from '../../../components/Callout.astro';
+import CodeBlock from '../../../components/CodeBlock.astro';
+import PrerequisiteGrid from '../../../components/PrerequisiteGrid.astro';
+import PrerequisiteItem from '../../../components/PrerequisiteItem.astro';
+import NextSteps from '../../../components/NextSteps.astro';
+import NextStepCard from '../../../components/NextStepCard.astro';
+
+<section class="animate-fade-up [animation-delay:.1s]">
+<h2 id="tentang" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#tentang" class="flex items-center gap-2">Tentang Dashboard <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<p class="mt-3 leading-relaxed">Web Dashboard adalah aplikasi frontend berbasis React yang menyediakan interface untuk administrator mengelola users, orders, payments, dan analytics secara real-time.</p>
+
+<PrerequisiteGrid>
+  <PrerequisiteItem name="node ≥ 18" description="Runtime" />
+  <PrerequisiteItem name="pnpm ≥ 8" description="Package manager" />
+  <PrerequisiteItem name="Core API" description="Backend service" />
+</PrerequisiteGrid>
+</section>
+
+<section class="animate-fade-up [animation-delay:.15s]">
+<h2 id="fitur-utama" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#fitur-utama" class="flex items-center gap-2">Fitur Utama <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<p class="mt-3 leading-relaxed">Dashboard dilengkapi dengan berbagai fitur untuk memudahkan management:</p>
+
+<div class="mt-4 grid gap-3 sm:grid-cols-2">
+  <div class="rounded-xl border border-zinc-200 bg-white/60 p-4 dark:border-white/[.07] dark:bg-white/[.02]">
+    <p class="font-semibold text-zinc-900 dark:text-white">📊 Real-time Analytics</p>
+    <p class="mt-1 text-sm text-zinc-500">Dashboard dengan metrics live</p>
+  </div>
+  <div class="rounded-xl border border-zinc-200 bg-white/60 p-4 dark:border-white/[.07] dark:bg-white/[.02]">
+    <p class="font-semibold text-zinc-900 dark:text-white">👥 User Management</p>
+    <p class="mt-1 text-sm text-zinc-500">CRUD users dengan role-based access</p>
+  </div>
+  <div class="rounded-xl border border-zinc-200 bg-white/60 p-4 dark:border-white/[.07] dark:bg-white/[.02]">
+    <p class="font-semibold text-zinc-900 dark:text-white">💳 Payment Tracking</p>
+    <p class="mt-1 text-sm text-zinc-500">Monitor transaksi dan settlements</p>
+  </div>
+  <div class="rounded-xl border border-zinc-200 bg-white/60 p-4 dark:border-white/[.07] dark:bg-white/[.02]">
+    <p class="font-semibold text-zinc-900 dark:text-white">🔔 Notifications</p>
+    <p class="mt-1 text-sm text-zinc-500">Alert system dengan WebSocket</p>
+  </div>
+</div>
+</section>
+
+<section class="animate-fade-up [animation-delay:.2s]">
+<h2 id="quick-start" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#quick-start" class="flex items-center gap-2">Quick Start <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<p class="mt-3 leading-relaxed">Clone repository dan jalankan development server:</p>
+
+<CodeBlock code={`# clone repository
+git clone https://github.com/gatrion/web-dashboard.git
+cd web-dashboard
+
+# install dependencies
+pnpm install
+
+# copy environment file
+cp .env.example .env.local`} lang="bash" title="terminal" />
+
+<Callout type="info">
+  **Penting:** Pastikan Core API sudah berjalan di <code class="rounded-md bg-violet-500/10 px-1.5 py-0.5 font-mono text-[12px] text-violet-600 dark:text-violet-300">http://localhost:8000</code> sebelum menjalankan dashboard.
+</Callout>
+
+<CodeBlock code={`# start development server
+pnpm dev`} lang="bash" title="terminal" />
+
+<p class="mt-4 leading-relaxed">Dashboard akan tersedia di <code class="rounded-md bg-zinc-100 px-1.5 py-0.5 font-mono text-[13px] text-violet-600 dark:bg-white/[.06] dark:text-violet-300">http://localhost:3000</code></p>
+</section>
+
+<section class="animate-fade-up [animation-delay:.25s]">
+<h2 id="tech-stack" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#tech-stack" class="flex items-center gap-2">Tech Stack <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<div class="mt-4 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-white/[.08] dark:bg-[#0d0d10]">
+  <pre class="overflow-x-auto p-5 text-[13px] leading-7"><code class="font-mono text-zinc-800 dark:text-zinc-200">web-dashboard/
+├── src/
+│   ├── <span class="text-violet-500 dark:text-violet-400">components/</span>  <span class="text-zinc-500"># Reusable UI components</span>
+│   ├── <span class="text-violet-500 dark:text-violet-400">pages/</span>       <span class="text-zinc-500"># Route pages</span>
+│   ├── <span class="text-violet-500 dark:text-violet-400">hooks/</span>       <span class="text-zinc-500"># Custom React hooks</span>
+│   ├── <span class="text-violet-500 dark:text-violet-400">services/</span>    <span class="text-zinc-500"># API client & business logic</span>
+│   └── <span class="text-violet-500 dark:text-violet-400">stores/</span>      <span class="text-zinc-500"># Zustand state management</span>
+├── public/
+└── vite.config.ts</code></pre>
+</div>
+
+<p class="mt-4 leading-relaxed">Built with:</p>
+<ul class="mt-2 space-y-1 text-zinc-600 dark:text-zinc-400">
+  <li>• <strong>React 18</strong> + TypeScript</li>
+  <li>• <strong>Vite</strong> untuk build tool</li>
+  <li>• <strong>TanStack Query</strong> untuk data fetching</li>
+  <li>• <strong>Zustand</strong> untuk state management</li>
+  <li>• <strong>Tailwind CSS</strong> + shadcn/ui</li>
+</ul>
+</section>
+
+<section class="animate-fade-up [animation-delay:.3s]">
+<h2 id="next-steps" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#next-steps" class="flex items-center gap-2">Selanjutnya <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<NextSteps>
+  <NextStepCard 
+    title="Authentication Flow" 
+    description="Setup login, logout, dan protected routes."
+    href="#" />
+  <NextStepCard 
+    title="API Integration" 
+    description="Koneksi ke Core API dengan axios dan React Query."
+    href="#" />
+</NextSteps>
+</section>

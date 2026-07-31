@@ -1,0 +1,175 @@
+---
+title: "Authentication"
+project: "Web Dashboard"
+category: "Features"
+description: "Implementasi authentication flow: login, logout, refresh token, dan protected routes di Web Dashboard."
+---
+
+import Callout from '../../../components/Callout.astro';
+import CodeBlock from '../../../components/CodeBlock.astro';
+import NextSteps from '../../../components/NextSteps.astro';
+import NextStepCard from '../../../components/NextStepCard.astro';
+
+<section class="animate-fade-up [animation-delay:.1s]">
+<h2 id="login-flow" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#login-flow" class="flex items-center gap-2">Login Flow <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// src/pages/LoginPage.tsx
+import { useForm } from 'react-hook-form';
+import { useAuthStore } from '@/stores/auth-store';
+import { useNavigate } from 'react-router-dom';
+
+function LoginPage() {
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
+  const setAuth = useAuthStore(s => s.setAuth);
+  const navigate = useNavigate();
+
+  const onSubmit = async (data) => {
+    const res = await apiClient.post('/auth/login', data);
+    const { accessToken, refreshToken, user } = res.data.data;
+    
+    localStorage.setItem('gatrion_token', accessToken);
+    localStorage.setItem('gatrion_refresh', refreshToken);
+    setAuth(user, accessToken);
+    
+    navigate('/');
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Input label="Email" type="email" {...register('email')} error={errors.email?.message} />
+      <Input label="Password" type="password" {...register('password')} />
+      <Button type="submit" isLoading={isSubmitting} className="w-full">Login</Button>
+    </form>
+  );
+}`} lang="bash" title="LoginPage.tsx" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.15s]">
+<h2 id="protected-routes" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#protected-routes" class="flex items-center gap-2">Protected Routes <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// src/components/ProtectedRoute.tsx
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { useAuthStore } from '@/stores/auth-store';
+
+export function ProtectedRoute() {
+  const token = useAuthStore(s => s.token);
+  const location = useLocation();
+
+  if (!token) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  return <Outlet />;
+}
+
+// Admin-only route
+export function AdminRoute() {
+  const user = useAuthStore(s => s.user);
+  
+  if (user?.role !== 'ADMIN') {
+    return <Navigate to="/unauthorized" replace />;
+  }
+  
+  return <Outlet />;
+}`} lang="bash" title="ProtectedRoute.tsx" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.2s]">
+<h2 id="token-refresh" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#token-refresh" class="flex items-center gap-2">Auto Token Refresh <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// src/services/token-refresh.ts
+let isRefreshing = false;
+let failedQueue: Array<{ resolve: Function; reject: Function }> = [];
+
+export async function refreshToken(): Promise<boolean> {
+  const refresh = localStorage.getItem('gatrion_refresh');
+  if (!refresh) return false;
+
+  try {
+    const res = await axios.post(\`\${API_URL}/auth/refresh\`, { refreshToken: refresh });
+    localStorage.setItem('gatrion_token', res.data.data.accessToken);
+    return true;
+  } catch {
+    localStorage.removeItem('gatrion_token');
+    localStorage.removeItem('gatrion_refresh');
+    return false;
+  }
+}
+
+// di apiClient interceptor
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        }).then(() => apiClient(originalRequest));
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      const refreshed = await refreshToken();
+      isRefreshing = false;
+
+      if (refreshed) {
+        failedQueue.forEach(({ resolve }) => resolve(undefined));
+        failedQueue = [];
+        return apiClient(originalRequest);
+      }
+
+      failedQueue.forEach(({ reject }) => reject(error));
+      failedQueue = [];
+      window.location.href = '/login';
+    }
+
+    return Promise.reject(error);
+  }
+);`} lang="bash" title="token-refresh.ts" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.25s]">
+<h2 id="logout" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#logout" class="flex items-center gap-2">Logout <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`function useLogout() {
+  const logout = useAuthStore(s => s.logout);
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  return async () => {
+    try {
+      await apiClient.post('/auth/logout');
+    } catch {
+      // ignore error
+    } finally {
+      localStorage.removeItem('gatrion_token');
+      localStorage.removeItem('gatrion_refresh');
+      queryClient.clear();
+      logout();
+      navigate('/login');
+    }
+  };
+}`} lang="bash" title="useLogout.ts" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.3s]">
+<h2 id="next-steps" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#next-steps" class="flex items-center gap-2">Selanjutnya <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<NextSteps>
+  <NextStepCard title="User Management" description="CRUD users dengan role-based access." href="/docs/web-dashboard/user-management/" />
+  <NextStepCard title="Analytics Dashboard" description="Real-time analytics dan metrics." href="/docs/web-dashboard/analytics/" />
+</NextSteps>
+</section>

@@ -1,0 +1,111 @@
+---
+title: "Transactions"
+project: "Mobile SDK"
+category: "Payments"
+description: "Transaction history, filtering, dan detail di Gatrion Mobile SDK."
+---
+
+import Callout from '../../../components/Callout.astro';
+import CodeBlock from '../../../components/CodeBlock.astro';
+import NextSteps from '../../../components/NextSteps.astro';
+import NextStepCard from '../../../components/NextStepCard.astro';
+
+<section class="animate-fade-up [animation-delay:.1s]">
+<h2 id="history" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#history" class="flex items-center gap-2">Transaction History <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// Get transaction history
+final transactions = await GatrionSDK.transactions.list(
+  page: 1,
+  limit: 20,
+  status: TransactionStatus.settled, // optional filter
+  startDate: DateTime.now().subtract(Duration(days: 30)),
+  endDate: DateTime.now(),
+);
+
+for (final tx in transactions.data) {
+  print('\${tx.id} | \${tx.amount} | \${tx.status} | \${tx.createdAt}');
+}
+
+// Pagination info
+print('Total: \${transactions.meta.total}');
+print('Pages: \${transactions.meta.totalPages}');`} lang="bash" title="history.dart" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.15s]">
+<h2 id="detail" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#detail" class="flex items-center gap-2">Transaction Detail <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// Get single transaction
+final tx = await GatrionSDK.transactions.get('pay_789');
+
+print('ID: \${tx.id}');
+print('Amount: \${tx.amount}');
+print('Status: \${tx.status}');
+print('Method: \${tx.method}');
+print('Order ID: \${tx.orderId}');
+print('Created: \${tx.createdAt}');
+if (tx.paidAt != null) {
+  print('Paid: \${tx.paidAt}');
+}
+
+// Get receipt URL
+final receiptUrl = tx.receiptUrl;
+if (receiptUrl != null) {
+  await GatrionSDK.utils.openUrl(receiptUrl);
+}`} lang="bash" title="detail.dart" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.2s]">
+<h2 id="filtering" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#filtering" class="flex items-center gap-2">Filtering & Sorting <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// Filter by multiple statuses
+final transactions = await GatrionSDK.transactions.list(
+  statuses: [
+    TransactionStatus.settled,
+    TransactionStatus.pending,
+  ],
+  method: PaymentMethod.bankTransfer,
+  minAmount: 50000,
+  maxAmount: 1000000,
+  sort: TransactionSort.createdAtDesc,
+);
+
+// Search by ID or order ID
+final results = await GatrionSDK.transactions.search('order_456');`} lang="bash" title="filtering.dart" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.25s]">
+<h2 id="export" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#export" class="flex items-center gap-2">Export Transactions <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// Export to CSV
+final csvData = await GatrionSDK.transactions.export(
+  format: ExportFormat.csv,
+  startDate: DateTime.now().subtract(Duration(days: 30)),
+  endDate: DateTime.now(),
+);
+
+// Save and share
+final file = await GatrionSDK.utils.saveFile(
+  'transactions.csv',
+  csvData,
+);
+await GatrionSDK.utils.shareFile(file);`} lang="bash" title="export.dart" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.3s]">
+<h2 id="next-steps" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#next-steps" class="flex items-center gap-2">Next Steps <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<NextSteps>
+  <NextStepCard title="Webhooks" description="Webhook events reference." href="/docs/mobile-sdk/webhooks/" />
+  <NextStepCard title="Custom Plugins" description="Build custom plugins untuk SDK." href="/docs/mobile-sdk/custom-plugins/" />
+</NextSteps>
+</section>

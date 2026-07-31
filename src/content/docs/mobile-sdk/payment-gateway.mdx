@@ -1,0 +1,142 @@
+---
+title: "Payment Gateway"
+project: "Mobile SDK"
+category: "Payments"
+description: "Integrasi payment gateway dengan Midtrans: checkout, payment methods, dan transaction status."
+---
+
+import Callout from '../../../components/Callout.astro';
+import CodeBlock from '../../../components/CodeBlock.astro';
+import NextSteps from '../../../components/NextSteps.astro';
+import NextStepCard from '../../../components/NextStepCard.astro';
+
+<section class="animate-fade-up [animation-delay:.1s]">
+<h2 id="create-transaction" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#create-transaction" class="flex items-center gap-2">Create Payment Transaction <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// Create payment for an order
+final payment = await GatrionSDK.payments.create(
+  orderId: 'order_456',
+  method: PaymentMethod.bankTransfer,
+  // available: bankTransfer, qris, gopay, creditCard, shopeePay
+);
+
+// payment.redirectUrl contains Midtrans Snap URL
+// Open in WebView or in-app browser
+await GatrionSDK.payments.openPaymentPage(
+  payment.redirectUrl,
+  onFinish: (result) {
+    if (result.status == PaymentStatus.settled) {
+      showSuccess('Payment successful!');
+    } else {
+      showInfo('Payment status: \${result.status}');
+    }
+  },
+);`} lang="bash" title="create-payment.dart" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.15s]">
+<h2 id="payment-methods" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#payment-methods" class="flex items-center gap-2">Available Payment Methods <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<div class="mt-4 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-white/[.08] dark:bg-[#0d0d10]">
+  <pre class="overflow-x-auto p-5 text-[13px] leading-7"><code class="font-mono text-zinc-800 dark:text-zinc-200"><span class="text-violet-500 dark:text-violet-400">PaymentMethod.bankTransfer</span>  <span class="text-zinc-500"># BCA, BNI, Mandiri VA</span>
+<span class="text-violet-500 dark:text-violet-400">PaymentMethod.qris</span>          <span class="text-zinc-500"># QRIS (all banks + e-wallet)</span>
+<span class="text-violet-500 dark:text-violet-400">PaymentMethod.gopay</span>          <span class="text-zinc-500"># GoPay e-wallet</span>
+<span class="text-violet-500 dark:text-violet-400">PaymentMethod.creditCard</span>     <span class="text-zinc-500"># Visa, Mastercard, JCB</span>
+<span class="text-violet-500 dark:text-violet-400">PaymentMethod.shopeePay</span>      <span class="text-zinc-500"># ShopeePay e-wallet</span></code></pre>
+</div>
+
+<CodeBlock code={`// Get available methods based on amount
+final methods = await GatrionSDK.payments.getAvailableMethods(
+  amount: 150000,
+);
+
+for (final method in methods) {
+  print('\${method.name} - fee: \${method.fee}');
+}
+`} lang="bash" title="methods.dart" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.2s]">
+<h2 id="status" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#status" class="flex items-center gap-2">Check Payment Status <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// Get payment status
+final status = await GatrionSDK.payments.getStatus('pay_789');
+print('Status: \${status.status}');
+// pending | settled | failed | refunded
+
+// Listen to real-time status updates
+GatrionSDK.payments.statusStream('pay_789').listen((status) {
+  switch (status) {
+    case PaymentStatus.pending:
+      showLoading('Waiting for payment...');
+      break;
+    case PaymentStatus.settled:
+      hideLoading();
+      showSuccess('Payment successful!');
+      Navigator.pushReplacementNamed(context, '/order/success');
+      break;
+    case PaymentStatus.failed:
+      hideLoading();
+      showError('Payment failed');
+      break;
+  }
+});`} lang="bash" title="status.dart" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.25s]">
+<h2 id="webhook" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#webhook" class="flex items-center gap-2">Webhook Integration <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<Callout type="info">
+  **Backend handles webhook:** Midtrans mengirim webhook ke Core API server, lalu server push notification ke device via FCM. Mobile SDK hanya menerima notifikasi status update.
+</Callout>
+
+<CodeBlock code={`// SDK automatically listens to payment status changes via FCM
+// No additional code needed!
+
+// Just register a listener:
+GatrionSDK.payments.onPaymentCompleted.listen((paymentId) {
+  print('Payment $paymentId completed');
+  refreshOrders();
+});
+
+GatrionSDK.payments.onPaymentFailed.listen((paymentId) {
+  print('Payment $paymentId failed');
+  showPaymentFailedDialog();
+});`} lang="bash" title="webhook.dart" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.3s]">
+<h2 id="refund" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#refund" class="flex items-center gap-2">Refund <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// Request refund (admin only)
+final result = await GatrionSDK.payments.refund(
+  paymentId: 'pay_789',
+  reason: 'Customer cancelled',
+  amount: 150000, // full or partial
+);
+
+if (result.success) {
+  print('Refund requested: \${result.refundId}');
+}`} lang="bash" title="refund.dart" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.35s]">
+<h2 id="next-steps" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#next-steps" class="flex items-center gap-2">Next Steps <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<NextSteps>
+  <NextStepCard title="Transactions" description="Transaction history dan status." href="/docs/mobile-sdk/transactions/" />
+  <NextStepCard title="Webhooks" description="Webhook events reference." href="/docs/mobile-sdk/webhooks/" />
+</NextSteps>
+</section>

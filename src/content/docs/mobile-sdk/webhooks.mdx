@@ -1,0 +1,141 @@
+---
+title: "Webhooks"
+project: "Mobile SDK"
+category: "Payments"
+description: "Webhook events reference untuk Mobile SDK: cara handle payment notifications dan real-time updates."
+---
+
+import Callout from '../../../components/Callout.astro';
+import CodeBlock from '../../../components/CodeBlock.astro';
+import NextSteps from '../../../components/NextSteps.astro';
+import NextStepCard from '../../../components/NextStepCard.astro';
+
+<section class="animate-fade-up [animation-delay:.1s]">
+<h2 id="overview" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#overview" class="flex items-center gap-2">Overview <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<p class="mt-3 leading-relaxed">SDK menerima webhook events via FCM push notifications. Berikut events yang tersedia:</p>
+
+<div class="mt-4 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-white/[.08] dark:bg-[#0d0d10]">
+  <pre class="overflow-x-auto p-5 text-[13px] leading-7"><code class="font-mono text-zinc-800 dark:text-zinc-200"><span class="text-violet-500 dark:text-violet-400">payment.created</span>          <span class="text-zinc-500"># Payment dibuat</span>
+<span class="text-violet-500 dark:text-violet-400">payment.settled</span>           <span class="text-zinc-500"># Payment berhasil</span>
+<span class="text-violet-500 dark:text-violet-400">payment.failed</span>             <span class="text-zinc-500"># Payment gagal</span>
+<span class="text-violet-500 dark:text-violet-400">payment.refunded</span>           <span class="text-zinc-500"># Payment di-refund</span>
+<span class="text-violet-500 dark:text-violet-400">order.status_changed</span>      <span class="text-zinc-500"># Status order berubah</span></code></pre>
+</div>
+</section>
+
+<section class="animate-fade-up [animation-delay:.15s]">
+<h2 id="listening" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#listening" class="flex items-center gap-2">Listening to Events <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// Listen to specific event
+GatrionSDK.webhooks.on('payment.settled', (data) {
+  print('Payment settled: \${data['paymentId']}');
+  refreshOrders();
+  showSuccess('Payment successful!');
+});
+
+// Listen to multiple events
+GatrionSDK.webhooks.on('payment.failed', (data) {
+  showError('Payment failed for order \${data['orderId']}');
+});
+
+// Listen to all events
+GatrionSDK.webhooks.onAll((event, data) {
+  debugPrint('Event: $event, Data: $data');
+  
+  // Log to analytics
+  GatrionSDK.analytics.track('webhook_received', properties: {
+    'event': event,
+    'payment_id': data['paymentId'],
+  });
+});`} lang="bash" title="listening.dart" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.2s]">
+<h2 id="payload" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#payload" class="flex items-center gap-2">Event Payload <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// payment.settled event payload
+{
+  "event": "payment.settled",
+  "timestamp": "2025-01-30T12:30:00.000Z",
+  "data": {
+    "paymentId": "pay_789",
+    "orderId": "order_456",
+    "amount": 225000,
+    "method": "MIDTRANS",
+    "status": "SETTLED",
+    "paidAt": "2025-01-30T12:30:00.000Z"
+  }
+}
+
+// order.status_changed event payload
+{
+  "event": "order.status_changed",
+  "timestamp": "2025-01-30T13:00:00.000Z",
+  "data": {
+    "orderId": "order_456",
+    "oldStatus": "PENDING",
+    "newStatus": "PAID"
+  }
+}`} lang="bash" title="payload.json" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.25s]">
+<h2 id="background" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#background" class="flex items-center gap-2">Background Handling <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// Handle webhook in background (via FCM background handler)
+@pragma('vm:entry-point')
+Future<void> backgroundHandler(RemoteMessage message) async {
+  await GatrionSDK.initialize(
+    apiKey: 'YOUR_API_KEY',
+    environment: Environment.production,
+  );
+
+  final event = message.data['event'];
+  final data = jsonDecode(message.data['data']);
+
+  switch (event) {
+    case 'payment.settled':
+      // Update local database
+      await GatrionSDK.offline.save('payments', data);
+      // Show local notification
+      await GatrionSDK.notifications.showLocal(
+        title: 'Payment Successful',
+        body: 'Your payment of Rp \${data['amount']} has been settled',
+      );
+      break;
+    case 'order.status_changed':
+      await GatrionSDK.offline.save('order_status', data);
+      break;
+  }
+}
+
+// Register in main()
+void main() async {
+  FirebaseMessaging.onBackgroundMessage(backgroundHandler);
+  // ...
+}`} lang="bash" title="background-handler.dart" />
+
+<Callout type="warning">
+  **Important:** Background handler harus top-level function dan ditandai dengan <code class="rounded-md bg-amber-500/10 px-1.5 py-0.5 font-mono text-[12px] text-amber-600 dark:text-amber-300">@pragma('vm:entry-point')</code>.
+</Callout>
+</section>
+
+<section class="animate-fade-up [animation-delay:.3s]">
+<h2 id="next-steps" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#next-steps" class="flex items-center gap-2">Next Steps <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<NextSteps>
+  <NextStepCard title="Custom Plugins" description="Build custom plugins untuk SDK." href="/docs/mobile-sdk/custom-plugins/" />
+  <NextStepCard title="Analytics" description="Track user events dan screen views." href="/docs/mobile-sdk/analytics/" />
+</NextSteps>
+</section>

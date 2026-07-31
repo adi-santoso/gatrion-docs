@@ -1,65 +1,286 @@
 ---
 import DocsLayout from '../../layouts/DocsLayout.astro';
-import Sidebar from '../../components/Sidebar.astro';
 import CommandPalette from '../../components/CommandPalette.astro';
-import type { APIRoute } from 'astro';
-import { getCollection, type CollectionEntry } from 'astro:content';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import PrevNext from '../../components/PrevNext.astro';
+import PageFooter from '../../components/PageFooter.astro';
+import SidebarNav from '../../components/SidebarNav.astro';
+import { getCollection, render } from 'astro:content';
+import { getProjectByName } from '../../config/projects';
 
-interface Props { slug: string[]; }
-const { slug } = Astro.props;
+const allDocs = await getCollection('docs');
 
-// Ambil konten dari collection (jika ada), atau fallback ke sample data
-let mdxContent;
-try {
-  const docs = await getCollection('docs');
-  // Cari halaman sesuai slug
-  const path = slug.length ? slug.join('/') : null;
-  mdxContent = docs.find(d => d.data.title?.toLowerCase().includes(path || ''))?.body;
-} catch {}
+let slugParam = Astro.params?.slug;
+let slugPath = '';
 
-const title = slug.join('/ ') || 'Documentation';
+if (Array.isArray(slugParam)) {
+  slugPath = slugParam.join('/');
+} else if (slugParam) {
+  slugPath = String(slugParam);
+}
+
+let doc = allDocs.find(d => d.id === slugPath || d.id.startsWith(`${slugPath}/`));
+
+if (!doc && slugPath) {
+  const matchingDoc = allDocs.find(d => d.id.includes(slugPath.split('/')[0]));
+  if (matchingDoc) {
+    return Astro.redirect(`/docs/${matchingDoc.id}/`);
+  }
+}
+
+if (!doc) {
+  doc = allDocs.find(d => d.id.includes('getting-started')) || allDocs[0];
+}
+
+const rendered = doc ? await render(doc) : null;
+const Content = rendered?.Content;
+
+export const prerender = false;
+
+const title = doc?.data.title || 'Documentation';
+const description = doc?.data.description || '';
+const category = doc?.data.category || 'MEMULAI';
+const project = doc?.data.project || 'Core API';
+
+const currentPath = `/docs/${doc?.id}/`;
+const projectConfig = getProjectByName(project);
+
+// Define menu sections per project
+const getMenuSections = (projectName: string) => {
+  switch (projectName) {
+    case 'Core API':
+      return [
+        {
+          title: 'Memulai',
+          items: [
+            { label: 'Getting Started', href: '/docs/core-api/getting-started/' },
+            { label: 'Instalasi', href: '/docs/core-api/instalasi/' },
+            { label: 'Struktur Project', href: '/docs/core-api/struktur-project/' },
+            { label: 'Konfigurasi', href: '/docs/core-api/konfigurasi/' },
+          ]
+        },
+        {
+          title: 'Panduan',
+          items: [
+            { label: 'Autentikasi & JWT', href: '/docs/core-api/autentikasi-jwt/' },
+            { label: 'Database & Migrasi', href: '/docs/core-api/database-migrasi/' },
+            { label: 'Error Handling', href: '/docs/core-api/error-handling/' },
+            { label: 'Testing', href: '/docs/core-api/testing/' },
+            { label: 'Deployment', href: '/docs/core-api/deployment/' },
+          ]
+        },
+        {
+          title: 'API Reference',
+          items: [
+            { label: 'Users', href: '/docs/core-api/users-api/', badge: { text: 'GET', color: 'bg-emerald-500/10 text-emerald-500' } },
+            { label: 'Orders', href: '/docs/core-api/orders-api/', badge: { text: 'POST', color: 'bg-sky-500/10 text-sky-500' } },
+            { label: 'Payments', href: '/docs/core-api/payments-api/', badge: { text: 'PUT', color: 'bg-amber-500/10 text-amber-500' } },
+            { label: 'Webhooks', href: '/docs/core-api/webhooks/' },
+          ]
+        },
+        {
+          title: 'Lainnya',
+          items: [
+            { label: 'Changelog', href: '/docs/core-api/changelog/' },
+            { label: 'FAQ', href: '/docs/core-api/faq/' },
+          ]
+        }
+      ];
+    
+    case 'Web Dashboard':
+      return [
+        {
+          title: 'Getting Started',
+          items: [
+            { label: 'Overview', href: '/docs/web-dashboard/overview/' },
+            { label: 'Installation', href: '/docs/web-dashboard/installation/' },
+            { label: 'Configuration', href: '/docs/web-dashboard/configuration/' },
+          ]
+        },
+        {
+          title: 'Components',
+          items: [
+            { label: 'Buttons', href: '/docs/web-dashboard/buttons/' },
+            { label: 'Forms', href: '/docs/web-dashboard/forms/' },
+            { label: 'Tables', href: '/docs/web-dashboard/tables/' },
+            { label: 'Charts', href: '/docs/web-dashboard/charts/' },
+            { label: 'Modals', href: '/docs/web-dashboard/modals/' },
+          ]
+        },
+        {
+          title: 'Features',
+          items: [
+            { label: 'Authentication', href: '/docs/web-dashboard/authentication/' },
+            { label: 'User Management', href: '/docs/web-dashboard/user-management/' },
+            { label: 'Analytics Dashboard', href: '/docs/web-dashboard/analytics/' },
+            { label: 'Real-time Updates', href: '/docs/web-dashboard/real-time/' },
+          ]
+        },
+        {
+          title: 'Deployment',
+          items: [
+            { label: 'Build & Deploy', href: '/docs/web-dashboard/build-deploy/' },
+            { label: 'Environment Variables', href: '/docs/web-dashboard/env-vars/' },
+            { label: 'Performance Tips', href: '/docs/web-dashboard/performance/' },
+          ]
+        }
+      ];
+    
+    case 'Mobile SDK':
+      return [
+        {
+          title: 'Getting Started',
+          items: [
+            { label: 'Installation', href: '/docs/mobile-sdk/getting-started/' },
+            { label: 'Quick Start', href: '/docs/mobile-sdk/quick-start/' },
+            { label: 'Configuration', href: '/docs/mobile-sdk/configuration/' },
+          ]
+        },
+        {
+          title: 'Core Features',
+          items: [
+            { label: 'Authentication', href: '/docs/mobile-sdk/authentication/' },
+            { label: 'API Client', href: '/docs/mobile-sdk/api-client/' },
+            { label: 'Storage', href: '/docs/mobile-sdk/storage/' },
+            { label: 'Push Notifications', href: '/docs/mobile-sdk/push-notifications/' },
+          ]
+        },
+        {
+          title: 'Payments',
+          items: [
+            { label: 'Payment Gateway', href: '/docs/mobile-sdk/payment-gateway/' },
+            { label: 'Transactions', href: '/docs/mobile-sdk/transactions/' },
+            { label: 'Webhooks', href: '/docs/mobile-sdk/webhooks/' },
+          ]
+        },
+        {
+          title: 'Advanced',
+          items: [
+            { label: 'Custom Plugins', href: '/docs/mobile-sdk/custom-plugins/' },
+            { label: 'Analytics', href: '/docs/mobile-sdk/analytics/' },
+            { label: 'Error Tracking', href: '/docs/mobile-sdk/error-tracking/' },
+            { label: 'Testing', href: '/docs/mobile-sdk/testing/' },
+          ]
+        }
+      ];
+    
+    default:
+      return [];
+  }
+};
+
+const menuSections = getMenuSections(project);
 ---
 
 <DocsLayout title={`${title} · Gatrion Docs`}>
   <div id="overlay" class="fixed inset-0 z-40 hidden bg-zinc-950/50 backdrop-blur-sm lg:hidden"></div>
 
-  <!-- Sidebar -->
   <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 flex w-[280px] -translate-x-full flex-col border-r border-zinc-200/60 bg-[#fafafa] transition-transform duration-300 lg:sticky lg:top-[60px] lg:z-0 lg:h-[calc(100vh-60px)] lg:translate-x-0 lg:bg-transparent dark:border-white/[.06] dark:bg-[#09090b] dark:lg:bg-transparent">
-    <div class="relative border-b border-zinc-200/60 p-4 dark:border-white/[.06]">
-      <div class="mb-3 flex items-center justify-between lg:hidden">
-        <span class="text-sm font-bold text-zinc-900 dark:text-white">Menu</span>
-        <button id="closeBtn" class="flex h-8 w-8 items-center justify-center rounded-full text-zinc-500 hover:bg-zinc-100 dark:hover:bg-white/[.06]" aria-label="Tutup">
-          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
-      </div>
-      <Sidebar project="Core API" />
-    </div>
-    <nav class="flex-1 space-y-6 overflow-y-auto p-4 text-[13.5px]">
-      <div>
-        <p class="mb-1.5 px-3 text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-600">Getting Started</p>
-        <ul class="space-y-px">
-          <li><a href="/docs/core-api/getting-started/" class="block rounded-lg px-3 py-[7px] text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-white/[.05] dark:hover:text-white">Getting Started</a></li>
-        </ul>
-      </div>
-    </nav>
+    <SidebarNav 
+      project={project}
+      sections={menuSections}
+      currentPath={currentPath}
+    />
   </aside>
 
-  <!-- Main content -->
   <main class="min-w-0 flex-1 px-5 py-10 sm:px-10 lg:px-14">
-    {mdxContent ? <MarkdownContent>{mdxContent}</MarkdownContent> : <p>Halaman tidak ditemukan</p>}
+    <div class="mx-auto max-w-[46rem]">
+      <Breadcrumb 
+        items={[
+          { label: 'Hub', href: '/' },
+          { label: project, href: currentPath }
+        ]}
+        current={title}
+      />
+
+      <PageHeader 
+        category={category}
+        title={title}
+        description={description}
+      />
+
+      <article class="mt-10 space-y-12" id="article-content">
+        {Content ? (
+          <Content />
+        ) : (
+          <div>
+            <h1>Page Not Found</h1>
+            <p>No document found for this path.</p>
+          </div>
+        )}
+      </article>
+
+      <PrevNext 
+        prev={{ label: 'Kembali ke Hub', href: '/' }}
+        next={{ label: 'Instalasi Lengkap', href: '#' }}
+      />
+
+      <PageFooter />
+    </div>
   </main>
+
+  <!-- TOC Sidebar - Auto-generated from headings -->
+  <aside id="toc-sidebar" class="sticky top-[60px] hidden h-[calc(100vh-60px)] w-56 shrink-0 overflow-y-auto py-10 pr-6 xl:block">
+    <p class="mb-4 text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-600">Di halaman ini</p>
+    <nav id="toc-nav" class="space-y-2.5 text-[13px]">
+      <!-- Generated by script -->
+    </nav>
+
+    <div class="mt-8 rounded-2xl border border-zinc-200 bg-white/60 p-4 dark:border-white/[.07] dark:bg-white/[.02]">
+      <p class="text-[13px] font-semibold text-zinc-900 dark:text-white">Butuh bantuan?</p>
+      <p class="mt-1 text-xs leading-relaxed text-zinc-400">
+        Tanya di channel <span class="font-mono text-violet-500">#eng-core-api</span> atau buat issue di repo.
+      </p>
+    </div>
+  </aside>
 
   <CommandPalette />
 </DocsLayout>
 
+<style>
+  .toc-active {
+    color: rgb(167 139 250) !important;
+  }
+  :global(html:not(.dark)) .toc-active {
+    color: rgb(124 58 237) !important;
+  }
+</style>
+
 <script>
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('overlay');
-  const menuBtn = document.getElementById('menuBtn');
-  const closeBtn = document.getElementById('closeBtn');
-
-  if (menuBtn) menuBtn.addEventListener('click', () => { sidebar?.classList.remove('-translate-x-full'); overlay?.classList.remove('hidden'); });
-  if (closeBtn) closeBtn.addEventListener('click', () => { sidebar?.classList.add('-translate-x-full'); overlay?.classList.add('hidden'); });
-  overlay?.addEventListener('click', () => { sidebar?.classList.add('-translate-x-full'); overlay?.classList.add('hidden'); });
+  // Generate TOC from article headings
+  const article = document.getElementById('article-content');
+  const tocNav = document.getElementById('toc-nav');
+  
+  if (article && tocNav) {
+    const headings = article.querySelectorAll('h2[id]');
+    
+    if (headings.length > 0) {
+      headings.forEach(heading => {
+        const id = heading.id;
+        const text = heading.textContent?.replace('#', '').trim() || '';
+        
+        const link = document.createElement('a');
+        link.href = `#${id}`;
+        link.className = 'toc-link block text-zinc-400 transition hover:text-zinc-900 dark:hover:text-white';
+        link.textContent = text;
+        tocNav.appendChild(link);
+      });
+      
+      // Scroll spy
+      const tocLinks = document.querySelectorAll('.toc-link');
+      const spy = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            tocLinks.forEach(link => {
+              const isActive = link.getAttribute('href') === '#' + entry.target.id;
+              link.classList.toggle('toc-active', isActive);
+            });
+          }
+        });
+      }, { rootMargin: '-70px 0px -70% 0px' });
+      
+      headings.forEach(heading => spy.observe(heading));
+    }
+  }
 </script>
-

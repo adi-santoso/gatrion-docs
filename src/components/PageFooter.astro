@@ -1,0 +1,14 @@
+---
+interface Props {
+  lastUpdated?: string;
+  editUrl?: string;
+}
+const { lastUpdated = "12 Feb 2025", editUrl = "#" } = Astro.props;
+---
+
+<footer class="mt-10 pb-6 text-xs text-zinc-400 dark:text-zinc-600">
+  <p>
+    Terakhir diperbarui {lastUpdated} · 
+    <a href={editUrl} class="underline-offset-2 hover:underline">Edit halaman ini</a>
+  </p>
+</footer>

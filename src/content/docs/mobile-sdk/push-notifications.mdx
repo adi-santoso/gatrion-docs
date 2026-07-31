@@ -1,0 +1,150 @@
+---
+title: "Push Notifications"
+project: "Mobile SDK"
+category: "Core Features"
+description: "Push notifications dengan FCM: permission, topics, dan deep linking di Gatrion Mobile SDK."
+---
+
+import Callout from '../../../components/Callout.astro';
+import CodeBlock from '../../../components/CodeBlock.astro';
+import NextSteps from '../../../components/NextSteps.astro';
+import NextStepCard from '../../../components/NextStepCard.astro';
+
+<section class="animate-fade-up [animation-delay:.1s]">
+<h2 id="setup" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#setup" class="flex items-center gap-2">Setup <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`# pubspec.yaml
+dependencies:
+  gatrion_sdk: ^1.2.0  # includes FCM internally
+
+# Android: android/app/build.gradle
+android {
+  defaultConfig {
+    minSdkVersion 21  # required for FCM
+  }
+}`} lang="bash" title="setup" />
+
+<CodeBlock code={`// Initialize push notifications
+await GatrionSDK.notifications.initialize(
+  onMessage: (message) {
+    // foreground notification
+    showInAppNotification(message);
+  },
+  onMessageOpened: (message) {
+    // user tapped notification
+    final orderId = message.data['orderId'];
+    Navigator.pushNamed(context, '/orders/$orderId');
+  },
+);`} lang="bash" title="initialize.dart" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.15s]">
+<h2 id="permission" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#permission" class="flex items-center gap-2">Request Permission <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// Request permission (iOS required, Android optional)
+final status = await GatrionSDK.notifications.requestPermission();
+// returns: PermissionStatus.granted | denied | notDetermined
+
+if (status == PermissionStatus.granted) {
+  print('Notification permission granted');
+  
+  // Get FCM token
+  final token = await GatrionSDK.notifications.getToken();
+  print('FCM Token: $token');
+  
+  // Register token to backend
+  await GatrionSDK.notifications.registerToken();
+}`} lang="bash" title="permission.dart" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.2s]">
+<h2 id="topics" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#topics" class="flex items-center gap-2">Subscribe to Topics <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// Subscribe to a topic
+await GatrionSDK.notifications.subscribeToTopic('promotions');
+
+// Unsubscribe
+await GatrionSDK.notifications.unsubscribeFromTopic('promotions');
+
+// Subscribe based on user role
+final user = await GatrionSDK.auth.getCurrentUser();
+if (user != null) {
+  await GatrionSDK.notifications.subscribeToTopic('user_\${user.id}');
+  if (user.role == 'ADMIN') {
+    await GatrionSDK.notifications.subscribeToTopic('admin_alerts');
+  }
+}`} lang="bash" title="topics.dart" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.25s]">
+<h2 id="deep-linking" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#deep-linking" class="flex items-center gap-2">Deep Linking <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// Notification payload with deep link
+/*
+  Server sends:
+  {
+    "notification": {
+      "title": "Order Update",
+      "body": "Your order is being shipped"
+    },
+    "data": {
+      "type": "order_update",
+      "orderId": "order_456",
+      "deepLink": "gatrion://orders/order_456"
+    }
+  }
+*/
+
+// Handle deep link
+GatrionSDK.notifications.onMessageOpened.listen((message) {
+  final deepLink = message.data['deepLink'];
+  if (deepLink != null) {
+    GatrionSDK.deeplink.handle(deepLink);
+  }
+});
+
+// Register deep link routes
+GatrionSDK.deeplink.registerRoutes({
+  'orders/:id': (params) => OrderDetailPage(orderId: params['id']!),
+  'products/:id': (params) => ProductDetailPage(productId: params['id']!),
+});`} lang="bash" title="deep-linking.dart" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.3s]">
+<h2 id="local-notif" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#local-notif" class="flex items-center gap-2">Local Notifications <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// Schedule local notification
+await GatrionSDK.notifications.schedule(
+  id: 1,
+  title: 'Order Reminder',
+  body: 'You have uncompleted order',
+  scheduledAt: DateTime.now().add(Duration(hours: 2)),
+);
+
+// Cancel
+await GatrionSDK.notifications.cancel(1);
+
+// Cancel all
+await GatrionSDK.notifications.cancelAll();`} lang="bash" title="local-notif.dart" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.35s]">
+<h2 id="next-steps" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#next-steps" class="flex items-center gap-2">Next Steps <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<NextSteps>
+  <NextStepCard title="Payment Gateway" description="Integrasi payment dengan Midtrans." href="/docs/mobile-sdk/payment-gateway/" />
+  <NextStepCard title="Transactions" description="Transaction history dan status." href="/docs/mobile-sdk/transactions/" />
+</NextSteps>
+</section>

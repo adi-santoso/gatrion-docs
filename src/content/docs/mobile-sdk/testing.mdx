@@ -1,0 +1,236 @@
+---
+title: "Testing"
+project: "Mobile SDK"
+category: "Advanced"
+description: "Testing Gatrion Mobile SDK integration: unit tests, mock HTTP, dan widget tests."
+---
+
+import Callout from '../../../components/Callout.astro';
+import CodeBlock from '../../../components/CodeBlock.astro';
+import NextSteps from '../../../components/NextSteps.astro';
+import NextStepCard from '../../../components/NextStepCard.astro';
+
+<section class="animate-fade-up [animation-delay:.1s]">
+<h2 id="unit-tests" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#unit-tests" class="flex items-center gap-2">Unit Tests <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`# pubspec.yaml
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  mocktail: ^0.3.0`} lang="bash" title="pubspec.yaml" />
+
+<CodeBlock code={`// test/auth_test.dart
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:gatrion_sdk/gatrion_sdk.dart';
+
+class MockAuth extends Mock implements GatrionAuth {}
+
+void main() {
+  late MockAuth mockAuth;
+
+  setUp(() {
+    mockAuth = MockAuth();
+    registerFallbackValue(AuthResult.empty());
+  });
+
+  group('Auth', () {
+    test('login returns success', () async {
+      // arrange
+      when(() => mockAuth.login(
+        email: any(named: 'email'),
+        password: any(named: 'password'),
+      )).thenAnswer((_) async => AuthResult.success(
+        user: User(id: '1', name: 'Test', email: 'test@test.com', role: 'USER'),
+        token: 'mock-token',
+      ));
+
+      // act
+      final result = await mockAuth.login(
+        email: 'test@test.com',
+        password: 'password',
+      );
+
+      // assert
+      expect(result.success, true);
+      expect(result.user.name, 'Test');
+      verify(() => mockAuth.login(
+        email: 'test@test.com',
+        password: 'password',
+      )).called(1);
+    });
+
+    test('login fails with invalid credentials', () async {
+      when(() => mockAuth.login(
+        email: any(named: 'email'),
+        password: any(named: 'password'),
+      )).thenThrow(GatrionException(
+        type: GatrionErrorType.unauthorized,
+        message: 'Invalid credentials',
+      ));
+
+      expect(
+        () => mockAuth.login(email: 'wrong@test.com', password: 'wrong'),
+        throwsA(isA<GatrionException>()),
+      );
+    });
+  });
+}`} lang="bash" title="auth_test.dart" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.15s]">
+<h2 id="mock-http" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#mock-http" class="flex items-center gap-2">Mock HTTP Responses <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// test/mock_http_test.dart
+import 'package:http/testing.dart';
+import 'package:http/http.dart' as http;
+
+void main() {
+  setUpAll(() {
+    // Mock HTTP client
+    GatrionSDK.test.setMockClient(MockClient((request) async {
+      if (request.url.path.contains('/users')) {
+        return http.Response(
+          jsonEncode({
+            'statusCode': 200,
+            'data': [
+              {'id': '1', 'name': 'Test User', 'email': 'test@test.com'}
+            ],
+          }),
+          200,
+          headers: {'content-type': 'application/json'},
+        );
+      }
+      
+      if (request.url.path.contains('/auth/login')) {
+        return http.Response(
+          jsonEncode({
+            'statusCode': 200,
+            'data': {
+              'accessToken': 'mock-token',
+              'user': {'id': '1', 'name': 'Test', 'email': 'test@test.com'},
+            },
+          }),
+          200,
+        );
+      }
+      
+      return http.Response('', 404);
+    }));
+  });
+
+  test('getUsers returns list', () async {
+    final users = await GatrionSDK.users.list();
+    expect(users.data, hasLength(1));
+    expect(users.data.first.name, 'Test User');
+  });
+}`} lang="bash" title="mock_http_test.dart" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.2s]">
+<h2 id="widget-tests" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#widget-tests" class="flex items-center gap-2">Widget Tests <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// test/login_page_test.dart
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+
+class MockAuth extends Mock implements GatrionAuth {}
+
+void main() {
+  testWidgets('Login form submits', (tester) async {
+    final mockAuth = MockAuth();
+    
+    when(() => mockAuth.login(
+      email: any(named: 'email'),
+      password: any(named: 'password'),
+    )).thenAnswer((_) async => AuthResult.success(
+      user: User(id: '1', name: 'Test', email: 'test@test.com', role: 'USER'),
+      token: 'token',
+    ));
+
+    await tester.pumpWidget(MaterialApp(
+      home: LoginPage(auth: mockAuth),
+    ));
+
+    // Enter email
+    await tester.enterText(
+      find.byKey(const Key('email_field')),
+      'test@test.com',
+    );
+    
+    // Enter password
+    await tester.enterText(
+      find.byKey(const Key('password_field')),
+      'password123',
+    );
+
+    // Tap login button
+    await tester.tap(find.byKey(const Key('login_button')));
+    await tester.pumpAndSettle();
+
+    // Verify login was called
+    verify(() => mockAuth.login(
+      email: 'test@test.com',
+      password: 'password123',
+    )).called(1);
+  });
+}`} lang="bash" title="widget_test.dart" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.25s]">
+<h2 id="integration" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#integration" class="flex items-center gap-2">Integration Tests <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// integration_test/app_test.dart
+import 'package:integration_test/integration_test.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
+  group('End-to-End', () {
+    testWidgets('Login and view orders', (tester) async {
+      app.main();
+      await tester.pumpAndSettle();
+
+      // Login
+      await tester.enterText(find.byKey(const Key('email')), 'test@gatrion.com');
+      await tester.enterText(find.byKey(const Key('password')), 'test123');
+      await tester.tap(find.byKey(const Key('login_button')));
+      await tester.pumpAndSettle();
+
+      // Should be on dashboard
+      expect(find.text('Dashboard'), findsOneWidget);
+
+      // Navigate to orders
+      await tester.tap(find.byIcon(Icons.shopping_cart));
+      await tester.pumpAndSettle();
+
+      // Should see orders list
+      expect(find.byType(OrderCard), findsWidgets);
+    });
+  });
+}`} lang="bash" title="app_test.dart" />
+
+<CodeBlock code={`# run tests
+flutter test                    # unit & widget
+flutter test integration_test   # integration`} lang="bash" title="terminal" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.3s]">
+<h2 id="next-steps" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#next-steps" class="flex items-center gap-2">Next Steps <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<NextSteps>
+  <NextStepCard title="Getting Started" description="Kembali ke awal." href="/docs/mobile-sdk/getting-started/" />
+  <NextStepCard title="Configuration" description="Konfigurasi SDK." href="/docs/mobile-sdk/configuration/" />
+</NextSteps>
+</section>

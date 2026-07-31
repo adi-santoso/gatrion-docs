@@ -1,0 +1,132 @@
+---
+title: "Storage"
+project: "Mobile SDK"
+category: "Core Features"
+description: "Local storage di Gatrion Mobile SDK: secure storage untuk tokens, key-value cache, dan offline data."
+---
+
+import Callout from '../../../components/Callout.astro';
+import CodeBlock from '../../../components/CodeBlock.astro';
+import NextSteps from '../../../components/NextSteps.astro';
+import NextStepCard from '../../../components/NextStepCard.astro';
+
+<section class="animate-fade-up [animation-delay:.1s]">
+<h2 id="secure-storage" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#secure-storage" class="flex items-center gap-2">Secure Storage <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<p class="mt-3 leading-relaxed">SDK otomatis menyimpan token di secure storage (Keychain iOS / EncryptedSharedPreferences Android). Tapi kamu bisa juga simpan data custom:</p>
+
+<CodeBlock code={`// Save to secure storage
+await GatrionSDK.storage.secureWrite('user_pin', '123456');
+
+// Read from secure storage
+final pin = await GatrionSDK.storage.secureRead('user_pin');
+print('PIN: $pin');
+
+// Delete
+await GatrionSDK.storage.secureDelete('user_pin');
+
+// Check if exists
+final exists = await GatrionSDK.storage.secureContains('user_pin');`} lang="bash" title="secure-storage.dart" />
+
+<Callout type="info">
+  **Security:** Secure storage menggunakan <code class="rounded-md bg-violet-500/10 px-1.5 py-0.5 font-mono text-[12px] text-violet-600 dark:text-violet-300">flutter_secure_storage</code>. Data di-encrypt dengan AES di Android dan Keychain di iOS.
+</Callout>
+</section>
+
+<section class="animate-fade-up [animation-delay:.15s]">
+<h2 id="key-value" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#key-value" class="flex items-center gap-2">Key-Value Storage <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// SharedPreferences - for non-sensitive data
+await GatrionSDK.storage.write('theme_mode', 'dark');
+await GatrionSDK.storage.write('language', 'id');
+
+final theme = await GatrionSDK.storage.read('theme_mode');
+final hasOnboarded = await GatrionSDK.storage.read('onboarding_completed');
+
+// Write JSON objects
+await GatrionSDK.storage.writeObject('last_user', {
+  'id': '123',
+  'name': 'John',
+});
+
+final user = await GatrionSDK.storage.readObject('last_user');
+print(user?['name']); // John
+
+// Remove
+await GatrionSDK.storage.remove('theme_mode');
+
+// Clear all
+await GatrionSDK.storage.clear();`} lang="bash" title="key-value.dart" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.2s]">
+<h2 id="cache" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#cache" class="flex items-center gap-2">Data Cache <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// Cache with TTL
+await GatrionSDK.cache.set(
+  'products_page_1',
+  value: productsJson,
+  ttl: Duration(minutes: 5),
+);
+
+// Read from cache
+final cached = await GatrionSDK.cache.get('products_page_1');
+if (cached != null && !cached.isExpired) {
+  // use cached data
+  return Product.fromJson(cached.value);
+}
+
+// Clear expired entries
+await GatrionSDK.cache.clearExpired();
+
+// Clear all cache
+await GatrionSDK.cache.clearAll();`} lang="bash" title="cache.dart" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.25s]">
+<h2 id="offline" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#offline" class="flex items-center gap-2">Offline Support <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// Store data for offline use with SQLite
+await GatrionSDK.offline.save('orders', {
+  'id': 'order_123',
+  'total': 150000,
+  'status': 'PENDING',
+});
+
+// Query offline data
+final orders = await GatrionSDK.offline.query('orders',
+  where: 'status = ?',
+  whereArgs: ['PENDING'],
+);
+
+// Sync when online
+GatrionSDK.offline.syncStatus.listen((isSyncing) {
+  if (isSyncing) {
+    showSyncingIndicator();
+  } else {
+    hideSyncingIndicator();
+  }
+});
+
+// Queue actions for when online
+await GatrionSDK.offline.queue('POST', '/orders', body: orderData);`} lang="bash" title="offline.dart" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.3s]">
+<h2 id="next-steps" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#next-steps" class="flex items-center gap-2">Next Steps <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<NextSteps>
+  <NextStepCard title="Push Notifications" description="FCM integration dan deep linking." href="/docs/mobile-sdk/push-notifications/" />
+  <NextStepCard title="Payment Gateway" description="Integrasi payment dengan Midtrans." href="/docs/mobile-sdk/payment-gateway/" />
+</NextSteps>
+</section>

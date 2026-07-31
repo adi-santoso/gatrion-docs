@@ -1,4 +1,5 @@
 ---
+import '../styles/globals.css';
 interface Props { title: string; children: any; }
 const { title, children } = Astro.props;
 ---
@@ -51,11 +52,33 @@ const { title, children } = Astro.props;
 
   <slot />
 
+  <script is:inline>
+    (function () {
+      const saved = localStorage.getItem('theme');
+      if (saved !== 'light') document.documentElement.classList.add('dark');
+    })();
+  </script>
+
   <script>
-    const html = document.documentElement, iconSun = document.getElementById('iconSun'), iconMoon = document.getElementById('iconMoon');
-    function syncIcon(){ const d = html.classList.contains('dark'); iconSun.classList.toggle('hidden', !d); iconMoon.classList.toggle('hidden', d); }
+    const html = document.documentElement;
+    const iconSun = document.getElementById('iconSun');
+    const iconMoon = document.getElementById('iconMoon');
+    
+    function syncIcon() {
+      const dark = html.classList.contains('dark');
+      iconSun?.classList.toggle('hidden', !dark);
+      iconMoon?.classList.toggle('hidden', dark);
+    }
     syncIcon();
-    document.getElementById('themeToggle')?.addEventListener('click', () => { html.classList.toggle('dark'); localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light'); syncIcon(); });
+    
+    document.getElementById('themeToggle')?.addEventListener('click', () => {
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+      syncIcon();
+    });
+
+    // Command Palette placeholder
+    window.openPalette = () => console.log('Open command palette...');
   </script>
 </body>
 </html>

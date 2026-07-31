@@ -1,0 +1,131 @@
+---
+title: "Struktur Project"
+project: "Core API"
+category: "Memulai"
+description: "Pahami organisasi kode Core API — modular architecture, folder structure, dan konvensi naming yang digunakan."
+---
+
+import Callout from '../../../components/Callout.astro';
+import CodeBlock from '../../../components/CodeBlock.astro';
+import NextSteps from '../../../components/NextSteps.astro';
+import NextStepCard from '../../../components/NextStepCard.astro';
+
+<section class="animate-fade-up [animation-delay:.1s]">
+<h2 id="overview" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#overview" class="flex items-center gap-2">Overview <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<p class="mt-3 leading-relaxed">Core API menggunakan <strong>modular architecture</strong> dimana setiap domain bisnis (users, orders, payments) berada di folder terpisah. Pendekatan ini membuat kode mudah di-maintain dan scale.</p>
+</section>
+
+<section class="animate-fade-up [animation-delay:.15s]">
+<h2 id="folder-structure" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#folder-structure" class="flex items-center gap-2">Folder Structure <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<div class="mt-4 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-white/[.08] dark:bg-[#0d0d10]">
+  <pre class="overflow-x-auto p-5 text-[13px] leading-7"><code class="font-mono text-zinc-800 dark:text-zinc-200">core-api/
+├── src/
+│   ├── <span class="text-violet-500 dark:text-violet-400">modules/</span>          <span class="text-zinc-500"># fitur per domain</span>
+│   │   ├── users/
+│   │   │   ├── users.controller.ts
+│   │   │   ├── users.service.ts
+│   │   │   ├── users.dto.ts
+│   │   │   └── users.module.ts
+│   │   ├── orders/
+│   │   └── payments/
+│   ├── <span class="text-violet-500 dark:text-violet-400">common/</span>           <span class="text-zinc-500"># guard, interceptor, util</span>
+│   │   ├── guards/
+│   │   ├── interceptors/
+│   │   ├── filters/
+│   │   └── decorators/
+│   ├── <span class="text-violet-500 dark:text-violet-400">config/</span>           <span class="text-zinc-500"># konfigurasi</span>
+│   │   ├── database.config.ts
+│   │   ├── jwt.config.ts
+│   │   └── app.config.ts
+│   ├── <span class="text-violet-500 dark:text-violet-400">prisma/</span>           <span class="text-zinc-500"># prisma service</span>
+│   └── main.ts
+├── prisma/
+│   ├── schema.prisma
+│   ├── migrations/
+│   └── seed.ts
+├── test/
+│   ├── unit/
+│   └── e2e/
+├── docker-compose.yml
+└── .env</code></pre>
+</div>
+</section>
+
+<section class="animate-fade-up [animation-delay:.2s]">
+<h2 id="module-pattern" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#module-pattern" class="flex items-center gap-2">Module Pattern <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<p class="mt-3 leading-relaxed">Setiap module mengikuti pola yang konsisten:</p>
+
+<div class="mt-4 grid gap-3 sm:grid-cols-2">
+  <div class="rounded-xl border border-zinc-200 bg-white/60 p-4 dark:border-white/[.07] dark:bg-white/[.02]">
+    <p class="font-mono text-sm font-semibold text-violet-600 dark:text-violet-300">*.controller.ts</p>
+    <p class="mt-1 text-sm text-zinc-500">Handle HTTP requests dan routing</p>
+  </div>
+  <div class="rounded-xl border border-zinc-200 bg-white/60 p-4 dark:border-white/[.07] dark:bg-white/[.02]">
+    <p class="font-mono text-sm font-semibold text-violet-600 dark:text-violet-300">*.service.ts</p>
+    <p class="mt-1 text-sm text-zinc-500">Business logic dan data access</p>
+  </div>
+  <div class="rounded-xl border border-zinc-200 bg-white/60 p-4 dark:border-white/[.07] dark:bg-white/[.02]">
+    <p class="font-mono text-sm font-semibold text-violet-600 dark:text-violet-300">*.dto.ts</p>
+    <p class="mt-1 text-sm text-zinc-500">Data Transfer Objects & validation</p>
+  </div>
+  <div class="rounded-xl border border-zinc-200 bg-white/60 p-4 dark:border-white/[.07] dark:bg-white/[.02]">
+    <p class="font-mono text-sm font-semibold text-violet-600 dark:text-violet-300">*.module.ts</p>
+    <p class="mt-1 text-sm text-zinc-500">Dependency injection container</p>
+  </div>
+</div>
+
+<Callout type="info">
+  **Konvensi:** Gunakan <strong>PascalCase</strong> untuk class name, <strong>camelCase</strong> untuk method, dan <strong>kebab-case</strong> untuk filename.
+</Callout>
+</section>
+
+<section class="animate-fade-up [animation-delay:.25s]">
+<h2 id="example-module" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#example-module" class="flex items-center gap-2">Contoh Module <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<p class="mt-3 leading-relaxed">Contoh struktur module <code class="rounded-md bg-zinc-100 px-1.5 py-0.5 font-mono text-[13px] dark:bg-white/[.06]">users</code>:</p>
+
+<CodeBlock code={`// users.controller.ts
+@Controller('users')
+export class UsersController {
+  constructor(private readonly usersService: UsersService) {}
+
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  findAll(@Query() query: QueryUserDto) {
+    return this.usersService.findAll(query);
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.usersService.findOne(id);
+  }
+}`} lang="bash" title="users.controller.ts" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.3s]">
+<h2 id="next-steps" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#next-steps" class="flex items-center gap-2">Selanjutnya <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<NextSteps>
+  <NextStepCard 
+    title="Konfigurasi" 
+    description="Setup environment variables dan konfigurasi lanjutan."
+    href="/docs/core-api/konfigurasi/" />
+  <NextStepCard 
+    title="Autentikasi & JWT" 
+    description="Implementasi JWT, guards, dan role-based access."
+    href="/docs/core-api/autentikasi-jwt/" />
+</NextSteps>
+</section>

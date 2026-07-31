@@ -1,0 +1,155 @@
+---
+title: "API Client"
+project: "Mobile SDK"
+category: "Core Features"
+description: "HTTP client di Gatrion Mobile SDK: request methods, error handling, interceptors, dan file upload."
+---
+
+import Callout from '../../../components/Callout.astro';
+import CodeBlock from '../../../components/CodeBlock.astro';
+import NextSteps from '../../../components/NextSteps.astro';
+import NextStepCard from '../../../components/NextStepCard.astro';
+
+<section class="animate-fade-up [animation-delay:.1s]">
+<h2 id="request-methods" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#request-methods" class="flex items-center gap-2">Request Methods <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// GET
+final response = await GatrionSDK.client.get('/products', query: {
+  'page': '1',
+  'limit': '20',
+});
+
+// POST
+final response = await GatrionSDK.client.post('/orders', body: {
+  'items': [
+    {'productId': 'prod_1', 'qty': 2},
+  ],
+});
+
+// PUT
+final response = await GatrionSDK.client.put('/users/me', body: {
+  'name': 'Updated Name',
+});
+
+// DELETE
+final response = await GatrionSDK.client.delete('/orders/\${orderId}');`} lang="bash" title="request-methods.dart" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.15s]">
+<h2 id="typed-requests" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#typed-requests" class="flex items-center gap-2">Typed Requests <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// Automatic JSON deserialization
+final products = await GatrionSDK.client.get<List<Product>>(
+  '/products',
+  parser: (json) => (json as List)
+      .map((e) => Product.fromJson(e))
+      .toList(),
+);
+
+// Single object
+final user = await GatrionSDK.client.get<User>(
+  '/users/me',
+  parser: (json) => User.fromJson(json as Map<String, dynamic>),
+);
+
+// Paginated response
+final page = await GatrionSDK.client.get<PaginatedResponse<Product>>(
+  '/products?page=1',
+  parser: (json) => PaginatedResponse.fromJson(
+    json, 
+    itemsParser: (items) => items.map((e) => Product.fromJson(e)).toList(),
+  ),
+);`} lang="bash" title="typed-requests.dart" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.2s]">
+<h2 id="error-handling" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#error-handling" class="flex items-center gap-2">Error Handling <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`try {
+  final result = await GatrionSDK.client.post('/orders', body: data);
+  print('Order created: \${result['id']}');
+} on GatrionException catch (e) {
+  switch (e.type) {
+    case GatrionErrorType.network:
+      showSnackBar('No internet connection');
+      break;
+    case GatrionErrorType.unauthorized:
+      // token expired, SDK auto-refreshes
+      break;
+    case GatrionErrorType.validation:
+      showFormErrors(e.fieldErrors);
+      break;
+    case GatrionErrorType.server:
+      showSnackBar('Server error: \${e.message}');
+      break;
+  }
+} catch (e) {
+  showSnackBar('Unexpected error: $e');
+}`} lang="bash" title="error-handling.dart" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.25s]">
+<h2 id="interceptors" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#interceptors" class="flex items-center gap-2">Interceptors <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// Add request interceptor
+GatrionSDK.client.addRequestInterceptor((request) {
+  // add custom header
+  request.headers['X-App-Version'] = '1.0.0';
+  request.headers['X-Platform'] = Platform.operatingSystem;
+  return request;
+});
+
+// Add response interceptor
+GatrionSDK.client.addResponseInterceptor((response) {
+  // log response time
+  final duration = response.duration;
+  debugPrint('\${response.request.path} took \${duration}ms');
+  return response;
+});`} lang="bash" title="interceptors.dart" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.3s]">
+<h2 id="file-upload" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#file-upload" class="flex items-center gap-2">File Upload <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// Upload single file
+final result = await GatrionSDK.client.upload(
+  '/users/avatar',
+  file: avatarFile,
+  fieldName: 'avatar',
+  onProgress: (sent, total) {
+    final percent = (sent / total * 100).toInt();
+    print('Upload: $percent%');
+  },
+);
+
+// Upload multiple files
+final result = await GatrionSDK.client.uploadMultiple(
+  '/products/images',
+  files: imageFiles,
+  fieldName: 'images',
+  onProgress: (sent, total) {
+    print('Uploading: ${(sent/total*100).toInt()}%');
+  },
+);`} lang="bash" title="file-upload.dart" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.35s]">
+<h2 id="next-steps" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#next-steps" class="flex items-center gap-2">Next Steps <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<NextSteps>
+  <NextStepCard title="Storage" description="Local storage dan secure storage." href="/docs/mobile-sdk/storage/" />
+  <NextStepCard title="Push Notifications" description="FCM integration dan deep linking." href="/docs/mobile-sdk/push-notifications/" />
+</NextSteps>
+</section>

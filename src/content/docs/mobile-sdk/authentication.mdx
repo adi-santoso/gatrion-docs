@@ -1,0 +1,126 @@
+---
+title: "Authentication"
+project: "Mobile SDK"
+category: "Core Features"
+description: "Authentication flow di Mobile SDK: login, register, biometric auth, session management, dan token refresh."
+---
+
+import Callout from '../../../components/Callout.astro';
+import CodeBlock from '../../../components/CodeBlock.astro';
+import NextSteps from '../../../components/NextSteps.astro';
+import NextStepCard from '../../../components/NextStepCard.astro';
+
+<section class="animate-fade-up [animation-delay:.1s]">
+<h2 id="login" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#login" class="flex items-center gap-2">Login <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// Email & password login
+final result = await GatrionSDK.auth.login(
+  email: 'user@example.com',
+  password: 'password123',
+);
+
+if (result.success) {
+  final user = result.user;
+  print('Welcome, \${user.name}!');
+  // Token tersimpan otomatis di secure storage
+}`} lang="bash" title="login.dart" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.15s]">
+<h2 id="register" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#register" class="flex items-center gap-2">Register <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`final result = await GatrionSDK.auth.register(
+  email: 'newuser@example.com',
+  password: 'SecurePass123!',
+  name: 'New User',
+  phone: '+6281234567890',
+);
+
+if (result.success) {
+  print('Account created: \${result.user.id}');
+}`} lang="bash" title="register.dart" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.2s]">
+<h2 id="biometric" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#biometric" class="flex items-center gap-2">Biometric Authentication <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// Check biometric availability
+final isAvailable = await GatrionSDK.auth.isBiometricAvailable();
+// returns: BiometricAvailability.available | unavailable | notEnrolled
+
+if (isAvailable == BiometricAvailability.available) {
+  // Enable biometric login
+  await GatrionSDK.auth.enableBiometric();
+  
+  // Login with biometric
+  final result = await GatrionSDK.auth.loginWithBiometric();
+  if (result.success) {
+    print('Biometric login successful!');
+  }
+}`} lang="bash" title="biometric.dart" />
+
+<Callout type="info">
+  **Platform Support:** Fingerprint (Android), Face ID (iOS), dan fingerprint (iOS). SDK menggunakan <code class="rounded-md bg-violet-500/10 px-1.5 py-0.5 font-mono text-[12px] text-violet-600 dark:text-violet-300">local_auth</code> package.
+</Callout>
+</section>
+
+<section class="animate-fade-up [animation-delay:.25s]">
+<h2 id="session" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#session" class="flex items-center gap-2">Session Management <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// Check if user is logged in
+final isLoggedIn = await GatrionSDK.auth.isLoggedIn();
+
+// Get current user
+final user = await GatrionSDK.auth.getCurrentUser();
+if (user != null) {
+  print('Logged in as: \${user.name}');
+}
+
+// Listen to auth state changes
+GatrionSDK.auth.authStateChanges.listen((state) {
+  if (state == AuthState.loggedOut) {
+    // redirect to login
+    Navigator.pushReplacementNamed(context, '/login');
+  }
+});
+
+// Logout
+await GatrionSDK.auth.logout();
+// clears token, navigate to login screen`} lang="bash" title="session.dart" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.3s]">
+<h2 id="token-refresh" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#token-refresh" class="flex items-center gap-2">Auto Token Refresh <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// SDK auto-refreshes token when expired
+// No manual intervention needed!
+
+// But you can listen to refresh events:
+GatrionSDK.auth.onTokenRefreshed.listen((newToken) {
+  print('Token refreshed: \${newToken.substring(0, 10)}...');
+});
+
+// Force refresh if needed
+final newToken = await GatrionSDK.auth.refreshToken();`} lang="bash" title="token-refresh.dart" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.35s]">
+<h2 id="next-steps" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#next-steps" class="flex items-center gap-2">Next Steps <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<NextSteps>
+  <NextStepCard title="API Client" description="HTTP client dan request methods." href="/docs/mobile-sdk/api-client/" />
+  <NextStepCard title="Storage" description="Local storage dan secure storage." href="/docs/mobile-sdk/storage/" />
+</NextSteps>
+</section>

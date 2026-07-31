@@ -1,59 +1,104 @@
 ---
 title: "Getting Started"
 project: "Core API"
-description: "Panduan instalasi, konfigurasi, dan menjalankan Core API pertama kali."
+category: "Memulai"
+description: "Core API adalah backbone dari seluruh layanan Gatrion. Panduan ini membawamu dari nol sampai server berjalan di lokal — kurang dari 5 menit."
 ---
 
-# Getting Started
+import Callout from '../../../components/Callout.astro';
+import CodeBlock from '../../../components/CodeBlock.astro';
+import PrerequisiteGrid from '../../../components/PrerequisiteGrid.astro';
+import PrerequisiteItem from '../../../components/PrerequisiteItem.astro';
+import NextSteps from '../../../components/NextSteps.astro';
+import NextStepCard from '../../../components/NextStepCard.astro';
 
-Welcome to **Core API** documentation — the backend that powers all Gatrion services. In less than 5 minutes, you'll have a running server locally.
+<section class="animate-fade-up [animation-delay:.1s]">
+<h2 id="prerequisites" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#prerequisites" class="flex items-center gap-2">Prasyarat <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
 
-## Prerequisites
+<p class="mt-3 leading-relaxed">Pastikan tools berikut sudah terpasang sebelum lanjut:</p>
 
-Ensure you have:
+<PrerequisiteGrid>
+  <PrerequisiteItem name="node ≥ 18" description="Runtime utama" />
+  <PrerequisiteItem name="postgres ≥ 15" description="Database" />
+  <PrerequisiteItem name="redis ≥ 7" description="Cache & queue" />
+</PrerequisiteGrid>
+</section>
 
-- **Node.js** ≥ 18 (check with `node -v`)
-- **PostgreSQL** ≥ 15
-- **Redis** ≥ 7
+<section class="animate-fade-up [animation-delay:.15s]">
+<h2 id="installation" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#installation" class="flex items-center gap-2">Instalasi <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
 
-## Installation
+<p class="mt-3 leading-relaxed">Kloning repositori dan instal seluruh dependensi:</p>
 
-Clone and install dependencies:
-
-```bash
+<CodeBlock code={`# kloning & masuk direktori
 git clone https://github.com/gatrion/core-api.git
 cd core-api
-npm install
-cp .env.example .env
-```
 
-<Tailwind>
-  <!-- Placeholder to test Tailwind in MDX -->
-</Tailwind>
+# instal dependensi & salin env
+npm install
+cp .env.example .env`} lang="bash" title="terminal" />
 
 <Callout type="info">
-  **Tip:** Use `nvm use` to match the Node version defined in `.nvmrc`.
+  **Tips:** Gunakan <code class="rounded-md bg-violet-500/10 px-1.5 py-0.5 font-mono text-[12px] text-violet-600 dark:text-violet-300">nvm use</code> — file <code class="rounded-md bg-violet-500/10 px-1.5 py-0.5 font-mono text-[12px] text-violet-600 dark:text-violet-300">.nvmrc</code> sudah tersedia di root project.
 </Callout>
+</section>
 
-## Running the server
+<section class="animate-fade-up [animation-delay:.2s]">
+<h2 id="running-the-server" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#running-the-server" class="flex items-center gap-2">Menjalankan Server <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
 
-Start your database via Docker, then start development server:
+<p class="mt-3 leading-relaxed">Jalankan database via Docker, lalu start development server:</p>
 
-```bash
-docker compose up -d
+<CodeBlock code={`docker compose up -d
 npm run db:migrate
-npm run dev
-```
+npm run dev`} lang="bash" title="terminal" />
 
-If successful, the API will be available at `http://localhost:8000` with output:
+<p class="mt-4 leading-relaxed">Jika berhasil, API tersedia di <code class="rounded-md bg-zinc-100 px-1.5 py-0.5 font-mono text-[13px] text-violet-600 dark:bg-white/[.06] dark:text-violet-300">http://localhost:8000</code> dengan output:</p>
 
-```
-✓ Database connected (postgres@localhost:5432)
-✓ Redis connected
-✓ Server listening on http://localhost:8000
-```
+<div class="mt-4 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-white/[.08] dark:bg-[#0d0d10]">
+  <pre class="overflow-x-auto p-5 text-[13px] leading-7"><code class="font-mono"><span class="text-emerald-500">✓</span> <span class="text-zinc-800 dark:text-zinc-200">Database connected</span> <span class="text-zinc-500">(postgres@localhost:5432)</span>
+<span class="text-emerald-500">✓</span> <span class="text-zinc-800 dark:text-zinc-200">Redis connected</span>
+<span class="text-emerald-500">✓</span> <span class="text-zinc-800 dark:text-zinc-200">Server listening on</span> <span class="text-cyan-500 dark:text-cyan-400">http://localhost:8000</span></code></pre>
+</div>
+</section>
 
-## Next steps
+<section class="animate-fade-up [animation-delay:.25s]">
+<h2 id="struktur-direktori" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#struktur-direktori" class="flex items-center gap-2">Struktur Direktori <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
 
-- [Authentication & JWT](#authentication-jwt)
-- [API Reference](#api-reference)
+<p class="mt-3 leading-relaxed">Gambaran singkat organisasi kode:</p>
+
+<div class="mt-4 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-white/[.08] dark:bg-[#0d0d10]">
+  <pre class="overflow-x-auto p-5 text-[13px] leading-7"><code class="font-mono text-zinc-800 dark:text-zinc-200">core-api/
+├── src/
+│   ├── <span class="text-violet-500 dark:text-violet-400">modules/</span>     <span class="text-zinc-500"># fitur per domain (users, orders, ...)</span>
+│   ├── <span class="text-violet-500 dark:text-violet-400">common/</span>      <span class="text-zinc-500"># guard, interceptor, util bersama</span>
+│   ├── <span class="text-violet-500 dark:text-violet-400">config/</span>      <span class="text-zinc-500"># konfigurasi env & database</span>
+│   └── main.ts
+├── prisma/          <span class="text-zinc-500"># schema & migrasi</span>
+├── test/
+└── docker-compose.yml</code></pre>
+</div>
+</section>
+
+<section class="animate-fade-up [animation-delay:.3s]">
+<h2 id="next-steps" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#next-steps" class="flex items-center gap-2">Selanjutnya <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<NextSteps>
+  <NextStepCard 
+    title="Autentikasi & JWT" 
+    description="Setup login, refresh token, dan role-based access."
+    href="#" />
+  <NextStepCard 
+    title="API Reference" 
+    description="Detail seluruh endpoint, request, dan response."
+    href="#" />
+</NextSteps>
+</section>

@@ -1,0 +1,133 @@
+---
+title: "Instalasi"
+project: "Core API"
+category: "Memulai"
+description: "Panduan lengkap instalasi Core API: requirements, setup environment, dan konfigurasi awal untuk development maupun production."
+---
+
+import Callout from '../../../components/Callout.astro';
+import CodeBlock from '../../../components/CodeBlock.astro';
+import PrerequisiteGrid from '../../../components/PrerequisiteGrid.astro';
+import PrerequisiteItem from '../../../components/PrerequisiteItem.astro';
+import NextSteps from '../../../components/NextSteps.astro';
+import NextStepCard from '../../../components/NextStepCard.astro';
+
+<section class="animate-fade-up [animation-delay:.1s]">
+<h2 id="system-requirements" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#system-requirements" class="flex items-center gap-2">System Requirements <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<p class="mt-3 leading-relaxed">Pastikan sistem memenuhi requirements berikut sebelum instalasi:</p>
+
+<PrerequisiteGrid>
+  <PrerequisiteItem name="Node.js ≥ 18" description="Runtime utama (LTS recommended)" />
+  <PrerequisiteItem name="PostgreSQL ≥ 15" description="Database utama" />
+  <PrerequisiteItem name="Redis ≥ 7" description="Cache & message queue" />
+  <PrerequisiteItem name="Docker ≥ 24" description="Untuk containerized setup" />
+</PrerequisiteGrid>
+</section>
+
+<section class="animate-fade-up [animation-delay:.15s]">
+<h2 id="clone-repository" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#clone-repository" class="flex items-center gap-2">Clone Repository <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<p class="mt-3 leading-relaxed">Mulai dengan kloning repositori dari GitHub:</p>
+
+<CodeBlock code={`git clone https://github.com/gatrion/core-api.git
+cd core-api
+
+# gunakan versi node yang sesuai
+nvm use
+
+# install dependencies
+npm install`} lang="bash" title="terminal" />
+
+<Callout type="info">
+  **Tips:** File <code class="rounded-md bg-violet-500/10 px-1.5 py-0.5 font-mono text-[12px] text-violet-600 dark:text-violet-300">.nvmrc</code> sudah tersedia. Jalankan <code class="rounded-md bg-violet-500/10 px-1.5 py-0.5 font-mono text-[12px] text-violet-600 dark:text-violet-300">nvm use</code> untuk switch ke versi Node yang benar.
+</Callout>
+</section>
+
+<section class="animate-fade-up [animation-delay:.2s]">
+<h2 id="environment-setup" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#environment-setup" class="flex items-center gap-2">Environment Setup <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<p class="mt-3 leading-relaxed">Salin file environment dan sesuaikan konfigurasi:</p>
+
+<CodeBlock code={`cp .env.example .env`} lang="bash" title="terminal" />
+
+<p class="mt-4 leading-relaxed">Berikut key environment yang perlu di-set:</p>
+
+<CodeBlock code={`# Database
+DATABASE_URL=postgresql://user:pass@localhost:5432/gatrion
+
+# Redis
+REDIS_URL=redis://localhost:6379
+
+# JWT
+JWT_SECRET=your-super-secret-key
+JWT_EXPIRES_IN=1d
+
+# Server
+PORT=8000
+NODE_ENV=development`} lang="bash" title=".env" />
+
+<Callout type="warning">
+  **Penting:** Jangan commit file <code class="rounded-md bg-amber-500/10 px-1.5 py-0.5 font-mono text-[12px] text-amber-600 dark:text-amber-300">.env</code> ke repository. Pastikan sudah ada di <code class="rounded-md bg-amber-500/10 px-1.5 py-0.5 font-mono text-[12px] text-amber-600 dark:text-amber-300">.gitignore</code>.
+</Callout>
+</section>
+
+<section class="animate-fade-up [animation-delay:.25s]">
+<h2 id="docker-setup" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#docker-setup" class="flex items-center gap-2">Docker Setup (Recommended) <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<p class="mt-3 leading-relaxed">Cara termudah menjalankan PostgreSQL dan Redis secara lokal:</p>
+
+<CodeBlock code={`# jalankan postgres & redis
+docker compose up -d
+
+# cek status container
+docker compose ps`} lang="bash" title="terminal" />
+
+<p class="mt-4 leading-relaxed">Setelah container berjalan, jalankan migrasi database:</p>
+
+<CodeBlock code={`npm run db:migrate
+npm run db:seed`} lang="bash" title="terminal" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.3s]">
+<h2 id="verification" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#verification" class="flex items-center gap-2">Verifikasi Instalasi <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<p class="mt-3 leading-relaxed">Jalankan development server untuk memastikan semua berjalan:</p>
+
+<CodeBlock code={`npm run dev`} lang="bash" title="terminal" />
+
+<p class="mt-4 leading-relaxed">Jika berhasil, server akan start di <code class="rounded-md bg-zinc-100 px-1.5 py-0.5 font-mono text-[13px] text-violet-600 dark:bg-white/[.06] dark:text-violet-300">http://localhost:8000</code> dengan output:</p>
+
+<div class="mt-4 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-white/[.08] dark:bg-[#0d0d10]">
+  <pre class="overflow-x-auto p-5 text-[13px] leading-7"><code class="font-mono"><span class="text-emerald-500">✓</span> <span class="text-zinc-800 dark:text-zinc-200">Database connected</span> <span class="text-zinc-500">(postgres@localhost:5432)</span>
+<span class="text-emerald-500">✓</span> <span class="text-zinc-800 dark:text-zinc-200">Redis connected</span>
+<span class="text-emerald-500">✓</span> <span class="text-zinc-800 dark:text-zinc-200">Server listening on</span> <span class="text-cyan-500 dark:text-cyan-400">http://localhost:8000</span></code></pre>
+</div>
+</section>
+
+<section class="animate-fade-up [animation-delay:.35s]">
+<h2 id="next-steps" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#next-steps" class="flex items-center gap-2">Selanjutnya <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<NextSteps>
+  <NextStepCard 
+    title="Struktur Project" 
+    description="Pahami organisasi kode dan arsitektur Core API."
+    href="/docs/core-api/struktur-project/" />
+  <NextStepCard 
+    title="Konfigurasi" 
+    description="Setup environment variables dan konfigurasi lanjutan."
+    href="/docs/core-api/konfigurasi/" />
+</NextSteps>
+</section>

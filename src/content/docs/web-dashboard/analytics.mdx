@@ -1,0 +1,150 @@
+---
+title: "Analytics Dashboard"
+project: "Web Dashboard"
+category: "Features"
+description: "Real-time analytics dashboard: revenue metrics, order statistics, dan user activity tracking."
+---
+
+import Callout from '../../../components/Callout.astro';
+import CodeBlock from '../../../components/CodeBlock.astro';
+import NextSteps from '../../../components/NextSteps.astro';
+import NextStepCard from '../../../components/NextStepCard.astro';
+
+<section class="animate-fade-up [animation-delay:.1s]">
+<h2 id="overview" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#overview" class="flex items-center gap-2">Dashboard Overview <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<p class="mt-3 leading-relaxed">Analytics dashboard menampilkan key metrics dalam real-time dengan auto-refresh setiap 30 detik.</p>
+
+<CodeBlock code={`// src/pages/DashboardPage.tsx
+function DashboardPage() {
+  const { data: stats, isLoading } = useDashboardStats();
+
+  return (
+    <div className="space-y-6">
+      <PageHeader title="Dashboard" description="Overview metrik real-time" />
+      
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard label="Total Revenue" value={stats?.totalRevenue} icon="cash" trend={+12.5} />
+        <StatCard label="Total Orders" value={stats?.totalOrders} icon="cart" trend={+8.2} />
+        <StatCard label="Active Users" value={stats?.activeUsers} icon="users" trend={-2.1} />
+        <StatCard label="Conversion Rate" value={stats?.conversionRate} icon="chart" trend={+5.4} />
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <RevenueChart data={stats?.revenueByMonth} />
+        <OrdersChart data={stats?.ordersByStatus} />
+      </div>
+
+      <RecentTransactions limit={10} />
+    </div>
+  );
+}`} lang="bash" title="DashboardPage.tsx" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.15s]">
+<h2 id="stat-cards" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#stat-cards" class="flex items-center gap-2">Stat Cards <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// src/components/StatCard.tsx
+interface StatCardProps {
+  label: string;
+  value: number | string;
+  icon: string;
+  trend?: number;
+}
+
+function StatCard({ label, value, icon, trend }: StatCardProps) {
+  const isPositive = trend && trend > 0;
+  
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <CardTitle className="text-sm font-medium text-zinc-500">{label}</CardTitle>
+        <Icon name={icon} className="h-4 w-4 text-zinc-400" />
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold">{formatCurrency(value)}</div>
+        {trend && (
+          <p className={\`mt-1 text-xs \${isPositive ? 'text-emerald-500' : 'text-red-500'}\`}>
+            {isPositive ? '↑' : '↓'} {Math.abs(trend)}% dari bulan lalu
+          </p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}`} lang="bash" title="StatCard.tsx" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.2s]">
+<h2 id="data-fetching" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#data-fetching" class="flex items-center gap-2">Data Fetching dengan Auto-refresh <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// src/hooks/use-dashboard-stats.ts
+export function useDashboardStats() {
+  return useQuery({
+    queryKey: ['dashboard-stats'],
+    queryFn: () => apiClient.get('/analytics/dashboard').then(res => res.data.data),
+    refetchInterval: 30000, // auto-refresh 30s
+    refetchIntervalInBackground: false,
+  });
+}
+
+export function useRevenueChart(period: 'daily' | 'weekly' | 'monthly') {
+  return useQuery({
+    queryKey: ['revenue-chart', period],
+    queryFn: () => apiClient.get('/analytics/revenue', { params: { period } })
+      .then(res => res.data.data),
+  });
+}`} lang="bash" title="use-dashboard-stats.ts" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.25s]">
+<h2 id="date-range" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#date-range" class="flex items-center gap-2">Date Range Filter <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`function DateRangeFilter({ onChange }: { onChange: (range: DateRange) => void }) {
+  const presets = [
+    { label: 'Hari ini', value: 'today' },
+    { label: '7 hari', value: '7d' },
+    { label: '30 hari', value: '30d' },
+    { label: 'Bulan ini', value: 'month' },
+    { label: 'Custom', value: 'custom' },
+  ];
+
+  const [preset, setPreset] = useState('30d');
+
+  return (
+    <div className="flex items-center gap-2">
+      {presets.map(p => (
+        <Button
+          key={p.value}
+          variant={preset === p.value ? 'primary' : 'secondary'}
+          size="sm"
+          onClick={() => {
+            setPreset(p.value);
+            onChange(getDateRange(p.value));
+          }}
+        >
+          {p.label}
+        </Button>
+      ))}
+    </div>
+  );
+}`} lang="bash" title="DateRangeFilter.tsx" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.3s]">
+<h2 id="next-steps" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#next-steps" class="flex items-center gap-2">Selanjutnya <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<NextSteps>
+  <NextStepCard title="Real-time Updates" description="WebSocket untuk live updates." href="/docs/web-dashboard/real-time/" />
+  <NextStepCard title="Build & Deploy" description="Production build dan deployment." href="/docs/web-dashboard/build-deploy/" />
+</NextSteps>
+</section>

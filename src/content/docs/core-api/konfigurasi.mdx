@@ -1,0 +1,147 @@
+---
+title: "Konfigurasi"
+project: "Core API"
+category: "Memulai"
+description: "Konfigurasi lengkap Core API: environment variables, database config, JWT settings, dan third-party integrations."
+---
+
+import Callout from '../../../components/Callout.astro';
+import CodeBlock from '../../../components/CodeBlock.astro';
+import NextSteps from '../../../components/NextSteps.astro';
+import NextStepCard from '../../../components/NextStepCard.astro';
+
+<section class="animate-fade-up [animation-delay:.1s]">
+  <h2 id="environment-variables" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+    <a href="#environment-variables" class="flex items-center gap-2">Environment Variables <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+  </h2>
+
+  <p class="mt-3 leading-relaxed">Berikut daftar lengkap environment variables yang tersedia:</p>
+
+  <CodeBlock code={`# ─── Database ──────────────────────────
+DATABASE_URL=postgresql://user:pass@localhost:5432/gatrion
+DATABASE_POOL_MIN=2
+DATABASE_POOL_MAX=10
+
+# ─── Redis ─────────────────────────────
+REDIS_URL=redis://localhost:6379
+REDIS_PREFIX=gatrion:
+
+# ─── JWT ───────────────────────────────
+JWT_SECRET=your-super-secret-key-min-32-chars
+JWT_EXPIRES_IN=1d
+JWT_REFRESH_EXPIRES_IN=7d
+
+# ─── Server ────────────────────────────
+PORT=8000
+NODE_ENV=development
+CORS_ORIGIN=http://localhost:3000
+
+# ─── Rate Limiting ────────────────────
+RATE_LIMIT_TTL=60
+RATE_LIMIT_MAX=100
+
+# ─── External Services ─────────────────
+MIDTRANS_SERVER_KEY=SB-Mid-server-xxx
+MIDTRANS_CLIENT_KEY=SB-Mid-client-xxx
+FIREBASE_PROJECT_ID=gatrion-prod`} lang="bash" title=".env" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.15s]">
+  <h2 id="database-config" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+    <a href="#database-config" class="flex items-center gap-2">Database Configuration <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+  </h2>
+
+  <p class="mt-3 leading-relaxed">Konfigurasi Prisma terletak di <code class="rounded-md bg-zinc-100 px-1.5 py-0.5 font-mono text-[13px] dark:bg-white/[.06]">prisma/schema.prisma</code>:</p>
+
+  <CodeBlock code={`generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  orders    Order[]
+}
+
+enum Role {
+  ADMIN
+  USER
+}`} lang="typescript" title="prisma/schema.prisma" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.2s]">
+  <h2 id="cors-config" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+    <a href="#cors-config" class="flex items-center gap-2">CORS Configuration <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+  </h2>
+
+  <CodeBlock code={`// src/main.ts
+import { ValidationPipe } from '@nestjs/pipe';
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+
+  app.enableCors({
+    origin: process.env.CORS_ORIGIN?.split(',') || '*',
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    credentials: true,
+  });
+
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
+  await app.listen(process.env.PORT || 8000);
+}
+bootstrap();`} lang="typescript" title="src/main.ts" />
+
+  <Callout type="warning">
+    **Production:** Set <code class="rounded-md bg-amber-500/10 px-1.5 py-0.5 font-mono text-[12px] text-amber-600 dark:text-amber-300">CORS_ORIGIN</code> ke domain yang spesifik (e.g. <code class="rounded-md bg-amber-500/10 px-1.5 py-0.5 font-mono text-[12px] text-amber-600 dark:text-amber-300">https://dashboard.gatrion.com</code>). Jangan gunakan <code class="rounded-md bg-amber-500/10 px-1.5 py-0.5 font-mono text-[12px] text-amber-600 dark:text-amber-300">*</code> di production.
+  </Callout>
+</section>
+
+<section class="animate-fade-up [animation-delay:.25s]">
+  <h2 id="rate-limiting" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+    <a href="#rate-limiting" class="flex items-center gap-2">Rate Limiting <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+  </h2>
+
+  <p class="mt-3 leading-relaxed">Rate limiting menggunakan Redis untuk tracking. Konfigurasi default:</p>
+
+  <div class="mt-4 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-white/[.08] dark:bg-[#0d0d10]">
+    <pre class="overflow-x-auto p-5 text-[13px] leading-7"><code class="font-mono text-zinc-800 dark:text-zinc-200"># Default config
+RATE_LIMIT_TTL=60    # window dalam detik
+RATE_LIMIT_MAX=100    # max requests per window
+
+# Response jika limit terlampaui:
+{
+  "statusCode": 429,
+  "message": "Too Many Requests",
+  "retryAfter": 42
+}</code></pre>
+  </div>
+</section>
+
+<section class="animate-fade-up [animation-delay:.3s]">
+  <h2 id="next-steps" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+    <a href="#next-steps" class="flex items-center gap-2">Selanjutnya <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+  </h2>
+
+  <NextSteps>
+    <NextStepCard 
+      title="Autentikasi & JWT" 
+      description="Setup login, refresh token, dan role-based access."
+      href="/docs/core-api/autentikasi-jwt/" />
+    <NextStepCard 
+      title="Database & Migrasi" 
+      description="Prisma schema, migrasi, dan seeding."
+      href="/docs/core-api/database-migrasi/" />
+  </NextSteps>
+</section>

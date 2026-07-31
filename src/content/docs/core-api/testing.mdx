@@ -1,0 +1,180 @@
+---
+title: "Testing"
+project: "Core API"
+category: "Panduan"
+description: "Panduan testing Core API: unit testing, integration testing, dan e2e testing dengan Jest dan Supertest."
+---
+
+import Callout from '../../../components/Callout.astro';
+import CodeBlock from '../../../components/CodeBlock.astro';
+import NextSteps from '../../../components/NextSteps.astro';
+import NextStepCard from '../../../components/NextStepCard.astro';
+
+<section class="animate-fade-up [animation-delay:.1s]">
+<h2 id="overview" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#overview" class="flex items-center gap-2">Overview <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<p class="mt-3 leading-relaxed">Core API menggunakan <strong>Jest</strong> untuk unit testing dan <strong>Supertest</strong> untuk e2e testing. Target coverage minimal 80%.</p>
+
+<CodeBlock code={`# run all tests
+npm test
+
+# run with coverage
+npm run test:cov
+
+# run e2e only
+npm run test:e2e
+
+# watch mode
+npm run test:watch`} lang="bash" title="terminal" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.15s]">
+<h2 id="unit-testing" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#unit-testing" class="flex items-center gap-2">Unit Testing <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<p class="mt-3 leading-relaxed">Contoh unit test untuk service:</p>
+
+<CodeBlock code={`// users.service.spec.ts
+describe('UsersService', () => {
+  let service: UsersService;
+  let prismaMock: any;
+
+  beforeEach(async () => {
+    prismaMock = {
+      user: {
+        findUnique: jest.fn(),
+        create: jest.fn(),
+      },
+    };
+
+    const module = await Test.createTestingModule({
+      providers: [
+        UsersService,
+        { provide: PrismaService, useValue: prismaMock },
+      ],
+    }).compile();
+
+    service = module.get<UsersService>(UsersService);
+  });
+
+  describe('findByEmail', () => {
+    it('should return user if found', async () => {
+      const mockUser = { id: '1', email: 'test@test.com' };
+      prismaMock.user.findUnique.mockResolvedValue(mockUser);
+
+      const result = await service.findByEmail('test@test.com');
+      expect(result).toEqual(mockUser);
+      expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
+        where: { email: 'test@test.com' },
+      });
+    });
+
+    it('should return null if not found', async () => {
+      prismaMock.user.findUnique.mockResolvedValue(null);
+      const result = await service.findByEmail('not@test.com');
+      expect(result).toBeNull();
+    });
+  });
+});`} lang="bash" title="users.service.spec.ts" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.2s]">
+<h2 id="e2e-testing" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#e2e-testing" class="flex items-center gap-2">E2E Testing <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// users.e2e-spec.ts
+describe('UsersController (e2e)', () => {
+  let app: INestApplication;
+
+  beforeAll(async () => {
+    const module = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
+
+    app = module.createNestApplication();
+    await app.init();
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+
+  describe('GET /users', () => {
+    it('should return 401 without auth', () => {
+      return request(app.getHttpServer())
+        .get('/users')
+        .expect(401);
+    });
+
+    it('should return users list with auth', async () => {
+      const loginRes = await request(app.getHttpServer())
+        .post('/auth/login')
+        .send({ email: 'admin@gatrion.com', password: 'admin123' });
+
+      return request(app.getHttpServer())
+        .get('/users')
+        .set('Authorization', \`Bearer \${loginRes.body.data.accessToken}\`)
+        .expect(200)
+        .expect(res => {
+          expect(res.body.data).toBeInstanceOf(Array);
+        });
+    });
+  });
+});`} lang="bash" title="users.e2e-spec.ts" />
+</section>
+
+<section class="animate-fade-up [animation-delay:.25s]">
+<h2 id="mocking" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#mocking" class="flex items-center gap-2">Mocking External Services <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<CodeBlock code={`// mock midtrans payment gateway
+jest.mock('@midtrans/midtrans-client', () => ({
+  Snap: jest.fn().mockImplementation(() => ({
+    createTransaction: jest.fn().mockResolvedValue({
+      token: 'mock-token',
+      redirect_url: 'https://app.sandbox.midtrans.com/mock',
+    }),
+  })),
+}));`} lang="bash" title="mock-setup.ts" />
+
+<Callout type="info">
+  **Tips:** Gunakan <code class="rounded-md bg-violet-500/10 px-1.5 py-0.5 font-mono text-[12px] text-violet-600 dark:text-violet-300">jest.mock()</code> untuk mock external services agar test tidak bergantung pada service pihak ketiga.
+</Callout>
+</section>
+
+<section class="animate-fade-up [animation-delay:.3s]">
+<h2 id="coverage" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#coverage" class="flex items-center gap-2">Coverage Target <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<div class="mt-4 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-white/[.08] dark:bg-[#0d0d10]">
+  <pre class="overflow-x-auto p-5 text-[13px] leading-7"><code class="font-mono text-zinc-800 dark:text-zinc-200"><span class="text-emerald-500">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+<span class="text-emerald-500">All files</span>       <span class="text-emerald-500">  85.32</span>  <span class="text-emerald-500">  82.14</span>  <span class="text-emerald-500">  88.90</span>  <span class="text-emerald-500">  83.45</span>
+<span class="text-zinc-500">───────────────────────────────────────────────</span>
+src/modules       <span class="text-emerald-500">  88.12</span>  <span class="text-emerald-500">  85.33</span>  <span class="text-emerald-500">  91.20</span>  <span class="text-emerald-500">  86.10</span>
+src/common        <span class="text-emerald-500">  78.45</span>  <span class="text-emerald-500">  72.10</span>  <span class="text-emerald-500">  80.00</span>  <span class="text-emerald-500">  75.30</span>
+src/config        <span class="text-emerald-500">  95.00</span>  <span class="text-emerald-500">  90.00</span>  <span class="text-emerald-500">  100.0</span>  <span class="text-emerald-500">  92.50</span></code></pre>
+</div>
+</section>
+
+<section class="animate-fade-up [animation-delay:.35s]">
+<h2 id="next-steps" class="group scroll-mt-24 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+  <a href="#next-steps" class="flex items-center gap-2">Selanjutnya <span class="text-violet-400 opacity-0 transition group-hover:opacity-100">#</span></a>
+</h2>
+
+<NextSteps>
+  <NextStepCard 
+    title="Deployment" 
+    description="Deploy ke production dengan Docker dan CI/CD."
+    href="/docs/core-api/deployment/" />
+  <NextStepCard 
+    title="Users API" 
+    description="Detail endpoint Users module."
+    href="/docs/core-api/users-api/" />
+</NextSteps>
+</section>

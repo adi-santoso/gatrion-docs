@@ -1,0 +1,74 @@
+---
+interface Props {
+  html: string;
+}
+
+const { html } = Astro.props;
+
+// Extract headings from HTML
+const extractHeadings = (html: string) => {
+  const headingRegex = /<h2[^>]*id="([^"]*)"[^>]*>.*?<a[^>]*>(.*?)<span/g;
+  const headings: Array<{ id: string; title: string }> = [];
+  
+  let match;
+  while ((match = headingRegex.exec(html)) !== null) {
+    const id = match[1];
+    const titleWithTags = match[2];
+    // Remove HTML tags from title
+    const title = titleWithTags.replace(/<[^>]*>/g, '').trim();
+    headings.push({ id, title });
+  }
+  
+  return headings;
+};
+
+const headings = extractHeadings(html);
+---
+
+{headings.length > 0 && (
+  <aside class="sticky top-[60px] hidden h-[calc(100vh-60px)] w-56 shrink-0 overflow-y-auto py-10 pr-6 xl:block">
+    <p class="mb-4 text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-600">Di halaman ini</p>
+    <nav class="space-y-2.5 text-[13px]">
+      {headings.map((heading) => (
+        <a href={`#${heading.id}`} class="toc-link block text-zinc-400 transition hover:text-zinc-900 dark:hover:text-white">
+          {heading.title}
+        </a>
+      ))}
+    </nav>
+
+    <div class="mt-8 rounded-2xl border border-zinc-200 bg-white/60 p-4 dark:border-white/[.07] dark:bg-white/[.02]">
+      <p class="text-[13px] font-semibold text-zinc-900 dark:text-white">Butuh bantuan?</p>
+      <p class="mt-1 text-xs leading-relaxed text-zinc-400">
+        Tanya di channel <span class="font-mono text-violet-500">#eng-core-api</span> atau buat issue di repo.
+      </p>
+    </div>
+  </aside>
+)}
+
+<script>
+  // TOC scroll spy
+  const tocLinks = document.querySelectorAll('.toc-link');
+  const sections = Array.from(tocLinks).map(l => document.querySelector(l.getAttribute('href') || ''));
+  
+  const spy = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        tocLinks.forEach(link => {
+          const isActive = link.getAttribute('href') === '#' + entry.target.id;
+          link.classList.toggle('toc-active', isActive);
+        });
+      }
+    });
+  }, { rootMargin: '-70px 0px -70% 0px' });
+  
+  sections.forEach(section => section && spy.observe(section));
+</script>
+
+<style>
+  .toc-active {
+    color: rgb(167 139 250) !important;
+  }
+  :global(html:not(.dark)) .toc-active {
+    color: rgb(124 58 237) !important;
+  }
+</style>
