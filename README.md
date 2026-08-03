@@ -1,6 +1,8 @@
-# Astro Docs Template
+# Gatrion Docs
 
 A multi-project documentation template built with **Astro 7**, **MDX**, and **Tailwind CSS 4**. Markdown-first, internationalization-ready, fully static, and intentionally straightforward for both people and AI coding agents to author.
+
+Made by [Gatrion](https://gatrion.my.id) and open-sourced under the MIT licence. Live at **[docs.gatrion.my.id](https://docs.gatrion.my.id)**.
 
 ## Why this template
 
@@ -16,7 +18,11 @@ A multi-project documentation template built with **Astro 7**, **MDX**, and **Ta
 
 ## Quick start
 
+Click **Use this template** on GitHub, or clone directly:
+
 ```bash
+git clone https://github.com/adi-santoso/gatrion-docs.git
+cd gatrion-docs
 npm install
 npm run dev
 ```
@@ -177,10 +183,38 @@ This keeps agent output short, portable, and mechanically verifiable.
 
 ## Deployment
 
-The output is static HTML, CSS, and JavaScript. Deploy `dist/` to Netlify, Vercel, Cloudflare Pages, GitHub Pages, an S3-compatible host, or any ordinary web server.
+The output is plain static HTML, CSS, and JavaScript, so no server adapter or runtime is needed.
 
-No adapter is required.
+Set `site.url` in `site.config.ts` first — canonical links, Open Graph tags, the sitemap, and `robots.txt` are all derived from it.
+
+| Setting | Value |
+| --- | --- |
+| Build command | `npm run build` |
+| Publish directory | `dist` |
+| Node version | 22 or newer |
+
+`netlify.toml` and `vercel.json` are included, so Netlify and Vercel need no dashboard configuration. Cloudflare Pages requires entering the two values above once.
+
+For a subpath deployment such as `https://example.com/docs`, also set `base`:
+
+```ts
+url: 'https://example.com',
+base: '/docs',
+```
+
+Root and subdomain deployments keep `base: '/'`.
+
+## Contributing
+
+Issues and pull requests are welcome. Before opening a pull request:
+
+```bash
+npm run check
+npm run build
+```
+
+Both must pass. When adding documentation, follow [`AGENTS.md`](AGENTS.md) — it applies to human contributors as much as to AI agents.
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE) © Gatrion

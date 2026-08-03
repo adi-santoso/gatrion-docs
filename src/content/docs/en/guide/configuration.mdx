@@ -10,11 +10,11 @@ The template intentionally keeps configuration in a few typed files instead of s
 
 ## Site identity
 
-Edit `site.config.ts`:
+Edit `site.config.ts`. The example below uses placeholder values — replace them with your own:
 
 ```ts
 export const site = {
-  url: 'https://docs.example.com',
+  url: 'https://docs.acme.com',
   base: '/',
   title: 'acme',
   titleAccent: 'docs',
@@ -29,7 +29,7 @@ export const site = {
 ```
 
 <Callout type="note">
-  Set a link to `null` to hide its interface element. `helpBox` can also be `null`.
+  Set a link to `null` to hide its interface element. `helpBox` can also be `null`, or given an `href` to turn its label into a link.
 </Callout>
 
 ## Projects

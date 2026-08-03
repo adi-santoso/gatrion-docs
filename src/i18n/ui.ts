@@ -51,7 +51,7 @@ const en = {
 
   'toc.title': 'On this page',
   'toc.help.title': 'Need help?',
-  'toc.help.body': 'Ask in {channel} or open an issue on the repository.',
+  'toc.help.body': 'Found a mistake or something unclear? Let us know via {channel}.',
 
   'page.previous': 'Previous',
   'page.next': 'Next',
@@ -125,7 +125,7 @@ const id: Partial<Record<UIKey, string>> = {
 
   'toc.title': 'Di halaman ini',
   'toc.help.title': 'Butuh bantuan?',
-  'toc.help.body': 'Tanyakan di {channel} atau buat issue di repositori.',
+  'toc.help.body': 'Menemukan kekeliruan atau bagian yang kurang jelas? Sampaikan lewat {channel}.',
 
   'page.previous': 'Sebelumnya',
   'page.next': 'Selanjutnya',

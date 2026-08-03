@@ -23,7 +23,31 @@ const visible = headings.filter((heading) => heading.depth === 2 || heading.dept
     <div class="mt-8 rounded-2xl border border-zinc-200 bg-white/60 p-4 dark:border-white/[0.07] dark:bg-white/[0.02]">
       <p class="text-[13px] font-semibold text-zinc-900 dark:text-white">{t('toc.help.title')}</p>
       <p class="mt-1 text-xs leading-relaxed text-zinc-400">
-        {t('toc.help.body', { channel: site.helpBox.channel })}
+        {/* The translated sentence embeds `{channel}` mid-string, so it is split
+            around the placeholder to render the channel as a link without
+            resorting to `set:html`. */}
+        {(() => {
+          const [before, after] = t('toc.help.body', { channel: '\u0000' }).split('\u0000');
+          const label = site.helpBox.channel;
+          return (
+            <>
+              {before}
+              {site.helpBox.href ? (
+                <a
+                  href={site.helpBox.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  class="font-medium text-violet-500 transition hover:text-violet-600 dark:hover:text-violet-400"
+                >
+                  {label}
+                </a>
+              ) : (
+                <span class="font-medium text-violet-500">{label}</span>
+              )}
+              {after}
+            </>
+          );
+        })()}
       </p>
     </div>
   )}

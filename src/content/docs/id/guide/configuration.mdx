@@ -10,11 +10,11 @@ Template menyimpan konfigurasi di beberapa file bertipe jelas, bukan menyebarkan
 
 ## Identitas situs
 
-Edit `site.config.ts` untuk URL, nama, logo, deskripsi, link repository, dan help box.
+Edit `site.config.ts` untuk URL, nama, logo, deskripsi, link repository, dan help box. Contoh di bawah memakai nilai placeholder — ganti dengan milik Anda:
 
 ```ts
 export const site = {
-  url: 'https://docs.example.com',
+  url: 'https://docs.acme.com',
   base: '/',
   title: 'acme',
   titleAccent: 'docs',
@@ -25,7 +25,7 @@ export const site = {
 ```
 
 <Callout type="note">
-  Atur link ke `null` untuk menyembunyikan elemen antarmukanya. `helpBox` juga dapat bernilai `null`.
+  Atur link ke `null` untuk menyembunyikan elemen antarmukanya. `helpBox` juga dapat bernilai `null`, atau diberi `href` agar labelnya menjadi tautan.
 </Callout>
 
 ## Proyek

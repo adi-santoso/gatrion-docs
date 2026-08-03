@@ -23,29 +23,29 @@ export const site = {
    * Absolute URL of the deployed site, with no trailing slash.
    * Used for canonical links, Open Graph tags, and sitemap generation.
    */
-  url: 'https://example.com',
+  url: 'https://docs.gatrion.my.id',
 
   /**
    * Set this when deploying to a subpath, e.g. GitHub Pages at
    * `https://user.github.io/my-repo` → base: '/my-repo'.
-   * Leave as '/' for root deployments.
+   * Leave as '/' for root and subdomain deployments.
    */
   base: '/',
 
   /** Shown in the header, next to the logo mark. */
-  title: 'astro',
+  title: 'gatrion',
 
   /** Rendered in the accent gradient after the title. */
   titleAccent: 'docs',
 
   /** The single character rendered inside the gradient logo square. */
-  logoLetter: 'A',
+  logoLetter: 'G',
 
   /** Falls back to this description when a page does not define its own. */
   description: 'Multi-project documentation, all in one place.',
 
   /** Footer copyright line. The year is appended automatically. */
-  copyright: 'Astro Docs Template',
+  copyright: 'Gatrion',
 
   /**
    * Optional links rendered in the header. Set to `null` to hide.
@@ -53,16 +53,18 @@ export const site = {
    * the file path within `src/content/docs/` is appended to it.
    */
   links: {
-    github: 'https://github.com/your-org/your-repo',
-    editBase: 'https://github.com/your-org/your-repo/edit/main/src/content/docs/',
+    github: 'https://github.com/adi-santoso/gatrion-docs',
+    editBase: 'https://github.com/adi-santoso/gatrion-docs/edit/main/src/content/docs/',
   },
 
   /**
    * Optional help box shown under the table of contents.
    * Set to `null` to hide it entirely.
+   *
+   * `channel` is the label shown to readers; `href` makes it a link.
    */
   helpBox: {
-    channel: '#support',
-    href: null as string | null,
+    channel: 'GitHub Issues',
+    href: 'https://github.com/adi-santoso/gatrion-docs/issues' as string | null,
   },
 } as const;

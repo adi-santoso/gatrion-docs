@@ -1,9 +1,17 @@
 {
-  "name": "astro-docs-template",
+  "name": "gatrion-docs",
   "version": "1.0.0",
-  "description": "Multi-project documentation template for Astro. Markdown-first, i18n-ready, and designed to be written by AI agents.",
+  "description": "Multi-project documentation template for Astro by Gatrion. Markdown-first, i18n-ready, and designed to be written by AI agents.",
   "type": "module",
   "license": "MIT",
+  "homepage": "https://docs.gatrion.my.id",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adi-santoso/gatrion-docs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/adi-santoso/gatrion-docs/issues"
+  },
   "keywords": [
     "astro",
     "astro-template",
@@ -11,7 +19,8 @@
     "docs",
     "mdx",
     "tailwindcss",
-    "i18n"
+    "i18n",
+    "gatrion"
   ],
   "scripts": {
     "dev": "astro dev",
