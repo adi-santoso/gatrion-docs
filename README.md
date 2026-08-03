@@ -2,7 +2,10 @@
 
 A multi-project documentation template built with **Astro 7**, **MDX**, and **Tailwind CSS 4**. Markdown-first, internationalization-ready, fully static, and intentionally straightforward for both people and AI coding agents to author.
 
-Made by [Gatrion](https://gatrion.my.id) and open-sourced under the MIT licence. Live at **[docs.gatrion.my.id](https://docs.gatrion.my.id)**.
+Made by [Gatrion](https://gatrion.my.id) and open-sourced under the MIT licence.
+
+- Production: **[docs.gatrion.my.id](https://docs.gatrion.my.id)**
+- Vercel fallback: **[gatrion-docs.vercel.app](https://gatrion-docs.vercel.app)**
 
 ## Why this template
 
@@ -193,7 +196,59 @@ Set `site.url` in `site.config.ts` first — canonical links, Open Graph tags, t
 | Publish directory | `dist` |
 | Node version | 22 or newer |
 
-`netlify.toml` and `vercel.json` are included, so Netlify and Vercel need no dashboard configuration. Cloudflare Pages requires entering the two values above once.
+### Current production deployment
+
+This repository is connected to the Vercel project `adi-santosos-projects/gatrion-docs`. Every push to `main` triggers a production deployment automatically.
+
+The stable Vercel URL is:
+
+```text
+https://gatrion-docs.vercel.app
+```
+
+The intended custom domain is:
+
+```text
+https://docs.gatrion.my.id
+```
+
+The domain is registered with the Vercel project, while DNS remains managed by Cloudflare. Configure this record in Cloudflare:
+
+| Type | Name | Target | Proxy status |
+| --- | --- | --- | --- |
+| `A` | `docs` | `76.76.21.21` | DNS only |
+
+Keep the record set to **DNS only** until Vercel verifies the domain and issues the TLS certificate. There is no need to move the `gatrion.my.id` nameservers to Vercel.
+
+After DNS propagation, verify:
+
+```bash
+curl -I https://docs.gatrion.my.id
+```
+
+### Deploy your own copy
+
+`netlify.toml` and `vercel.json` are included, so Netlify and Vercel need no additional build configuration. Cloudflare Pages requires entering the build command and publish directory from the table above once.
+
+To deploy a new copy with the Vercel CLI:
+
+```bash
+npm install -g vercel
+vercel login
+vercel --prod
+```
+
+The first deployment links the local directory to a Vercel project and creates `.vercel/`. That directory contains local project metadata and is intentionally ignored by Git.
+
+To attach a custom domain to the linked project:
+
+```bash
+vercel domains add docs.example.com
+```
+
+If the domain uses Cloudflare nameservers, add the DNS record requested by Vercel in Cloudflare rather than changing nameservers.
+
+### Subpath deployments
 
 For a subpath deployment such as `https://example.com/docs`, also set `base`:
 
