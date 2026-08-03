@@ -1,0 +1,17 @@
+---
+import HubPage from '../../components/pages/HubPage.astro';
+import { projects } from '../../config/projects';
+import { LOCALES, DEFAULT_LOCALE, type Locale } from '../../i18n';
+import { projectSummaries } from '../../lib/docs';
+
+export function getStaticPaths() {
+  return LOCALES.filter((locale) => locale !== DEFAULT_LOCALE).map((lang) => ({ params: { lang } }));
+}
+
+const locale = Astro.params.lang as Locale;
+if (projects.length === 1) {
+  const first = (await projectSummaries(locale))[0]?.href;
+  if (first) return Astro.redirect(first);
+}
+---
+<HubPage locale={locale} />

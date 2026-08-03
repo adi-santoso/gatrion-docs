@@ -1,0 +1,7 @@
+---
+import { DEFAULT_LOCALE } from '../../i18n';
+import { projectSummaries } from '../../lib/docs';
+
+const target = (await projectSummaries(DEFAULT_LOCALE)).find((summary) => summary.href)?.href ?? '/';
+Astro.redirect(target);
+---

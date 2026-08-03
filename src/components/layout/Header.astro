@@ -1,0 +1,49 @@
+---
+import { site } from '../../../site.config';
+import Brand from './Brand.astro';
+import ThemeToggle from './ThemeToggle.astro';
+import LocaleSwitcher from './LocaleSwitcher.astro';
+import Icon from '../ui/Icon.astro';
+import { localizedPath, type Locale, type TranslateFn } from '../../i18n';
+
+interface Props {
+  locale: Locale;
+  pathname: string;
+  t: TranslateFn;
+  docs?: boolean;
+}
+
+const { locale, pathname, t, docs = false } = Astro.props;
+---
+
+<header class="sticky top-0 z-40 border-b border-zinc-200/60 bg-[#fafafa]/75 backdrop-blur-xl dark:border-white/[0.06] dark:bg-[#09090b]/75">
+  <div class="mx-auto flex h-[60px] max-w-[1440px] items-center gap-2 px-4 sm:px-6">
+    {docs && (
+      <button type="button" data-menu-open class="mr-1 flex h-9 w-9 items-center justify-center rounded-full text-zinc-500 transition hover:bg-zinc-100 lg:hidden dark:hover:bg-white/[0.06]" aria-label={t('menu.open')}>
+        <Icon name="menu" class="h-5 w-5" />
+      </button>
+    )}
+    <Brand href={localizedPath(locale)} />
+    {!docs && (
+      <nav class="ml-4 hidden items-center gap-1 text-sm md:flex" aria-label="Primary">
+        <a href={localizedPath(locale)} class="rounded-full px-3.5 py-1.5 text-zinc-900 dark:text-white">{t('nav.projects')}</a>
+      </nav>
+    )}
+    <div class="flex-1"></div>
+    <button type="button" data-search-open class="hidden items-center gap-2.5 rounded-full border border-zinc-200 bg-white/60 py-1.5 pl-4 pr-2 text-[13px] text-zinc-400 shadow-sm transition hover:border-zinc-300 sm:flex dark:border-white/[0.08] dark:bg-white/[0.03] dark:hover:border-white/[0.16]" aria-label={t('search.label')}>
+      <Icon name="search" class="h-3.5 w-3.5" />
+      {t('search.button')}
+      <kbd class="rounded-md border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 font-mono text-[10px] text-zinc-400 dark:border-white/[0.08] dark:bg-white/[0.04]">Ctrl K</kbd>
+    </button>
+    <button type="button" data-search-open class="flex h-9 w-9 items-center justify-center rounded-full text-zinc-500 transition hover:bg-zinc-100 sm:hidden dark:hover:bg-white/[0.06]" aria-label={t('search.label')}>
+      <Icon name="search" class="h-[18px] w-[18px]" />
+    </button>
+    <LocaleSwitcher {locale} {pathname} {t} />
+    <ThemeToggle {t} />
+    {site.links.github && (
+      <a href={site.links.github} target="_blank" rel="noreferrer" class="hidden h-9 w-9 items-center justify-center rounded-full text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-900 sm:flex dark:hover:bg-white/[0.06] dark:hover:text-white" aria-label={t('nav.github')}>
+        <Icon name="github" class="h-[18px] w-[18px]" />
+      </a>
+    )}
+  </div>
+</header>

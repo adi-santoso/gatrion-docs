@@ -1,0 +1,71 @@
+---
+title: Mulai
+description: Siapkan template, jalankan development server, dan publikasikan halaman dokumentasi pertama.
+category: Mulai di Sini
+order: 10
+keywords: [instalasi, setup, mulai, clone]
+---
+
+Template ini memisahkan konten Markdown dari tampilan tema. Satu file baru otomatis menjadi route, entri sidebar, hasil pencarian, table of contents, dan bagian navigasi sebelumnya/selanjutnya.
+
+<Callout type="tip" title="Untuk agent dan manusia">
+  AI agent cukup memahami path konten dan skema frontmatter. Agent **tidak perlu** membuat import, class Tailwind, heading ID, atau entri navigasi.
+</Callout>
+
+## Prasyarat
+
+<CardGrid cols={3}>
+  <Card title="Node.js 22+" icon="terminal">Runtime JavaScript dan package manager.</Card>
+  <Card title="Git" icon="package">Clone dan versioning dokumentasi.</Card>
+  <Card title="Editor" icon="book">Editor apa pun atau AI coding agent.</Card>
+</CardGrid>
+
+## Instalasi
+
+<Steps>
+  <Step title="Gunakan template">
+    Buat repository dari template ini, atau clone langsung.
+
+    ```bash
+    git clone https://github.com/your-org/your-docs.git
+    cd your-docs
+    ```
+  </Step>
+  <Step title="Instal dependensi">
+    ```bash
+    npm install
+    ```
+  </Step>
+  <Step title="Jalankan development server">
+    ```bash
+    npm run dev
+    ```
+
+    Buka `http://localhost:4321`. Perubahan konten langsung terlihat.
+  </Step>
+</Steps>
+
+## Sesuaikan template
+
+Edit tiga file ini terlebih dahulu:
+
+<FileTree>
+  <File name="site.config.ts" description="Brand, URL, locale, link repository" highlight />
+  <File name="src/config/projects.ts" description="Proyek yang tampil di hub" highlight />
+  <File name="src/i18n/ui.ts" description="Teks antarmuka tema" />
+  <File name="src/content/docs" type="folder" description="Dokumentasi Anda" />
+</FileTree>
+
+<Callout type="important">
+  Atur `site.url` di `site.config.ts` sebelum deploy. Canonical link dan sitemap dibuat dari nilai tersebut.
+</Callout>
+
+## Build produksi
+
+Perintah build menjalankan type checker Astro sebelum membuat situs statis:
+
+```bash
+npm run build
+```
+
+Hasilnya berada di `dist/` dan dapat di-host di platform statis mana pun.

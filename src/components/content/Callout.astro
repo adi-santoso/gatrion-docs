@@ -1,0 +1,116 @@
+---
+/**
+ * Callout — a highlighted aside.
+ *
+ * Usage in MDX (no import needed):
+ *
+ *   <Callout type="warning" title="Heads up">
+ *     Markdown **works** inside here.
+ *   </Callout>
+ *
+ * Note: uses `<slot />`, not `{children}`. Astro has no `children` prop, and
+ * `{children}` renders nothing at all.
+ */
+
+import Icon, { type IconName } from '../ui/Icon.astro';
+import { useTranslations, type Locale, DEFAULT_LOCALE } from '../../i18n';
+import type { UIKey } from '../../i18n/ui';
+
+export type CalloutType = 'note' | 'tip' | 'important' | 'warning' | 'caution';
+
+interface Props {
+  /** Visual tone. Defaults to `note`. */
+  type?: CalloutType;
+  /** Heading. Omit to use the localised default for this type. */
+  title?: string;
+  /** Set to `false` to drop the heading entirely. */
+  showTitle?: boolean;
+}
+
+const { type = 'note', title, showTitle = true } = Astro.props;
+
+const styles: Record<CalloutType, { box: string; icon: IconName; accent: string }> = {
+  note: {
+    box: 'border-violet-500/20 bg-violet-500/[0.06]',
+    accent: 'text-violet-600 dark:text-violet-300',
+    icon: 'info',
+  },
+  tip: {
+    box: 'border-emerald-500/20 bg-emerald-500/[0.06]',
+    accent: 'text-emerald-600 dark:text-emerald-300',
+    icon: 'tip',
+  },
+  important: {
+    box: 'border-sky-500/20 bg-sky-500/[0.06]',
+    accent: 'text-sky-600 dark:text-sky-300',
+    icon: 'info',
+  },
+  warning: {
+    box: 'border-amber-500/20 bg-amber-500/[0.06]',
+    accent: 'text-amber-600 dark:text-amber-300',
+    icon: 'warning',
+  },
+  caution: {
+    box: 'border-rose-500/20 bg-rose-500/[0.06]',
+    accent: 'text-rose-600 dark:text-rose-300',
+    icon: 'danger',
+  },
+};
+
+const style = styles[type] ?? styles.note;
+
+// Astro.currentLocale is undefined on default-locale routes when
+// prefixDefaultLocale is false.
+const locale = (Astro.currentLocale ?? DEFAULT_LOCALE) as Locale;
+const t = useTranslations(locale);
+
+const headingKey = `callout.${type}` as UIKey;
+const heading = title ?? t(headingKey);
+---
+
+<!--
+  Layout note.
+
+  Callouts render inside `<article class="docs-prose">`, and the typography
+  plugin styles *descendants*, not just direct children. Its `:where(p)` rule
+  therefore reaches the title and adds `margin-top: 1.25em`, pushing the title
+  below the icon and breaking the alignment.
+
+  `not-prose` cannot be used on the wrapper: the plugin's guard is
+  `:not(:where([class~="not-prose"], [class~="not-prose"] *))`, so it would also
+  disable prose for the slotted Markdown in the body — killing `strong`, lists
+  and links.
+
+  Instead the title is a `<span>` (a block via `block`). The plugin only styles
+  `p`, `h1`–`h4`, `ul`, `ol` and similar tags, so a `span` inherits nothing and
+  its box is defined entirely by the classes below. The body keeps full prose.
+-->
+<aside
+  class:list={['my-5 flex items-start gap-3.5 rounded-2xl border px-5 py-4', style.box]}
+>
+  {/* The icon box (h-5 = 20px) matches the title's line-height (leading-5 =
+      20px), so `items-start` aligns them with no nudge needed. */}
+  <Icon name={style.icon} class:list={['h-5 w-5 shrink-0', style.accent]} />
+  <div class="min-w-0 flex-1">
+    {
+      showTitle && (
+        <span class:list={['block text-sm font-semibold leading-5', style.accent]}>
+          {heading}
+        </span>
+      )
+    }
+    <div
+      class:list={[
+        // Body keeps prose styling so slotted Markdown renders normally.
+        'docs-prose prose-sm max-w-none',
+        'prose-p:text-[14px] prose-li:text-[14px]',
+        // Collapse outer margins so the coloured box hugs its content evenly,
+        // whether the body is one line or several blocks.
+        'prose-p:my-2 prose-ul:my-2 first:*:mt-0 last:*:mb-0',
+        showTitle && 'mt-1.5',
+      ]}
+    >
+      <slot />
+    </div>
+  </div>
+</aside>

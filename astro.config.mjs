@@ -1,25 +1,54 @@
+// @ts-check
 import { defineConfig } from 'astro/config';
+import { unified } from '@astrojs/markdown-remark';
 import tailwindcss from '@tailwindcss/vite';
 import mdx from '@astrojs/mdx';
+import sitemap from '@astrojs/sitemap';
+
+import { site, LOCALES, DEFAULT_LOCALE } from './site.config';
+import rehypeCodeFrames from './src/plugins/rehype-code-frames';
+import rehypeHeadingAnchors from './src/plugins/rehype-heading-anchors';
 
 export default defineConfig({
-  integrations: [
-    mdx({
-      remarkPlugins: [],
-      rehypePlugins: [],
-    }),
-  ],
-  vite: {
-    plugins: [tailwindcss()]
+  site: site.url,
+  base: site.base,
+
+  integrations: [mdx(), sitemap()],
+
+  i18n: {
+    locales: [...LOCALES],
+    defaultLocale: DEFAULT_LOCALE,
+    routing: {
+      // The default locale is served from the root, e.g. `/docs/…` not `/en/docs/…`
+      prefixDefaultLocale: false,
+    },
   },
+
   markdown: {
-    shikiConfig: { theme: 'vitesse-dark' },
-    remarkRehypeOptions: { headingIds: true },
-    highlight: {
-      defaultLang: 'typescript',
-      langs: ['bash', 'javascript', 'json', 'typescript', 'css']
-    }
+    shikiConfig: {
+      themes: {
+        light: 'vitesse-light',
+        dark: 'vitesse-dark',
+      },
+      wrap: false,
+    },
+    /**
+     * `unified()` is the supported way to extend the pipeline in Astro 7; MDX
+     * inherits it automatically.
+     *
+     * Order matters: heading anchors are added before code blocks are wrapped
+     * in their frame, so neither plugin walks the other's output.
+     */
+    processor: unified({
+      rehypePlugins: [rehypeHeadingAnchors, rehypeCodeFrames],
+    }),
   },
-  site: 'https://gatrion-docs.local',
-  build: { inlineStylesheets: 'auto' }
+
+  build: {
+    inlineStylesheets: 'auto',
+  },
+
+  vite: {
+    plugins: [tailwindcss()],
+  },
 });

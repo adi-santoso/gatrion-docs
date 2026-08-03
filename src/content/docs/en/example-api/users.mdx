@@ -1,0 +1,81 @@
+---
+title: Users Endpoint
+sidebarLabel: Users
+description: Create, retrieve, and list users with the example REST API.
+category: API Reference
+eyebrow: REST API
+order: 10
+sidebarBadge: GET
+sidebarBadgeVariant: success
+keywords: [users, rest, endpoint, pagination]
+---
+
+The Users resource represents an account in the example platform.
+
+## List users
+
+<Badge variant="success">GET</Badge> `/v1/users`
+
+Returns a paginated list of users.
+
+```bash
+curl "https://api.example.com/v1/users?limit=20" \
+  --header "Authorization: Bearer $API_TOKEN"
+```
+
+### Query parameters
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `limit` | integer | No | Results per page, from `1` to `100` |
+| `cursor` | string | No | Cursor returned by the previous response |
+| `status` | string | No | Filter by `active` or `disabled` |
+
+### Response
+
+```json
+{
+  "data": [
+    {
+      "id": "usr_01J8Z6M4K2",
+      "email": "ada@example.com",
+      "name": "Ada Lovelace",
+      "status": "active"
+    }
+  ],
+  "next_cursor": null
+}
+```
+
+## Create a user
+
+<Badge variant="info">POST</Badge> `/v1/users`
+
+```ts
+const response = await fetch('https://api.example.com/v1/users', {
+  method: 'POST',
+  headers: {
+    authorization: `Bearer ${process.env.API_TOKEN}`,
+    'content-type': 'application/json',
+  },
+  body: JSON.stringify({
+    email: 'ada@example.com',
+    name: 'Ada Lovelace',
+  }),
+});
+
+if (!response.ok) throw new Error(`Request failed: ${response.status}`);
+```
+
+<Callout type="warning" title="Idempotency">
+  Send an `Idempotency-Key` header when retrying a create request. Reusing the key returns the original response instead of creating a duplicate user.
+</Callout>
+
+## Errors
+
+| Status | Code | Meaning |
+| --- | --- | --- |
+| `400` | `invalid_request` | The request body is malformed |
+| `401` | `unauthorized` | The bearer token is missing or invalid |
+| `409` | `email_exists` | A user already owns the email address |
+| `429` | `rate_limited` | Retry after the duration in `Retry-After` |

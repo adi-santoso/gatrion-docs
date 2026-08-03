@@ -1,539 +1,186 @@
-# Gatrion Docs
+# Astro Docs Template
 
-Documentation hub untuk seluruh project Gatrion, dibangun dengan **Astro v7 + MDX + Tailwind CSS 4**.
+A multi-project documentation template built with **Astro 7**, **MDX**, and **Tailwind CSS 4**. Markdown-first, internationalization-ready, fully static, and intentionally straightforward for both people and AI coding agents to author.
 
-## 📊 Overview
+## Why this template
 
-**43 dokumen lengkap** untuk 3 proyek utama:
-- ✅ **Core API** - 15 halaman dokumentasi REST API & backend guide
-- ✅ **Web Dashboard** - 15 halaman frontend development guide  
-- ✅ **Mobile SDK** - 14 halaman Flutter mobile integration guide
+- **Markdown-first authoring** — headings, code blocks, tables, and links use ordinary Markdown. Content contains no Tailwind classes or layout boilerplate.
+- **Agent-friendly contract** — one deterministic file convention, typed frontmatter, globally available MDX components, and build-time validation.
+- **Multi-project hub** — project cards, project switcher, sidebars, previous/next links, and search are generated from content.
+- **Internationalization** — English is the default locale and Indonesian is included as a complete example. Locale switching preserves the current path.
+- **Static by default** — every route is prerendered. No server adapter or runtime is required after build.
+- **Accessible interface** — skip link, keyboard search and tabs, reduced-motion support, focus styles, semantic landmarks, and responsive navigation.
+- **Dark and light themes** — persistent theme selection with no flash on first paint.
+- **Shiki highlighting** — standard fenced code blocks, dual themes, language labels, and copy buttons.
+- **SEO basics** — canonical URLs, Open Graph metadata, sitemap, generated robots file, and a real static 404 page.
 
-## 🚀 Fitur Utama
+## Quick start
 
-### Content & Navigation
-- **Multi-project Support** - Sidebar switcher dinamis untuk berpindah antar project
-- **Auto-generated TOC** - Table of Contents otomatis dari H2 headings dengan scroll spy
-- **Smart Project Switcher** - Dropdown dengan color coding per project
-- **Command Palette** - Search (`Ctrl+K`) cross-project navigation
-- **Dynamic Routing** - Astro content collections dengan glob loader
-- **Prev/Next Navigation** - Navigasi antar halaman related documentation
-
-### UI/UX Features
-- **Dark/Light Mode** - Theme toggle dengan localStorage persistence
-- **Responsive Design** - Mobile drawer menu + tablet/desktop layouts
-- **Smooth Animations** - Fade-in, slide-up effects, hover states
-- **Glassmorphism UI** - Blur backgrounds, gradients, glow orbs
-- **Code Highlighting** - Syntax highlight dengan Prism.js support
-- **Callout Boxes** - Info/warning/success/alert notification boxes
-
-### Developer Experience
-- **Content Collections** - Type-safe MDX dengan schema validation
-- **Reusable Components** - 12+ komponen reusable (CodeBlock, TOC, Prerequisites, dll)
-- **Centralized Config** - `src/config/projects.ts` untuk project metadata
-- **Auto-scan Structure** - Folder-based organization dengan auto-detection
-
-## 🛠️ Tech Stack
-
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| **Astro** | v7.1.6 | Static site generator |
-| **MDX** | latest | Content with JSX components |
-| **Tailwind CSS** | v4 | Utility-first styling |
-| **Prisma** | latest | Database ORM (for docs data) |
-| **Glob Loader** | astro:loader | Auto-scan MDX files |
-
-## 📂 Struktur Project Lengkap
-
-```
-src/
-├── config/
-│   └── projects.ts                 # Project metadata & configuration
-├── content/
-│   ├── docs/                       # Main documentation collection
-│   │   ├── core-api/              # 15 pages - API reference & guides
-│   │   │   ├── getting-started.mdx
-│   │   │   ├── instalasi.mdx
-│   │   │   ├── konfigurasi.mdx
-│   │   │   ├── autentikasi-jwt.mdx
-│   │   │   ├── database-migrasi.mdx
-│   │   │   ├── error-handling.mdx
-│   │   │   ├── testing.mdx
-│   │   │   ├── deployment.mdx
-│   │   │   ├── users-api.mdx
-│   │   │   ├── orders-api.mdx
-│   │   │   ├── payments-api.mdx
-│   │   │   ├── webhooks.mdx
-│   │   │   ├── changelog.mdx
-│   │   │   ├── faq.mdx
-│   │   │   └── struktur-project.mdx
-│   │   ├── web-dashboard/         # 15 pages - Frontend guide
-│   │   │   ├── overview.mdx
-│   │   │   ├── installation.mdx
-│   │   │   ├── configuration.mdx
-│   │   │   ├── buttons.mdx
-│   │   │   ├── forms.mdx
-│   │   │   ├── tables.mdx
-│   │   │   ├── charts.mdx
-│   │   │   ├── modals.mdx
-│   │   │   ├── authentication.mdx
-│   │   │   ├── user-management.mdx
-│   │   │   ├── analytics.mdx
-│   │   │   ├── real-time.mdx
-│   │   │   ├── build-deploy.mdx
-│   │   │   ├── env-vars.mdx
-│   │   │   └── performance.mdx
-│   │   └── mobile-sdk/            # 14 pages - Mobile integration
-│   │       ├── getting-started.mdx
-│   │       ├── quick-start.mdx
-│   │       ├── configuration.mdx
-│   │       ├── authentication.mdx
-│   │       ├── api-client.mdx
-│   │       ├── storage.mdx
-│   │       ├── push-notifications.mdx
-│   │       ├── payment-gateway.mdx
-│   │       ├── transactions.mdx
-│   │       ├── webhooks.mdx
-│   │       ├── custom-plugins.mdx
-│   │       ├── analytics.mdx
-│   │       ├── error-tracking.mdx
-│   │       └── testing.mdx
-│   └── content.config.ts          # Collection schema definition
-├── components/
-│   ├── Breadcrumb.astro           # Path breadcrumbs navigation
-│   ├── Callout.astro              # Alert/notification boxes
-│   ├── CodeBlock.astro            # Syntax-highlighted code blocks
-│   ├── CommandPalette.astro       # ⌘K search modal
-│   ├── NextStepCard.astro         # "Selanjutnya" card component
-│   ├── NextSteps.astro            # Related links grid
-│   ├── PageFooter.astro           # Footer section
-│   ├── PageHeader.astro           # Title, description, category
-│   ├── PrerequisiteGrid.astro     # Requirements checklist
-│   ├── PrerequisiteItem.astro     # Individual requirement item
-│   ├── PrevNext.astro             # Previous/Next page nav
-│   ├── SidebarNav.astro           # Responsive sidebar menu
-│   ├── TOC.astro                  # Table of contents
-│   └── TOCDynamic.astro           # Auto-generated TOC script
-├── layouts/
-│   ├── DocsLayout.astro           # Main docs page layout
-│   └── HubLayout.astro            # Landing/hub page layout
-├── pages/
-│   ├── index.astro                # Hub landing page
-│   ├── 404/index.astro            # Custom not found page
-│   └── docs/
-│       └── [...slug].astro        # Dynamic routing handler
-└── styles/
-    └── globals.css                # Global styles & animations
-```
-
-## 🏃‍♂️ Quick Start
-
-### Prerequisites
-- Node.js ≥ 18 LTS
-- npm ≥ 9 or pnpm ≥ 8
-
-### Installation
 ```bash
 npm install
-# atau
-pnpm install
-```
-
-### Development
-```bash
 npm run dev
-# Server running at http://localhost:4321
 ```
 
-### Production Build
+Open `http://localhost:4321`.
+
+For production:
+
 ```bash
 npm run build
-# Output in dist/ folder
-```
-
-### Preview Production
-```bash
 npm run preview
 ```
 
-## ✍️ Menambah Dokumen Baru
+`npm run build` runs `astro check` before generating the static site in `dist/`.
 
-### 1. Buat File MDX
-Buat file di `src/content/docs/<project>/<judul>.mdx`:
+## Configure the template
 
-```markdown
+Start with these files:
+
+| File | Purpose |
+| --- | --- |
+| `site.config.ts` | Site URL, base path, branding, locales, repository links, help box |
+| `src/config/projects.ts` | Projects shown on the hub, versions, status, icons, accents |
+| `src/i18n/ui.ts` | Theme interface strings and locale names |
+| `src/styles/globals.css` | Design tokens and Markdown typography |
+| `src/content.config.ts` | Typed frontmatter contract |
+
+Set `site.url` before deployment. For a subpath deployment, such as GitHub Pages at `https://user.github.io/docs`, use:
+
+```ts
+url: 'https://user.github.io',
+base: '/docs',
+```
+
+## Add documentation
+
+Content follows this path:
+
+```text
+src/content/docs/<locale>/<project-id>/<page-slug>.mdx
+```
+
+Examples:
+
+```text
+src/content/docs/en/guide/getting-started.mdx
+src/content/docs/id/guide/getting-started.mdx
+```
+
+The English file is served at `/docs/guide/getting-started/`; the Indonesian file is served at `/id/docs/guide/getting-started/`.
+
+The project ID must exist in `src/config/projects.ts`. Adding a file automatically adds its route, sidebar entry, search result, table of contents, and previous/next position.
+
+### Minimal page
+
+```md
 ---
-title: "Setup Environment"
-project: "Core API"
-category: "Memulai"
-description: "Panduan setup environment variables dan konfigurasi lokal"
+title: Authentication
+description: Authenticate API requests with bearer tokens.
+category: Guides
+order: 30
 ---
 
-import Callout from '../../../components/Callout.astro';
-import CodeBlock from '../../../components/CodeBlock.astro';
+## Create a token
 
-# Setup Environment
+Use the CLI to create a token:
 
-Konten dokumentasi di sini...
-
-<CodeBlock code={`cp .env.example .env`} lang="bash" />
-
-<Callout type="info">
-  **Tips:** Jangan commit file `.env` ke repository!
-</Callout>
+```bash
+example auth token create
+```
 ```
 
-### 2. Update Menu Sections
-Edit `src/pages/docs/[...slug].astro` → fungsi `getMenuSections()`:
+Only `title` is required. The full schema is documented in `src/content.config.ts` and in the included **Writing Content** page.
 
-```javascript
-const getMenuSections = (projectName) => {
-  switch (projectName) {
-    case 'Core API':
-      return [
-        // ... existing sections
-        {
-          title: 'New Section',
-          items: [
-            { label: 'New Page', href: '/docs/core-api/new-page/' }
-          ]
-        }
-      ];
-  }
-};
-```
+## Built-in MDX components
 
-### 3. Verify Navigation
-- Sidebar akan auto-detect dari file structure
-- TOC akan auto-generate dari H2 headings
-- Checkmarks aktif di project dropdown via `SidebarNav.astro`
+Components are injected globally. Do not import them in content files.
 
-## 🎨 Kustomisasi
-
-### Add New Project
-Edit `src/config/projects.ts`:
-
-```typescript
-export const projects = [
-  // ... existing projects
-  {
-    id: 'new-project',
-    name: 'New Project',
-    version: 'v1.0.0',
-    status: 'stable',
-    icon: 'star',
-    color: 'blue',
-    firstDocPath: '/docs/new-project/getting-started/',
-  },
-];
-```
-
-Color options: `violet`, `cyan`, `fuchsia`, `emerald`, `orange`, `rose`
-
-### Styling Updates
-- **Theme colors**: Edit `src/styles/globals.css`
-- **Components**: Modify individual `.astro` files
-- **Animations**: Update keyframes in `globals.css`
-- **Fonts**: Change in `tailwind.config.mjs`
-
-## 📖 Documentation Structure Pattern
-
-Setiap halaman harus memiliki:
-1. **Frontmatter** - title, project, category, description
-2. **H2 Headings** - untuk auto TOC generation
-3. **Code Blocks** - dengan syntax highlighting
-4. **Callouts** - untuk tips/warnings
-5. **Next Steps** - link ke related pages
-
-### Example Component Usage
-
-```jsx
-<!-- Prerequisites Grid -->
-<PrerequisiteGrid>
-  <PrerequisiteItem 
-    name="Node.js ≥ 18" 
-    description="Runtime utama" 
-  />
-</PrerequisiteGrid>
-
-<!-- Code Block -->
-<CodeBlock 
-  code={`npm install`} 
-  lang="bash" 
-  title="terminal" 
-/>
-
-<!-- Callout -->
-<Callout type="warning">
-  **Penting:** Backup database sebelum migrasi!
+```mdx
+<Callout type="tip" title="Optional title">
+  Markdown **works** inside components.
 </Callout>
 
-<!-- Next Steps -->
-<NextSteps>
-  <NextStepCard 
-    title="Next Guide" 
-    description="Description" 
-    href="/docs/project/page/" 
-  />
-</NextSteps>
+<CardGrid>
+  <Card title="Getting started" href="/docs/guide/getting-started/">
+    Set up the project in a few minutes.
+  </Card>
+</CardGrid>
+
+<Steps>
+  <Step title="Install">Run `npm install`.</Step>
+  <Step title="Develop">Run `npm run dev`.</Step>
+</Steps>
 ```
 
-## 🔄 Workflow untuk Contributors
+Included components:
 
-1. **Fork & Clone** repository
-2. **Branach baru** - `git checkout -b feature/add-docs`
-3. **Buat konten MDX** di folder project yang sesuai
-4. **Test locally** - `npm run dev`
-5. **Commit changes** - Message jelas & descriptive
-6. **Push & PR** - Request review
+- `Callout`: `note`, `tip`, `important`, `warning`, `caution`
+- `Card` and `CardGrid`
+- `Steps` and `Step`
+- `Tabs` and `Tab`
+- `PackageManagerTabs`
+- `Badge`
+- `FileTree` and `File`
 
-### Commit Guidelines
-```bash
-feat: add 5 new pages for Core API
-docs: update webhook documentation format
-fix: resolve mdx syntax errors in mobile-sdk
-chore: update project configuration
+See `/docs/guide/components/` in the running site for a live catalogue.
+
+## AI agent workflow
+
+This repository includes [`AGENTS.md`](AGENTS.md), a concise contract intended for coding agents. The essential rules are:
+
+1. Read `src/content.config.ts` before writing frontmatter.
+2. Read `src/config/projects.ts` and use a declared project ID.
+3. Write under `src/content/docs/<locale>/<project-id>/`.
+4. Prefer plain Markdown. Use built-in MDX components only when they add meaning.
+5. Never add presentation classes, manual heading IDs, component imports, or navigation entries to content.
+6. Run `npm run check` after editing and `npm run build` before finishing.
+
+This keeps agent output short, portable, and mechanically verifiable.
+
+## Scripts
+
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Start the local development server |
+| `npm run check` | Validate Astro, TypeScript, and content schemas |
+| `npm run build` | Validate and build the production site |
+| `npm run build:only` | Build without running a separate check first |
+| `npm run preview` | Serve the generated `dist/` directory locally |
+
+## Project structure
+
+```text
+├── site.config.ts              # Brand, URL, locales, external links
+├── astro.config.mjs
+├── src/
+│   ├── components/
+│   │   ├── content/            # Globally injected MDX components
+│   │   ├── layout/             # Navigation, search, ToC, header
+│   │   └── pages/              # Shared page implementations
+│   ├── config/projects.ts      # Project registry
+│   ├── content/docs/           # Markdown and MDX pages
+│   ├── i18n/                   # Interface translations and URL helpers
+│   ├── layouts/                # Base, hub, and documentation layouts
+│   ├── lib/docs.ts             # Generated navigation/search model
+│   ├── pages/                  # Static route definitions
+│   ├── plugins/                # Heading anchor and code-frame plugins
+│   └── styles/globals.css
+└── public/
 ```
 
-## 🧪 Testing Checklist
+## Adding a locale
 
-Sebelum deploy/commit:
-- ✅ All 43 pages render successfully (Status 200)
-- ✅ No console errors (MDX parsing errors)
-- ✅ Dark mode toggles correctly
-- ✅ Mobile responsive on all breakpoints
-- ✅ Navigation links work
-- ✅ Code blocks display properly
-- ✅ TOC generates correctly
+1. Add the code to `LOCALES` in `site.config.ts`.
+2. Add its name and HTML language tag in `src/i18n/ui.ts`.
+3. Add a translation object in `src/i18n/ui.ts`. Missing strings fall back to English.
+4. Add content under `src/content/docs/<locale>/`.
 
-## 📈 Stats & Coverage
+## Deployment
 
-| Metric | Count | Status |
-|--------|-------|--------|
-| Total Pages | 43 | ✅ Complete |
-| Core API | 15 | ✅ Complete |
-| Web Dashboard | 15 | ✅ Complete |
-| Mobile SDK | 14 | ✅ Complete |
-| Success Rate | 100% | ✅ Verified |
-| Components | 12+ | ✅ Reusable |
+The output is static HTML, CSS, and JavaScript. Deploy `dist/` to Netlify, Vercel, Cloudflare Pages, GitHub Pages, an S3-compatible host, or any ordinary web server.
 
-## 🔗 Links
+No adapter is required.
 
-- **Live Demo**: `http://localhost:4321` (development)
-- **Hub Page**: `/` - Landing page dengan project cards
-- **Mockup Source**: `mockup/docs-core-api.html` - Reference design
-- **Contributing**: See contributing guidelines below
+## License
 
-## 🤝 Contributing
-
-### How to Help
-1. Report bugs/issues di GitHub
-2. Suggest content improvements
-3. Add missing documentation pages
-4. Improve component reusability
-
-### Pull Request Process
-1. Fork the repo
-2. Create feature branch
-3. Make changes with tests
-4. Submit PR with description
-5. Await review & merge
-
-## 📄 License
-
-MIT License - © 2025 Gatrion  
-See [LICENSE](LICENSE) file for details.
-
-## 🤝 Contributing
-
-We welcome contributions! Here's how you can help:
-
-### 🎯 What We're Looking For
-
-- **New Documentation**: Add missing pages or sections
-- **Bug Fixes**: Fix typos, broken links, incorrect information
-- **Content Improvements**: Better explanations, examples, code samples
-- **Component Updates**: Improve existing components or suggest new ones
-- **Translation**: Localize docs to other languages
-
-### 🚀 Getting Started
-
-1. **Fork the repository**  
-   Click "Fork" button on GitHub
-
-2. **Clone your fork**  
-   ```bash
-   git clone https://github.com/your-username/gatrion_docs.git
-   cd gatrion_docs
-   ```
-
-3. **Set up original upstream**  
-   ```bash
-   git remote add upstream https://github.com/gatrion/gatrion_docs.git
-   git fetch upstream
-   ```
-
-4. **Create a feature branch**  
-   ```bash
-   git checkout -b feature/add-mobile-sdk-auth-guide
-   # or fix:fix-typo-in-api-reference
-   # or docs:update-core-api-installation
-   ```
-
-5. **Make your changes**
-   - Follow our MDX template structure
-   - Use proper component imports
-   - Test locally with `npm run dev`
-
-6. **Commit your changes**  
-   Follow conventional commits format:
-   ```bash
-   git commit -m "feat: add mobile SDK authentication guide
-   
-   - Added authentication.mdx with login flow
-   - Included code examples for token management
-   - Added prerequisites and next steps"
-   ```
-
-7. **Push to your fork**  
-   ```bash
-   git push origin feature/add-mobile-sdk-auth-guide
-   ```
-
-8. **Submit a Pull Request**
-   - Go to your fork on GitHub
-   - Click "Compare & pull request"
-   - Fill in PR template with:
-     - Description of changes
-     - Screenshots (if UI changes)
-     - Related issue numbers
-     - Testing performed
-
-### 📋 PR Checklist
-
-Before submitting your PR:
-- ✅ Content follows documentation standards
-- ✅ No markdown rendering errors
-- ✅ Code blocks have proper syntax highlighting
-- ✅ Links are functional and not broken
-- ✅ Responsive design tested on mobile/desktop
-- ✅ Dark mode works correctly
-- ✅ Grammar and spelling checked
-- ✅ Added relevant tests if applicable
-
-### 🎨 Style Guidelines
-
-#### Frontmatter Template
-```markdown
----
-title: "Your Page Title"
-project: "Project Name"
-category: "Section Name"
-description: "Brief description for SEO and navigation"
----
-```
-
-#### Heading Structure
-```markdown
-# Main Title (H1 auto-generated)
-
-## Section Title <a id="section-anchor">Anchor Text</a>  <!-- H2 for TOC -->
-
-### Subsection Title (optional)
-```
-
-#### Component Usage
-```jsx
-<Callout type="info">
-  This is helpful information
-</Callout>
-
-<CodeBlock 
-  code={`console.log('hello')`} 
-  lang="javascript"
-  title="example.js"
-/>
-```
-
-### 💬 Need Help?
-
-- Open an issue for questions
-- Check existing issues before creating new ones
-- Join our team chat/discussion for real-time help
-
-### 🏆 Contribution Areas
-
-| Type | Priority | Examples |
-|------|----------|----------|
-| **Missing Pages** | High | Complete API references, advanced guides |
-| **Content Updates** | High | Outdated info, broken code examples |
-| **Typos/Grammar** | Medium | Spelling, punctuation, clarity |
-| **Components** | Low | New reusable components |
-| **Design/UI** | Low | Theme improvements, animations |
-
-### 📜 Code of Conduct
-
-- Be respectful and inclusive
-- Provide constructive feedback
-- Focus on what's best for the community
-- Keep technical discussions professional
-
-## 🎯 Quick Contribution Examples
-
-### Example 1: Adding Missing Translation Guide
-```bash
-git checkout -b docs/add-translation-guide
-# Create src/content/docs/mobile-sdk/translation.mdx
-git add .
-git commit -m "docs: add translation guide for mobile SDK
-- Covers i18n setup, locale switching, string translation
-- Includes component localization examples"
-git push origin docs/add-translation-guide
-```
-
-### Example 2: Fixing Broken Link
-```bash
-git checkout -b fix/broken-auth-link
-# Edit file, update href from '#' to actual path
-git commit -m "fix: correct authentication guide link
-- Changed href from '#' to '/docs/core-api/auth-guide/'"
-git push origin fix/broken-auth-link
-```
-
-### Example 3: Improving Code Example
-```bash
-git checkout -b improve/better-code-examples
-# Update code block with better comments, error handling
-git commit -m "improve: enhance error handling in payment example
-- Added try-catch block
-- Improved error messages
-- Added retry logic comment"
-git push origin improve/better-code-examples
-```
-
-## 📈 Impact Tracking
-
-Contributors will be recognized in:
-- **Contributors section** (added below)
-- **Changelog** (for significant contributions)
-- **Team newsletter** (monthly highlights)
-
----
-
-**Thank you for helping us build better documentation!** 🙏
-
-This template is production-ready and can be cloned for future documentation projects.
-
-## 🎯 Template Readiness Score
-
-**Overall: 9.5/10** ⭐⭐⭐⭐⭐
-
-- ✅ Multi-project architecture
-- ✅ Content management system
-- ✅ Responsive design
-- ✅ SEO friendly
-- ✅ Performance optimized
-- ✅ Easy to extend
-- ⚠️ Minor polish needed for advanced features (search, translations)
-
-**Ready for production use!** 🚀
+[MIT](LICENSE)

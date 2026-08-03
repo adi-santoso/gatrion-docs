@@ -1,0 +1,76 @@
+---
+title: Komponen
+description: Katalog langsung semua komponen MDX bawaan template.
+category: Penulisan
+order: 30
+sidebarBadge: Baru
+sidebarBadgeVariant: info
+keywords: [komponen, callout, kartu, langkah, tab, badge, file tree]
+---
+
+Semua komponen di-inject secara global ke MDX. Gunakan langsung — **jangan menambahkan import ke file konten**.
+
+## Callout
+
+<Callout type="note">Catatan untuk konteks netral atau informasi pendukung.</Callout>
+<Callout type="tip">Tips untuk jalan pintas dan praktik yang direkomendasikan.</Callout>
+<Callout type="important">Informasi penting yang tidak boleh dilewatkan.</Callout>
+<Callout type="warning">Peringatan untuk tindakan berisiko atau kesalahan umum.</Callout>
+<Callout type="caution">Perhatian untuk tindakan destruktif atau permanen.</Callout>
+
+## Kartu
+
+<CardGrid>
+  <Card title="Kartu dengan link" href="/id/docs/guide/writing-content/" icon="book">Gunakan `href` agar seluruh kartu dapat diklik.</Card>
+  <Card title="Kartu statis" icon="package" badge="Opsional">Hilangkan `href` untuk kartu presentasional.</Card>
+</CardGrid>
+
+## Langkah
+
+<Steps>
+  <Step title="Buat file">Tambahkan halaman di bawah folder locale dan proyek.</Step>
+  <Step title="Tulis Markdown">Mulai dengan frontmatter, lalu konten biasa.</Step>
+  <Step title="Verifikasi">Jalankan `npm run check` dan preview halaman.</Step>
+</Steps>
+
+## Tab
+
+<Tabs>
+  <Tab label="JavaScript">
+    ```js
+    const response = await fetch('/api/users');
+    ```
+  </Tab>
+  <Tab label="TypeScript">
+    ```ts
+    const response: Response = await fetch('/api/users');
+    ```
+  </Tab>
+</Tabs>
+
+## Package manager
+
+<PackageManagerTabs package="@example/client" />
+
+## Badge
+
+<Badge variant="success">GET</Badge> <Badge variant="info">POST</Badge> <Badge variant="warning">BETA</Badge> <Badge variant="danger">BREAKING</Badge> <Badge variant="accent">BARU</Badge>
+
+## File tree
+
+<FileTree>
+  <File name="src" type="folder" />
+  <File name="components" type="folder" depth={1} />
+  <File name="Button.tsx" depth={2} description="Tombol reusable" highlight />
+  <File name="index.ts" depth={1} description="Public exports" />
+</FileTree>
+
+## Code block
+
+Gunakan fenced code standar. Shiki menangani syntax highlighting dan tema menambahkan label bahasa serta tombol salin.
+
+```ts
+const greeting = `Halo, ${user.name}`;
+```
+
+Template literal dan `${expression}` aman karena kode adalah Markdown, bukan prop JSX.

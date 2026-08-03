@@ -1,56 +1,50 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
-@import "tailwindcss";
+/* ==========================================================================
+   GLOBAL STYLES
+   ==========================================================================
 
-html { 
-  scroll-behavior: smooth; 
+   Three layers:
+     1. Tailwind + the typography plugin
+     2. Design tokens (@theme) — edit these to re-skin the site
+     3. Prose styling for Markdown output
+
+   Content authors write plain Markdown; all appearance is decided here, so a
+   heading can never be styled inconsistently from one page to the next.
+   ========================================================================== */
+
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+/* Tailwind v4 toggles dark mode on `[data-theme='dark']` instead of a media
+   query, so the theme switch can override the OS preference. */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/* --------------------------------------------------------------------------
+   1. Design tokens
+   -------------------------------------------------------------------------- */
+
+@theme {
+  --font-sans:
+    'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* Page background and surfaces. */
+  --color-canvas: #fafafa;
+  --color-surface: #ffffff;
+
+  /* Header height; referenced by sticky offsets and scroll margins. */
+  --spacing-header: 3.75rem; /* 60px */
+  --spacing-sidebar: 17.5rem; /* 280px */
+  --spacing-toc: 14rem; /* 224px */
+
+  --animate-fade-up: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-scale-in: scaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-body { 
-  font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif; 
-  -webkit-font-smoothing: antialiased;
+[data-theme='dark'] {
+  --color-canvas: #09090b;
+  --color-surface: #111113;
 }
 
-::selection { 
-  background: rgba(139,92,246,.35); 
-}
-
-::-webkit-scrollbar { 
-  width: 8px; 
-  height: 8px; 
-}
-
-::-webkit-scrollbar-thumb { 
-  background: rgba(120,120,140,.3); 
-  border-radius: 99px; 
-}
-
-::-webkit-scrollbar-thumb:hover { 
-  background: rgba(120,120,140,.5); 
-}
-
-/* Background effects */
-.bg-grid {
-  background-image:
-    linear-gradient(rgba(148,163,184,.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(148,163,184,.05) 1px, transparent 1px);
-  background-size: 48px 48px;
-  mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, black 40%, transparent 100%);
-}
-
-.dark .bg-grid {
-  background-image:
-    linear-gradient(rgba(148,163,184,.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(148,163,184,.05) 1px, transparent 1px);
-}
-
-.glow-orb { 
-  position: absolute; 
-  border-radius: 9999px; 
-  filter: blur(90px); 
-  pointer-events: none; 
-}
-
-/* Animations */
 @keyframes fadeUp {
   from {
     opacity: 0;
@@ -65,7 +59,7 @@ body {
 @keyframes scaleIn {
   from {
     opacity: 0;
-    transform: scale(.96) translateY(8px);
+    transform: scale(0.96) translateY(8px);
   }
   to {
     opacity: 1;
@@ -73,35 +67,259 @@ body {
   }
 }
 
-.animate-fade-up {
-  animation: fadeUp .5s cubic-bezier(.16,1,.3,1) both;
+/* Respect users who ask for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
-.animate-scale-in {
-  animation: scaleIn .25s cubic-bezier(.16,1,.3,1) both;
+/* --------------------------------------------------------------------------
+   2. Base
+   -------------------------------------------------------------------------- */
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Keep anchored headings clear of the sticky header. */
+    scroll-padding-top: calc(var(--spacing-header) + 1.5rem);
+  }
+
+  body {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: rgb(139 92 246 / 0.35);
+  }
+
+  /* Visible keyboard focus everywhere. */
+  :focus-visible {
+    outline: 2px solid rgb(139 92 246);
+    outline-offset: 2px;
+    border-radius: 0.25rem;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgb(120 120 140 / 0.3);
+    border-radius: 99px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(120 120 140 / 0.5);
+  }
 }
 
-/* Typography */
-code {
-  font-family: "JetBrains Mono", ui-monospace, monospace !important;
+/* --------------------------------------------------------------------------
+   3. Decorative helpers
+   -------------------------------------------------------------------------- */
+
+@utility bg-grid {
+  background-image:
+    linear-gradient(rgb(148 163 184 / 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(148 163 184 / 0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, black 40%, transparent 100%);
 }
 
-/* Section headings in article */
-article h2 {
-  scroll-margin-top: 6rem;
+@utility glow-orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  pointer-events: none;
 }
 
-/* Prose overrides */
-.prose p { 
-  margin-top: 0.75rem; 
-  margin-bottom: 0.75rem; 
+/* Skip link: hidden until focused. */
+@utility skip-link {
+  position: absolute;
+  left: 0.75rem;
+  top: 0.75rem;
+  z-index: 100;
+  transform: translateY(-200%);
+  transition: transform 0.15s ease;
+
+  &:focus {
+    transform: translateY(0);
+  }
 }
 
-.prose p:only-child { 
-  margin: 0; 
+/* --------------------------------------------------------------------------
+   4. Prose — Markdown rendering
+   --------------------------------------------------------------------------
+   The `.docs-prose` class carries every decision about how Markdown looks.
+   Content files contain no styling of their own.
+   -------------------------------------------------------------------------- */
+
+@layer components {
+  .docs-prose {
+    @apply prose prose-zinc dark:prose-invert max-w-none;
+
+    /* Body copy */
+    @apply prose-p:leading-relaxed prose-p:text-[15px];
+    @apply prose-li:text-[15px] prose-li:leading-relaxed;
+
+    /* Headings: tighter tracking, generous space above, clear of the header */
+    @apply prose-headings:font-bold prose-headings:tracking-tight;
+    @apply prose-headings:text-zinc-900 dark:prose-headings:text-white;
+    @apply prose-h2:mt-12 prose-h2:mb-4 prose-h2:text-xl;
+    @apply prose-h3:mt-8 prose-h3:mb-3 prose-h3:text-[17px];
+    @apply prose-h4:mt-6 prose-h4:mb-2 prose-h4:text-[15px];
+
+    /* Links */
+    @apply prose-a:font-medium prose-a:text-violet-600 prose-a:no-underline;
+    @apply dark:prose-a:text-violet-400;
+    @apply prose-a:underline-offset-4 hover:prose-a:underline;
+
+    @apply prose-strong:font-semibold prose-strong:text-zinc-900 dark:prose-strong:text-white;
+
+    /* Inline code — the typography plugin adds backtick pseudo-elements,
+       which are removed below. */
+    @apply prose-code:rounded-md prose-code:bg-violet-500/10 prose-code:px-1.5;
+    @apply prose-code:py-0.5 prose-code:font-mono prose-code:text-[0.85em];
+    @apply prose-code:font-medium prose-code:text-violet-600;
+    @apply dark:prose-code:text-violet-300;
+
+    /* Fenced code blocks are styled by Shiki; reset the plugin's own styling
+       so the two do not fight. */
+    @apply prose-pre:m-0 prose-pre:rounded-none prose-pre:bg-transparent prose-pre:p-0;
+
+    @apply prose-blockquote:border-l-2 prose-blockquote:border-violet-500/40;
+    @apply prose-blockquote:not-italic prose-blockquote:font-normal;
+    @apply prose-blockquote:text-zinc-500 dark:prose-blockquote:text-zinc-400;
+
+    @apply prose-hr:border-zinc-200 dark:prose-hr:border-white/10;
+
+    @apply prose-img:rounded-xl prose-img:border prose-img:border-zinc-200;
+    @apply dark:prose-img:border-white/10;
+  }
+
+  /* The typography plugin wraps inline code in literal backticks. */
+  .docs-prose :where(code):not(:where(pre code))::before,
+  .docs-prose :where(code):not(:where(pre code))::after {
+    content: '' !important;
+  }
+
+  /* Links inside headings inherit heading colour, not link colour. */
+  .docs-prose :where(h2, h3, h4) a {
+    @apply font-bold text-inherit no-underline;
+  }
+
+  /* Tables: horizontally scrollable on small screens without breaking layout. */
+  .docs-prose :where(table) {
+    @apply my-6 block w-full overflow-x-auto text-[14px];
+  }
+
+  .docs-prose :where(thead th) {
+    @apply border-b border-zinc-200 pb-2.5 text-left text-[13px];
+    @apply font-semibold text-zinc-900;
+  }
+
+  [data-theme='dark'] .docs-prose :where(thead th) {
+    @apply border-white/10 text-white;
+  }
+
+  .docs-prose :where(tbody td) {
+    @apply border-b border-zinc-100 py-2.5 align-top;
+  }
+
+  [data-theme='dark'] .docs-prose :where(tbody td) {
+    @apply border-white/5;
+  }
+
+  /* Anchor link that appears on heading hover.
+     The "#" glyph comes from CSS, not from a text node: see
+     src/plugins/rehype-heading-anchors.ts for why. */
+  .heading-anchor {
+    @apply ml-2 inline-block text-violet-400 opacity-0 transition;
+    @apply focus:opacity-100;
+  }
+
+  .heading-anchor::before {
+    content: '#';
+  }
+
+  :where(h2, h3, h4):hover > .heading-anchor {
+    @apply opacity-100;
+  }
 }
 
-.prose code:before, 
-.prose code:after { 
-  content: ''; 
+/* --------------------------------------------------------------------------
+   5. Shiki — dual theme
+   --------------------------------------------------------------------------
+   Astro emits both themes at once: the light value as an inline `style` and the
+   dark value as a custom property on the same element.
+
+       <span style="color:#393A34; --shiki-dark:#DBD7CAEE">
+
+   Because the light colour is inline, it beats any external rule on
+   specificity alone. Dark mode therefore has to override with `!important`,
+   otherwise the light foreground survives on a dark background and the text
+   becomes unreadable.
+
+   Light mode needs no rules at all — the inline styles already describe it.
+   -------------------------------------------------------------------------- */
+
+[data-theme='dark'] .astro-code,
+[data-theme='dark'] .astro-code span {
+  color: var(--shiki-dark) !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
+}
+
+/* Only the `<pre>` carries a background. Tokens stay transparent so selection
+   highlighting and line markers are not broken up by per-token backgrounds.
+   `:where(span)` keeps this in a separate rule from the colour block above —
+   an identical selector would otherwise be merged by the CSS optimiser and the
+   background declaration silently dropped. */
+[data-theme='dark'] .astro-code {
+  background-color: var(--shiki-dark-bg) !important;
+}
+
+[data-theme='dark'] .astro-code :where(span) {
+  background-color: transparent !important;
+}
+
+.astro-code {
+  @apply overflow-x-auto p-5 font-mono text-[13px] leading-[1.7];
+}
+
+/* --------------------------------------------------------------------------
+   6. Code frames
+   -------------------------------------------------------------------------- */
+
+.code-frame {
+  @apply my-6 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm;
+  @apply dark:border-white/[0.08] dark:bg-[#0d0d10];
+}
+
+.code-frame-head {
+  @apply flex items-center gap-2 border-b border-zinc-100 px-4 py-2.5;
+  @apply dark:border-white/[0.06];
+}
+
+.code-frame-dots {
+  @apply relative mr-10 h-2.5 w-2.5 rounded-full bg-red-400/80;
+  box-shadow: 1.25rem 0 rgb(251 191 36 / 0.8), 2.5rem 0 rgb(52 211 153 / 0.8);
+}
+
+.code-frame-title {
+  @apply truncate font-mono text-[11px] text-zinc-400;
+}
+
+.code-frame-copy {
+  @apply ml-auto rounded-md px-2 py-1 text-[11px] font-medium text-zinc-400 transition;
+  @apply hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-white/[0.06] dark:hover:text-white;
 }

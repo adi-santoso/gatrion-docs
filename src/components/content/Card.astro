@@ -1,0 +1,60 @@
+---
+/**
+ * Card — linked or static content card.
+ *
+ *   <Card title="Configuration" href="/docs/configuration/" icon="terminal">
+ *     Learn every available option.
+ *   </Card>
+ *
+ * `href` is optional. External links receive an external-link indicator.
+ */
+
+import Icon, { type IconName } from '../ui/Icon.astro';
+
+interface Props {
+  title: string;
+  href?: string;
+  icon?: IconName;
+  badge?: string;
+}
+
+const { title, href, icon = 'book', badge } = Astro.props;
+const external = href?.startsWith('http://') || href?.startsWith('https://');
+const Tag = href ? 'a' : 'div';
+---
+
+<Tag
+  href={href}
+  target={external ? '_blank' : undefined}
+  rel={external ? 'noreferrer' : undefined}
+  class:list={[
+    // No `not-prose` here: it would also disable prose for slotted Markdown in
+    // the body. The card uses `span`/`div` for its own text, which the
+    // typography plugin does not style, so it needs no opt-out.
+    'group block rounded-2xl border border-zinc-200 bg-white/70 p-5 shadow-sm',
+    'transition dark:border-white/[0.08] dark:bg-white/[0.025]',
+    href && 'hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-md dark:hover:border-violet-500/35',
+  ]}
+>
+  <div class="flex items-start gap-3">
+    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-500 ring-1 ring-inset ring-violet-500/15">
+      <Icon name={icon} class="h-4 w-4" width={1.8} />
+    </span>
+    <div class="min-w-0 flex-1">
+      <div class="flex items-center gap-2">
+        <span class="font-semibold text-zinc-900 transition group-hover:text-violet-600 dark:text-white dark:group-hover:text-violet-400">
+          {title}
+        </span>
+        {badge && (
+          <span class="rounded-full bg-violet-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-violet-500">
+            {badge}
+          </span>
+        )}
+        {external && <Icon name="external" class="ml-auto h-3.5 w-3.5 text-zinc-400" />}
+      </div>
+      <div class="mt-1 text-[13px] leading-relaxed text-zinc-500 dark:text-zinc-400">
+        <slot />
+      </div>
+    </div>
+  </div>
+</Tag>

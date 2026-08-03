@@ -1,0 +1,22 @@
+---
+/** One row inside `<FileTree>`. */
+
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  name: string;
+  type?: 'file' | 'folder';
+  depth?: number;
+  description?: string;
+  highlight?: boolean;
+}
+
+const { name, type = 'file', depth = 0, description, highlight = false } = Astro.props;
+const indent = `padding-left: ${Math.max(0, Math.min(depth, 12)) * 1.25}rem`;
+---
+
+<div class:list={['not-prose flex min-w-0 items-center gap-2 rounded-lg px-2 py-1.5', highlight && 'bg-violet-500/[0.08]']} style={indent}>
+  <Icon name={type === 'folder' ? 'package' : 'book'} class:list={['h-3.5 w-3.5 shrink-0', type === 'folder' ? 'text-amber-500' : 'text-zinc-400']} width={1.8} />
+  <span class:list={['truncate', highlight ? 'font-semibold text-violet-600 dark:text-violet-300' : 'text-zinc-700 dark:text-zinc-300']}>{name}</span>
+  {description && <span class="ml-auto hidden truncate pl-4 font-sans text-[11px] text-zinc-400 sm:block">{description}</span>}
+</div>

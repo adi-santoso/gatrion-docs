@@ -1,0 +1,99 @@
+---
+title: Components
+description: A live catalogue of every MDX component included with the template.
+category: Authoring
+order: 30
+sidebarBadge: New
+sidebarBadgeVariant: info
+keywords: [components, callout, cards, steps, tabs, badge, file tree]
+---
+
+Components are globally injected into MDX. Use them directly — **never add import statements to a content file**.
+
+## Callouts
+
+<Callout type="note">Use notes for neutral context or supporting information.</Callout>
+<Callout type="tip">Use tips for helpful shortcuts and recommended practices.</Callout>
+<Callout type="important">Use important callouts for information readers must not miss.</Callout>
+<Callout type="warning">Use warnings for risky actions or likely mistakes.</Callout>
+<Callout type="caution">Use caution for destructive or irreversible actions.</Callout>
+
+```mdx
+<Callout type="tip" title="Optional custom title">
+  Markdown **works** inside the component.
+</Callout>
+```
+
+## Cards
+
+<CardGrid>
+  <Card title="Linked card" href="/docs/guide/writing-content/" icon="book">Use `href` to make the whole card clickable.</Card>
+  <Card title="Static card" icon="package" badge="Optional">Omit `href` for a presentational card.</Card>
+</CardGrid>
+
+`CardGrid` accepts `cols={2}` or `cols={3}`.
+
+## Steps
+
+<Steps>
+  <Step title="Create the file">Add a page under the locale and project folders.</Step>
+  <Step title="Write Markdown">Start with frontmatter, then write plain content.</Step>
+  <Step title="Verify">Run `npm run check` and preview the page.</Step>
+</Steps>
+
+## Tabs
+
+<Tabs>
+  <Tab label="JavaScript">
+    ```js
+    const response = await fetch('/api/users');
+    ```
+  </Tab>
+  <Tab label="TypeScript">
+    ```ts
+    const response: Response = await fetch('/api/users');
+    ```
+  </Tab>
+</Tabs>
+
+Tabs support keyboard navigation with the left and right arrow keys.
+
+## Package manager tabs
+
+<PackageManagerTabs package="@example/client" />
+
+```mdx
+<PackageManagerTabs package="@example/client" dev={false} />
+```
+
+## Badges
+
+Use inline badges for methods and states:
+
+<Badge variant="success">GET</Badge> <Badge variant="info">POST</Badge> <Badge variant="warning">BETA</Badge> <Badge variant="danger">BREAKING</Badge> <Badge variant="accent">NEW</Badge>
+
+## File trees
+
+<FileTree>
+  <File name="src" type="folder" />
+  <File name="components" type="folder" depth={1} />
+  <File name="Button.tsx" depth={2} description="Reusable button" highlight />
+  <File name="index.ts" depth={1} description="Public exports" />
+</FileTree>
+
+Depth is clamped from `0` to `12`, so malformed agent output cannot push a row outside the component.
+
+## Code blocks
+
+Use standard fenced code. Shiki handles syntax highlighting and the theme adds a language label and copy button.
+
+```ts
+type User = {
+  id: string;
+  name: string;
+};
+
+const greeting = `Hello, ${user.name}`;
+```
+
+Template literals and `${expressions}` are safe because code is Markdown, not a JSX prop.

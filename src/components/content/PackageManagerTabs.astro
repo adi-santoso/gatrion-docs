@@ -1,0 +1,86 @@
+---
+/**
+ * Compact install-command switcher with no MDX imports or nested `<Tab>`s.
+ *
+ *   <PackageManagerTabs package="@example/sdk" />
+ */
+
+interface Props {
+  package: string;
+  dev?: boolean;
+}
+
+const { package: packageName, dev = false } = Astro.props;
+const commands = [
+  { label: 'npm', command: `npm install ${dev ? '-D ' : ''}${packageName}` },
+  { label: 'pnpm', command: `pnpm add ${dev ? '-D ' : ''}${packageName}` },
+  { label: 'yarn', command: `yarn add ${dev ? '-D ' : ''}${packageName}` },
+  { label: 'bun', command: `bun add ${dev ? '-d ' : ''}${packageName}` },
+];
+---
+
+<div class="not-prose my-6 overflow-hidden rounded-2xl border border-zinc-200 bg-[#f7f7f8] dark:border-white/[0.08] dark:bg-[#0d0d10]" data-pm-tabs>
+  <div class="flex items-center border-b border-zinc-200 px-3 dark:border-white/[0.07]">
+    {commands.map(({ label }, index) => (
+      <button type="button" class:list={['pm-tab px-3 py-2.5 font-mono text-[12px] text-zinc-400 transition', index === 0 && 'pm-active']} data-pm-index={index}>
+        {label}
+      </button>
+    ))}
+    <button type="button" data-pm-copy class="ml-auto rounded-lg px-2.5 py-1.5 text-[11px] font-medium text-zinc-400 transition hover:bg-zinc-200/70 hover:text-zinc-900 dark:hover:bg-white/[0.06] dark:hover:text-white">
+      Copy
+    </button>
+  </div>
+  {commands.map(({ command }, index) => (
+    <pre class:list={['overflow-x-auto px-5 py-4 font-mono text-[13px] text-zinc-800 dark:text-zinc-200', index !== 0 && 'hidden']} data-pm-panel={index}><code>{command}</code></pre>
+  ))}
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-pm-tabs]').forEach((root) => {
+    if (root.dataset.ready) return;
+    root.dataset.ready = 'true';
+    const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-pm-index]'));
+    const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-pm-panel]'));
+
+    const activate = (index: number) => {
+      tabs.forEach((tab, i) => tab.classList.toggle('pm-active', i === index));
+      panels.forEach((panel, i) => panel.classList.toggle('hidden', i !== index));
+      root.dataset.active = String(index);
+    };
+
+    tabs.forEach((tab, index) => tab.addEventListener('click', () => activate(index)));
+    root.querySelector<HTMLButtonElement>('[data-pm-copy]')?.addEventListener('click', async (event) => {
+      const button = event.currentTarget as HTMLButtonElement;
+      const active = Number(root.dataset.active ?? 0);
+      const text = panels[active]?.textContent ?? '';
+      try {
+        await navigator.clipboard.writeText(text.trim());
+        const original = button.textContent;
+        button.textContent = 'Copied';
+        setTimeout(() => (button.textContent = original), 1500);
+      } catch {
+        // Clipboard may be denied on insecure origins. Selecting the code gives
+        // the reader a usable fallback without throwing an unhandled promise.
+        const selection = window.getSelection();
+        const range = document.createRange();
+        const panel = panels[active];
+        if (selection && panel) {
+          range.selectNodeContents(panel);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        }
+      }
+    });
+  });
+</script>
+
+<style>
+  .pm-active {
+    color: rgb(124 58 237);
+    box-shadow: inset 0 -2px rgb(124 58 237);
+  }
+  :global([data-theme='dark']) .pm-active {
+    color: rgb(196 181 253);
+    box-shadow: inset 0 -2px rgb(139 92 246);
+  }
+</style>

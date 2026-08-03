@@ -1,0 +1,12 @@
+---
+import { LOCALES, DEFAULT_LOCALE, type Locale } from '../../../i18n';
+import { projectSummaries } from '../../../lib/docs';
+
+export function getStaticPaths() {
+  return LOCALES.filter((locale) => locale !== DEFAULT_LOCALE).map((lang) => ({ params: { lang } }));
+}
+
+const locale = Astro.params.lang as Locale;
+const target = (await projectSummaries(locale)).find((summary) => summary.href)?.href ?? `/${locale}/`;
+Astro.redirect(target);
+---

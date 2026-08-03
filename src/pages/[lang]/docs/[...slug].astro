@@ -1,0 +1,18 @@
+---
+import { render } from 'astro:content';
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import { DEFAULT_LOCALE } from '../../../i18n';
+import { loadDocs, type DocPage } from '../../../lib/docs';
+
+export async function getStaticPaths() {
+  const docs = await loadDocs();
+  return docs.filter((page) => page.locale !== DEFAULT_LOCALE).map((page) => ({
+    params: { lang: page.locale, slug: `${page.projectId}/${page.slug}` },
+    props: { page },
+  }));
+}
+
+const { page } = Astro.props as { page: DocPage };
+const { Content, headings } = await render(page.entry);
+---
+<DocsLayout {page} {Content} {headings} />

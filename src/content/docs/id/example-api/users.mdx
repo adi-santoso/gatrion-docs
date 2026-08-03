@@ -1,0 +1,76 @@
+---
+title: Endpoint Users
+sidebarLabel: Users
+description: Buat, ambil, dan lihat daftar user dengan contoh REST API.
+category: Referensi API
+eyebrow: REST API
+order: 10
+sidebarBadge: GET
+sidebarBadgeVariant: success
+keywords: [users, pengguna, rest, endpoint, pagination]
+---
+
+Resource Users merepresentasikan akun dalam platform contoh.
+
+## Daftar user
+
+<Badge variant="success">GET</Badge> `/v1/users`
+
+Mengembalikan daftar user dengan pagination.
+
+```bash
+curl "https://api.example.com/v1/users?limit=20" \
+  --header "Authorization: Bearer $API_TOKEN"
+```
+
+### Query parameter
+
+| Nama | Tipe | Wajib | Deskripsi |
+| --- | --- | --- | --- |
+| `limit` | integer | Tidak | Jumlah hasil, dari `1` sampai `100` |
+| `cursor` | string | Tidak | Cursor dari response sebelumnya |
+| `status` | string | Tidak | Filter `active` atau `disabled` |
+
+### Response
+
+```json
+{
+  "data": [
+    {
+      "id": "usr_01J8Z6M4K2",
+      "email": "ada@example.com",
+      "name": "Ada Lovelace",
+      "status": "active"
+    }
+  ],
+  "next_cursor": null
+}
+```
+
+## Buat user
+
+<Badge variant="info">POST</Badge> `/v1/users`
+
+```ts
+const response = await fetch('https://api.example.com/v1/users', {
+  method: 'POST',
+  headers: {
+    authorization: `Bearer ${process.env.API_TOKEN}`,
+    'content-type': 'application/json',
+  },
+  body: JSON.stringify({ email: 'ada@example.com', name: 'Ada Lovelace' }),
+});
+```
+
+<Callout type="warning" title="Idempotensi">
+  Kirim header `Idempotency-Key` saat mengulang create request agar tidak membuat user duplikat.
+</Callout>
+
+## Error
+
+| Status | Kode | Arti |
+| --- | --- | --- |
+| `400` | `invalid_request` | Request body tidak valid |
+| `401` | `unauthorized` | Bearer token tidak ada atau invalid |
+| `409` | `email_exists` | Email sudah digunakan |
+| `429` | `rate_limited` | Ulangi setelah durasi `Retry-After` |

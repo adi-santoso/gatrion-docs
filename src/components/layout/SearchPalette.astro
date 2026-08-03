@@ -1,0 +1,86 @@
+---
+import Icon from '../ui/Icon.astro';
+import type { SearchDoc } from '../../lib/docs';
+import type { TranslateFn } from '../../i18n';
+
+interface Props { pages: SearchDoc[]; t: TranslateFn }
+const { pages, t } = Astro.props;
+---
+
+<div data-search-palette class="fixed inset-0 z-[70] hidden" aria-hidden="true">
+  <button type="button" data-search-close class="absolute inset-0 h-full w-full bg-zinc-950/45 backdrop-blur-sm dark:bg-zinc-950/65" aria-label={t('search.hintClose')}></button>
+  <div class="animate-scale-in relative mx-auto mt-[10vh] w-[92%] max-w-xl overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-2xl dark:border-white/[0.1] dark:bg-[#111113]" role="dialog" aria-modal="true" aria-label={t('search.label')}>
+    <div class="flex items-center gap-3 border-b border-zinc-100 px-4 dark:border-white/[0.06]">
+      <Icon name="search" class="h-4 w-4 text-zinc-400" />
+      <input data-search-input type="search" placeholder={t('search.placeholder')} class="w-full bg-transparent py-4 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none dark:text-white" autocomplete="off" />
+      <kbd class="rounded-md border border-zinc-200 px-1.5 py-0.5 font-mono text-[10px] text-zinc-400 dark:border-white/[0.1]">esc</kbd>
+    </div>
+    <div data-search-results class="max-h-[min(55vh,380px)] overflow-y-auto p-2"></div>
+    <div class="flex items-center gap-4 border-t border-zinc-100 px-4 py-2.5 text-[11px] text-zinc-400 dark:border-white/[0.06]">
+      <span><kbd class="mr-1 rounded border border-zinc-200 px-1 font-mono dark:border-white/[0.1]">↑↓</kbd>{t('search.hintNavigate')}</span>
+      <span><kbd class="mr-1 rounded border border-zinc-200 px-1 font-mono dark:border-white/[0.1]">↵</kbd>{t('search.hintOpen')}</span>
+    </div>
+  </div>
+</div>
+
+<script is:inline define:vars={{ pages, emptyLabel: t('search.empty') }}>
+  const palette = document.querySelector('[data-search-palette]');
+  const input = palette?.querySelector('[data-search-input]');
+  const results = palette?.querySelector('[data-search-results]');
+  let filtered = pages;
+  let selected = 0;
+  let previousFocus = null;
+
+  const escapeHtml = (value) => value.replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char]);
+  const render = () => {
+    if (!results) return;
+    if (filtered.length === 0) {
+      results.innerHTML = `<p class="px-4 py-10 text-center text-sm text-zinc-400">${escapeHtml(emptyLabel)}</p>`;
+      return;
+    }
+    results.innerHTML = filtered.slice(0, 20).map((page, index) => `
+      <a href="${escapeHtml(page.href)}" data-result-index="${index}" class="flex items-start gap-3 rounded-xl px-3 py-2.5 transition ${index === selected ? 'bg-violet-500/10' : 'hover:bg-zinc-50 dark:hover:bg-white/[.04]'}">
+        <span class="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-violet-500"></span>
+        <span class="min-w-0 flex-1">
+          <span class="block truncate text-sm font-medium text-zinc-800 dark:text-zinc-200">${escapeHtml(page.title)}</span>
+          ${page.description ? `<span class="mt-0.5 block truncate text-xs text-zinc-400">${escapeHtml(page.description)}</span>` : ''}
+        </span>
+        <span class="rounded-md bg-zinc-100 px-2 py-0.5 text-[10px] font-medium text-zinc-400 dark:bg-white/[.06]">${escapeHtml(page.project)}</span>
+      </a>`).join('');
+  };
+  const open = () => {
+    if (!palette) return;
+    previousFocus = document.activeElement;
+    palette.classList.remove('hidden');
+    palette.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    filtered = pages;
+    selected = 0;
+    if (input) input.value = '';
+    render();
+    setTimeout(() => input?.focus(), 20);
+  };
+  const close = () => {
+    if (!palette) return;
+    palette.classList.add('hidden');
+    palette.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    previousFocus?.focus?.();
+  };
+  document.querySelectorAll('[data-search-open]').forEach((button) => button.addEventListener('click', open));
+  palette?.querySelector('[data-search-close]')?.addEventListener('click', close);
+  input?.addEventListener('input', () => {
+    const query = input.value.trim().toLowerCase();
+    filtered = query ? pages.filter((page) => `${page.title} ${page.project} ${page.description} ${page.keywords}`.toLowerCase().includes(query)) : pages;
+    selected = 0;
+    render();
+  });
+  document.addEventListener('keydown', (event) => {
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); open(); return; }
+    if (!palette || palette.classList.contains('hidden')) return;
+    if (event.key === 'Escape') close();
+    if (event.key === 'ArrowDown') { event.preventDefault(); selected = Math.min(selected + 1, Math.min(filtered.length, 20) - 1); render(); }
+    if (event.key === 'ArrowUp') { event.preventDefault(); selected = Math.max(selected - 1, 0); render(); }
+    if (event.key === 'Enter' && filtered[selected]) window.location.href = filtered[selected].href;
+  });
+</script>

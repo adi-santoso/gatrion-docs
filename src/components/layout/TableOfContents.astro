@@ -1,0 +1,48 @@
+---
+import { site } from '../../../site.config';
+import type { MarkdownHeading } from 'astro';
+import type { TranslateFn } from '../../i18n';
+
+interface Props { headings: MarkdownHeading[]; t: TranslateFn }
+const { headings, t } = Astro.props;
+const visible = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+---
+
+<aside class="sticky top-[60px] hidden h-[calc(100vh-60px)] w-56 shrink-0 overflow-y-auto py-10 pr-6 xl:block">
+  {visible.length > 0 && (
+    <>
+      <h2 class="mb-4 text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-600">{t('toc.title')}</h2>
+      <nav class="space-y-2.5 text-[13px]" aria-label={t('toc.title')}>
+        {visible.map((heading) => (
+          <a href={`#${heading.slug}`} data-toc-link class:list={['block text-zinc-400 transition hover:text-zinc-900 dark:hover:text-white', heading.depth === 3 && 'pl-3 text-xs']}>{heading.text}</a>
+        ))}
+      </nav>
+    </>
+  )}
+  {site.helpBox && (
+    <div class="mt-8 rounded-2xl border border-zinc-200 bg-white/60 p-4 dark:border-white/[0.07] dark:bg-white/[0.02]">
+      <p class="text-[13px] font-semibold text-zinc-900 dark:text-white">{t('toc.help.title')}</p>
+      <p class="mt-1 text-xs leading-relaxed text-zinc-400">
+        {t('toc.help.body', { channel: site.helpBox.channel })}
+      </p>
+    </div>
+  )}
+</aside>
+
+<script>
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]'));
+  const sections = links.map((link) => document.getElementById(decodeURIComponent(link.hash.slice(1)))).filter(Boolean) as HTMLElement[];
+  if (sections.length > 0 && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries.find((entry) => entry.isIntersecting);
+      if (!visible) return;
+      links.forEach((link) => link.classList.toggle('toc-active', link.hash === `#${visible.target.id}`));
+    }, { rootMargin: '-80px 0px -70% 0px' });
+    sections.forEach((section) => observer.observe(section));
+  }
+</script>
+
+<style>
+  .toc-active { color: rgb(124 58 237) !important; font-weight: 600; }
+  :global([data-theme='dark']) .toc-active { color: rgb(196 181 253) !important; }
+</style>

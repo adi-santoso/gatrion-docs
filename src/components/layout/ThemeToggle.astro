@@ -1,0 +1,25 @@
+---
+import Icon from '../ui/Icon.astro';
+import type { TranslateFn } from '../../i18n';
+
+interface Props { t: TranslateFn }
+const { t } = Astro.props;
+---
+
+<button type="button" data-theme-toggle class="flex h-9 w-9 items-center justify-center rounded-full text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-white/[0.06] dark:hover:text-white" aria-label={t('theme.toggle')}>
+  <Icon name="sun" class="hidden h-[18px] w-[18px] dark:block" />
+  <Icon name="moon" class="h-[18px] w-[18px] dark:hidden" />
+</button>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((button) => {
+    if (button.dataset.ready) return;
+    button.dataset.ready = 'true';
+    button.addEventListener('click', () => {
+      const html = document.documentElement;
+      const next = html.dataset.theme === 'dark' ? 'light' : 'dark';
+      html.dataset.theme = next;
+      try { localStorage.setItem('theme', next); } catch { /* storage may be blocked */ }
+    });
+  });
+</script>

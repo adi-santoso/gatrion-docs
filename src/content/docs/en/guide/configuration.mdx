@@ -1,0 +1,85 @@
+---
+title: Configuration
+description: Configure branding, projects, locale support, deployment paths, and theme tokens.
+category: Customization
+order: 40
+keywords: [config, branding, project, locale, deploy, base path, colors]
+---
+
+The template intentionally keeps configuration in a few typed files instead of spreading branding and navigation across components.
+
+## Site identity
+
+Edit `site.config.ts`:
+
+```ts
+export const site = {
+  url: 'https://docs.example.com',
+  base: '/',
+  title: 'acme',
+  titleAccent: 'docs',
+  logoLetter: 'A',
+  description: 'Documentation for every Acme project.',
+  copyright: 'Acme Inc.',
+  links: {
+    github: 'https://github.com/acme/docs',
+    editBase: 'https://github.com/acme/docs/edit/main/src/content/docs/',
+  },
+};
+```
+
+<Callout type="note">
+  Set a link to `null` to hide its interface element. `helpBox` can also be `null`.
+</Callout>
+
+## Projects
+
+Each entry in `src/config/projects.ts` maps to a content folder:
+
+```ts
+{
+  id: 'platform-api',
+  name: { en: 'Platform API', id: 'API Platform' },
+  description: {
+    en: 'REST API guides and reference.',
+    id: 'Panduan dan referensi REST API.',
+  },
+  version: 'v2.0.0',
+  status: 'stable',
+  icon: 'server',
+  accent: 'violet',
+  group: 'backend',
+}
+```
+
+A project with no pages is shown as **Coming soon**. Keep one project to make the hub redirect directly to its first page.
+
+## Locales
+
+Locales are declared in `site.config.ts`:
+
+```ts
+export const LOCALES = ['en', 'id'] as const;
+export const DEFAULT_LOCALE = 'en';
+```
+
+Then add interface strings and a human-readable name in `src/i18n/ui.ts`. Missing interface strings safely fall back to English.
+
+<Callout type="important" title="Translated content is explicit">
+  Each locale has its own content folder. This avoids silently serving English body content under an Indonesian URL. If a translated project has no pages, its hub card links to the default-locale documentation instead.
+</Callout>
+
+## Subpath deployment
+
+For GitHub Pages at `https://user.github.io/docs`, set:
+
+```ts
+url: 'https://user.github.io',
+base: '/docs',
+```
+
+Internal theme links use a central URL helper, so locale and base prefixes are applied together.
+
+## Theme tokens
+
+Edit the design tokens near the top of `src/styles/globals.css` to change fonts, surfaces, or spacing. Project accent palettes live in `src/config/projects.ts` because Tailwind needs to see complete class names at build time.

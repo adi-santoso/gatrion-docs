@@ -1,0 +1,107 @@
+---
+import { site, DEFAULT_LOCALE } from '../../../site.config';
+import HubLayout from '../../layouts/HubLayout.astro';
+import Icon from '../ui/Icon.astro';
+import { accentFor, localised } from '../../config/projects';
+import { projectSummaries } from '../../lib/docs';
+import { useTranslations, type Locale } from '../../i18n';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const summaries = await projectSummaries(locale);
+const documented = summaries.filter((item) => item.href !== null);
+const groups = [...new Set(summaries.map((item) => item.project.group).filter((value): value is string => Boolean(value)))];
+const title = `${site.title}/${site.titleAccent}`;
+---
+
+<HubLayout {title} locale={locale}>
+  <div class="relative mx-auto max-w-6xl px-5 pb-20">
+    <section class="pt-10 text-center sm:pt-16">
+      <div class="animate-fade-up">
+        <span class="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white/60 px-3.5 py-1 text-xs font-medium text-zinc-500 backdrop-blur dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-zinc-400">
+          <span class="relative flex h-1.5 w-1.5"><span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500"></span></span>
+          {t('hub.eyebrow', { count: documented.length })}
+        </span>
+      </div>
+      <h1 class="mx-auto mt-6 max-w-3xl animate-fade-up text-4xl font-extrabold leading-[1.1] tracking-tight text-zinc-900 [animation-delay:.08s] sm:text-6xl dark:text-white">
+        {t('hub.title.line1')}<br />
+        <span class="bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-400 bg-clip-text text-transparent">{t('hub.title.line2')}</span>
+      </h1>
+      <p class="mx-auto mt-5 max-w-xl animate-fade-up text-base leading-relaxed text-zinc-500 [animation-delay:.16s] sm:text-lg dark:text-zinc-400">
+        {t('hub.subtitle', { shortcut: 'Ctrl K' })}
+      </p>
+      <div class="mx-auto mt-8 max-w-xl animate-fade-up [animation-delay:.24s]">
+        <button type="button" data-search-open class="group flex w-full items-center gap-3 rounded-2xl border border-zinc-200 bg-white/80 px-5 py-4 text-left shadow-lg shadow-zinc-200/50 backdrop-blur transition hover:border-violet-300 dark:border-white/[0.08] dark:bg-white/[0.04] dark:shadow-black/20 dark:hover:border-violet-500/40">
+          <Icon name="search" class="h-5 w-5 text-zinc-400 transition group-hover:text-violet-500" />
+          <span class="flex-1 text-[15px] text-zinc-400">{t('hub.searchPlaceholder')}</span>
+          <kbd class="hidden rounded-md border border-zinc-200 bg-zinc-50 px-2 py-1 font-mono text-[11px] text-zinc-400 sm:block dark:border-white/[0.08] dark:bg-white/[0.04]">Ctrl K</kbd>
+        </button>
+      </div>
+    </section>
+
+    <section class="mt-14">
+      <div class="mb-6 flex items-end justify-between gap-4">
+        <div>
+          <h2 class="text-lg font-bold tracking-tight text-zinc-900 dark:text-white">{t('hub.sectionTitle')}</h2>
+          <p class="mt-0.5 text-sm text-zinc-500">{t('hub.sectionSubtitle')}</p>
+        </div>
+        {groups.length > 1 && (
+          <div class="hidden gap-1.5 sm:flex" data-project-filters>
+            <button type="button" data-filter="all" class="filter-chip filter-active rounded-full px-3.5 py-1.5 text-xs font-medium transition">{t('hub.filterAll')}</button>
+            {groups.map((group) => <button type="button" data-filter={group} class="filter-chip rounded-full px-3.5 py-1.5 text-xs font-medium capitalize transition">{group}</button>)}
+          </div>
+        )}
+      </div>
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" data-project-grid>
+        {summaries.map(({ project, pageCount, href }) => {
+          const accent = accentFor(project);
+          const name = localised(project.name, locale, DEFAULT_LOCALE);
+          const description = localised(project.description, locale, DEFAULT_LOCALE);
+          const Tag = href ? 'a' : 'article';
+          return (
+            <Tag href={href ?? undefined} data-project-card data-group={project.group ?? ''} class:list={['card-glow group rounded-2xl border border-zinc-200 bg-white/80 p-6 backdrop-blur transition dark:border-white/[0.07] dark:bg-white/[0.03]', href ? `hover:-translate-y-1 ${accent.hoverBorder}` : 'opacity-65']}>
+              <div class="flex items-start justify-between">
+                <span class:list={['flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br ring-1 ring-inset', accent.gradient, accent.text, accent.ring]}><Icon name={project.icon} class="h-5 w-5" width={1.8} /></span>
+                <span class:list={['inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold ring-1 ring-inset', project.status === 'stable' ? 'bg-emerald-500/10 text-emerald-600 ring-emerald-500/20 dark:text-emerald-400' : 'bg-amber-500/10 text-amber-600 ring-amber-500/20 dark:text-amber-400']}><span class:list={['h-1 w-1 rounded-full', project.status === 'stable' ? 'bg-emerald-500' : 'bg-amber-500']}></span>{t(`status.${project.status}`)}</span>
+              </div>
+              <h3 class:list={['mt-4 font-bold tracking-tight text-zinc-900 transition dark:text-white', href && accent.hoverText]}>{name}</h3>
+              <p class="mt-1.5 min-h-10 text-[13px] leading-relaxed text-zinc-500">{description}</p>
+              <div class="mt-5 flex items-center justify-between border-t border-zinc-100 pt-4 text-xs text-zinc-400 dark:border-white/[0.05]">
+                <span class="font-mono">{project.version ?? ''}{project.version && pageCount > 0 && ' · '}{pageCount > 0 ? t('project.pageCount', { count: pageCount }) : t('project.comingSoon')}</span>
+                {href && <span class:list={['flex items-center gap-1 font-medium opacity-0 transition group-hover:opacity-100', accent.text]}>{t('project.openDocs')}<Icon name="chevron-right" class="h-3 w-3" width={2.5} /></span>}
+              </div>
+            </Tag>
+          );
+        })}
+      </div>
+    </section>
+
+    <footer class="mt-16 flex flex-col items-center justify-between gap-3 border-t border-zinc-200 pt-8 text-xs text-zinc-400 sm:flex-row dark:border-white/[0.06]">
+      <p>© {new Date().getFullYear()} {site.copyright}</p>
+      <p class="font-mono">Astro + MDX + Tailwind CSS</p>
+    </footer>
+  </div>
+</HubLayout>
+
+<script>
+  const activeClasses = ['filter-active'];
+  document.querySelectorAll<HTMLButtonElement>('[data-project-filters] [data-filter]').forEach((button) => {
+    button.addEventListener('click', () => {
+      document.querySelectorAll('[data-project-filters] [data-filter]').forEach((chip) => chip.classList.remove(...activeClasses));
+      button.classList.add(...activeClasses);
+      const filter = button.dataset.filter;
+      document.querySelectorAll<HTMLElement>('[data-project-card]').forEach((card) => {
+        card.hidden = filter !== 'all' && card.dataset.group !== filter;
+      });
+    });
+  });
+</script>
+
+<style>
+  .filter-chip { border: 1px solid rgb(228 228 231); color: rgb(113 113 122); }
+  .filter-chip:hover { border-color: rgb(161 161 170); }
+  .filter-active { border-color: rgb(24 24 27); background: rgb(24 24 27); color: white; }
+  :global([data-theme='dark']) .filter-chip { border-color: rgb(255 255 255 / .08); }
+  :global([data-theme='dark']) .filter-active { border-color: white; background: white; color: rgb(24 24 27); }
+</style>

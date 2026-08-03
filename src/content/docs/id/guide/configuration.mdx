@@ -1,0 +1,74 @@
+---
+title: Konfigurasi
+description: Atur branding, proyek, locale, path deployment, dan token tema.
+category: Kustomisasi
+order: 40
+keywords: [konfigurasi, branding, project, locale, deploy, warna]
+---
+
+Template menyimpan konfigurasi di beberapa file bertipe jelas, bukan menyebarkan branding dan navigasi di banyak komponen.
+
+## Identitas situs
+
+Edit `site.config.ts` untuk URL, nama, logo, deskripsi, link repository, dan help box.
+
+```ts
+export const site = {
+  url: 'https://docs.example.com',
+  base: '/',
+  title: 'acme',
+  titleAccent: 'docs',
+  logoLetter: 'A',
+  description: 'Dokumentasi seluruh proyek Acme.',
+  copyright: 'Acme Inc.',
+};
+```
+
+<Callout type="note">
+  Atur link ke `null` untuk menyembunyikan elemen antarmukanya. `helpBox` juga dapat bernilai `null`.
+</Callout>
+
+## Proyek
+
+Setiap entry di `src/config/projects.ts` memetakan sebuah folder konten. Nama dan deskripsi dapat berupa string atau object per-locale.
+
+```ts
+{
+  id: 'platform-api',
+  name: { en: 'Platform API', id: 'API Platform' },
+  description: { en: 'REST API reference.', id: 'Referensi REST API.' },
+  version: 'v2.0.0',
+  status: 'stable',
+  icon: 'server',
+  accent: 'violet',
+  group: 'backend',
+}
+```
+
+Proyek tanpa halaman ditampilkan sebagai **Segera hadir**.
+
+## Locale
+
+Locale dideklarasikan di `site.config.ts`:
+
+```ts
+export const LOCALES = ['en', 'id'] as const;
+export const DEFAULT_LOCALE = 'en';
+```
+
+Tambahkan teks antarmuka dan nama locale di `src/i18n/ui.ts`. Teks yang belum diterjemahkan otomatis fallback ke bahasa Inggris.
+
+## Deployment subpath
+
+Untuk GitHub Pages di `https://user.github.io/docs`, atur:
+
+```ts
+url: 'https://user.github.io',
+base: '/docs',
+```
+
+Link internal tema memakai URL helper terpusat sehingga prefix locale dan base selalu konsisten.
+
+## Token tema
+
+Edit token desain di bagian atas `src/styles/globals.css`. Palet aksen proyek berada di `src/config/projects.ts` agar Tailwind dapat menemukan seluruh nama class saat build.

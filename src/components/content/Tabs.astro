@@ -1,0 +1,80 @@
+---
+/**
+ * Accessible tabs container. Pair with `<Tab label="…">` children.
+ *
+ * Multiple tab groups can exist on one page. The client script initialises
+ * each independently and leaves the first panel visible when JavaScript is off.
+ */
+---
+
+<div class="not-prose my-6 overflow-hidden rounded-2xl border border-zinc-200 bg-white/60 dark:border-white/[0.08] dark:bg-white/[0.02]" data-tabs>
+  <div class="flex overflow-x-auto border-b border-zinc-200 px-2 pt-2 dark:border-white/[0.07]" role="tablist" aria-label="Content options" data-tab-list></div>
+  <div data-tab-panels>
+    <slot />
+  </div>
+</div>
+
+<script>
+  function initTabs(root: HTMLElement) {
+    if (root.dataset.tabsReady === 'true') return;
+    root.dataset.tabsReady = 'true';
+
+    const list = root.querySelector<HTMLElement>('[data-tab-list]');
+    const panels = Array.from(root.querySelectorAll<HTMLElement>(':scope > [data-tab-panels] > [data-tab-panel]'));
+    if (!list || panels.length === 0) return;
+
+    const activate = (index: number, focus = false) => {
+      const buttons = Array.from(list.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
+      panels.forEach((panel, i) => {
+        const active = i === index;
+        panel.hidden = !active;
+        buttons[i]?.setAttribute('aria-selected', String(active));
+        buttons[i]?.setAttribute('tabindex', active ? '0' : '-1');
+        buttons[i]?.classList.toggle('tab-active', active);
+      });
+      if (focus) buttons[index]?.focus();
+    };
+
+    panels.forEach((panel, index) => {
+      const label = panel.dataset.label || `Tab ${index + 1}`;
+      const id = `tab-${crypto.randomUUID()}`;
+      const panelId = `${id}-panel`;
+
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.id = id;
+      button.role = 'tab';
+      button.className = 'tab-button whitespace-nowrap rounded-t-lg px-3.5 py-2 text-[13px] font-medium text-zinc-500 transition hover:text-zinc-900 dark:hover:text-white';
+      button.textContent = label;
+      button.setAttribute('aria-controls', panelId);
+      button.addEventListener('click', () => activate(index));
+      button.addEventListener('keydown', (event) => {
+        if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+        event.preventDefault();
+        const delta = event.key === 'ArrowRight' ? 1 : -1;
+        activate((index + delta + panels.length) % panels.length, true);
+      });
+
+      panel.id = panelId;
+      panel.role = 'tabpanel';
+      panel.setAttribute('aria-labelledby', id);
+      list.appendChild(button);
+    });
+
+    activate(0);
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-tabs]').forEach(initTabs);
+</script>
+
+<style>
+  .tab-active {
+    color: rgb(124 58 237);
+    box-shadow: inset 0 -2px rgb(124 58 237);
+  }
+
+  :global([data-theme='dark']) .tab-active {
+    color: rgb(196 181 253);
+    box-shadow: inset 0 -2px rgb(139 92 246);
+  }
+</style>

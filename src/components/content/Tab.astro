@@ -1,0 +1,13 @@
+---
+/** A panel inside `<Tabs>`. */
+
+interface Props {
+  label: string;
+}
+
+const { label } = Astro.props;
+---
+
+<section data-tab-panel data-label={label} class="docs-prose max-w-none p-5 first:block [&[hidden]]:hidden">
+  <slot />
+</section>

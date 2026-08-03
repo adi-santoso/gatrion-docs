@@ -1,0 +1,21 @@
+# Dependencies and build output
+node_modules/
+dist/
+.astro/
+
+# Environment — keep a documented example if the project adds one
+.env
+.env.*
+!.env.example
+
+# Tooling
+*.tsbuildinfo
+*.log
+.DS_Store
+Thumbs.db
+
+# Editor settings (allow shared recommendations)
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/

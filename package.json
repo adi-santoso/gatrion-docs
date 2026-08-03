@@ -1,21 +1,41 @@
 {
-  "name": "gatrion_docs",
-  "version": "2.0.0",
+  "name": "astro-docs-template",
+  "version": "1.0.0",
+  "description": "Multi-project documentation template for Astro. Markdown-first, i18n-ready, and designed to be written by AI agents.",
   "type": "module",
+  "license": "MIT",
+  "keywords": [
+    "astro",
+    "astro-template",
+    "documentation",
+    "docs",
+    "mdx",
+    "tailwindcss",
+    "i18n"
+  ],
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview"
+    "build": "astro check && astro build",
+    "build:only": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "astro": "astro"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.10",
     "@astrojs/mdx": "^7.0.5",
+    "@astrojs/sitemap": "^3.7.3",
+    "@tailwindcss/typography": "^0.5.20",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/hast": "^3.0.5",
     "astro": "^7.1.6",
-    "autoprefixer": "^10.5.4",
-    "postcss": "^8.5.25"
+    "tailwindcss": "^4.3.3",
+    "typescript": "^6.0.3",
+    "unist-util-visit": "^5.1.0"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.3.3",
-    "tailwindcss": "^4.3.3"
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "@fontsource-variable/plus-jakarta-sans": "^5.3.0"
   }
 }

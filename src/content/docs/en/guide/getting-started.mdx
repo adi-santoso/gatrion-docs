@@ -1,0 +1,71 @@
+---
+title: Getting Started
+description: Set up the template, start the development server, and publish your first documentation page.
+category: Start Here
+order: 10
+keywords: [install, setup, quickstart, clone]
+---
+
+This template keeps content in Markdown and presentation in the theme. A new page needs one file and a small frontmatter block — navigation, search, the table of contents, and previous/next links are generated automatically.
+
+<Callout type="tip" title="Designed for agents and humans">
+  An AI agent only needs to know the content path and frontmatter schema. It does **not** need to generate imports, Tailwind classes, heading IDs, or navigation entries.
+</Callout>
+
+## Prerequisites
+
+<CardGrid cols={3}>
+  <Card title="Node.js 22+" icon="terminal">JavaScript runtime and package manager.</Card>
+  <Card title="Git" icon="package">Clone and version your documentation.</Card>
+  <Card title="An editor" icon="book">Any editor or AI coding agent works.</Card>
+</CardGrid>
+
+## Installation
+
+<Steps>
+  <Step title="Use the template">
+    Create a repository from this template, or clone it directly.
+
+    ```bash
+    git clone https://github.com/your-org/your-docs.git
+    cd your-docs
+    ```
+  </Step>
+  <Step title="Install dependencies">
+    ```bash
+    npm install
+    ```
+  </Step>
+  <Step title="Start the development server">
+    ```bash
+    npm run dev
+    ```
+
+    Open `http://localhost:4321`. Content updates appear immediately.
+  </Step>
+</Steps>
+
+## Make it yours
+
+Edit these three files first:
+
+<FileTree>
+  <File name="site.config.ts" description="Brand, URL, locales, repository links" highlight />
+  <File name="src/config/projects.ts" description="Projects shown on the hub" highlight />
+  <File name="src/i18n/ui.ts" description="Theme interface strings" />
+  <File name="src/content/docs" type="folder" description="Your documentation" />
+</FileTree>
+
+<Callout type="important">
+  Set `site.url` in `site.config.ts` before deployment. Canonical links and the sitemap are generated from it.
+</Callout>
+
+## Build for production
+
+The build command runs Astro's type checker before generating the static site:
+
+```bash
+npm run build
+```
+
+The output is written to `dist/` and can be hosted on any static platform.

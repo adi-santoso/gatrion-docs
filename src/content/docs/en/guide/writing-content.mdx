@@ -1,0 +1,90 @@
+---
+title: Writing Content
+description: The file convention and frontmatter contract that humans and AI agents use to add documentation.
+category: Authoring
+order: 20
+keywords: [markdown, mdx, frontmatter, agent, content]
+---
+
+Every page is a `.md` or `.mdx` file. Use Markdown for normal content and MDX only when you need one of the built-in components.
+
+## File convention
+
+Files follow one deterministic path:
+
+```text
+src/content/docs/<locale>/<project-id>/<page-slug>.mdx
+```
+
+For example:
+
+<FileTree>
+  <File name="src" type="folder" />
+  <File name="content" type="folder" depth={1} />
+  <File name="docs" type="folder" depth={2} />
+  <File name="en" type="folder" depth={3} />
+  <File name="guide" type="folder" depth={4} />
+  <File name="getting-started.mdx" depth={5} description="/docs/guide/getting-started/" highlight />
+  <File name="id" type="folder" depth={3} />
+  <File name="guide" type="folder" depth={4} />
+  <File name="getting-started.mdx" depth={5} description="/id/docs/guide/getting-started/" />
+</FileTree>
+
+The project folder must match an `id` in `src/config/projects.ts`. The default locale (`en`) has no URL prefix; other locales do.
+
+## Frontmatter
+
+Only `title` is required. Defaults keep the smallest valid page small:
+
+```md
+---
+title: Authentication
+description: Authenticate requests with bearer tokens.
+category: Guides
+order: 30
+---
+```
+
+| Field | Type | Default | Purpose |
+| --- | --- | --- | --- |
+| `title` | string | required | Page heading, search label, and browser title |
+| `description` | string | empty | Intro text and meta description |
+| `category` | string | `Guides` | Sidebar group |
+| `order` | number | `999` | Sidebar and reading order |
+| `sidebarLabel` | string | `title` | Shorter sidebar text |
+| `sidebarBadge` | string | empty | Small sidebar tag such as `GET` |
+| `sidebarBadgeVariant` | enum | `neutral` | Badge colour |
+| `eyebrow` | string | `category` | Label above the page title |
+| `hidden` | boolean | `false` | Hide from navigation and search |
+| `draft` | boolean | `false` | Exclude from production builds |
+| `tableOfContents` | boolean | `true` | Show the right-hand table of contents |
+| `keywords` | string[] | `[]` | Extra search terms |
+
+## Plain Markdown first
+
+Write headings, links, lists, tables, blockquotes, and code as Markdown. The theme handles styling and anchors.
+
+```md
+## Install the client
+
+Run the package manager, then create a client:
+
+```ts
+const client = createClient({ token: process.env.API_TOKEN });
+```
+```
+
+<Callout type="warning" title="Do not add presentation markup">
+  Avoid raw `<section class="…">`, hand-written heading IDs, animation delays, and component imports. They couple content to the current theme and make agent output fragile.
+</Callout>
+
+## Agent authoring contract
+
+Give an agent these rules:
+
+1. Read `src/content.config.ts` before writing frontmatter.
+2. Read `src/config/projects.ts` and use an existing project ID.
+3. Put the file under the correct locale folder.
+4. Use plain Markdown by default.
+5. Use only components documented on the Components page, without imports.
+6. Run `npm run check` after editing and `npm run build` before finishing.

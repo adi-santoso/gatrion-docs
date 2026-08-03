@@ -1,0 +1,81 @@
+---
+import '@fontsource-variable/plus-jakarta-sans';
+import '@fontsource-variable/jetbrains-mono';
+import '../styles/globals.css';
+
+import { site } from '../../site.config';
+import { asset, langTag, type Locale } from '../i18n';
+
+interface Props {
+  title: string;
+  description?: string;
+  locale: Locale;
+  pathname: string;
+  image?: string;
+  noindex?: boolean;
+}
+
+const { title, description = site.description, locale, pathname, image, noindex = false } = Astro.props;
+const canonical = new URL(pathname.replace(site.base.replace(/\/$/, ''), '') || '/', site.url);
+const socialImage = image ? new URL(image, site.url) : undefined;
+---
+
+<!doctype html>
+<html lang={langTag(locale)} data-theme="dark" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="icon" type="image/svg+xml" href={asset('favicon.svg')} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    {socialImage && <meta property="og:image" content={socialImage} />}
+    <meta name="twitter:card" content={socialImage ? 'summary_large_image' : 'summary'} />
+    <title>{title}</title>
+
+    <!-- Runs before first paint to prevent a light/dark flash. -->
+    <script is:inline>
+      (() => {
+        let saved = null;
+        try { saved = localStorage.getItem('theme'); } catch {}
+        const preferred = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.dataset.theme = saved === 'light' || saved === 'dark' ? saved : preferred;
+      })();
+    </script>
+  </head>
+  <body class="min-h-screen bg-[#fafafa] font-sans text-zinc-600 antialiased dark:bg-[#09090b] dark:text-zinc-400">
+    <a href="#main-content" class="skip-link rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white shadow-lg dark:bg-white dark:text-zinc-900">
+      Skip to content
+    </a>
+    <slot />
+
+    <!-- Copy buttons for Shiki code frames. One delegated handler covers all
+         blocks, including those rendered inside tabs. -->
+    <script define:vars={{ copyLabel: 'Copy', copiedLabel: 'Copied' }} is:inline>
+      document.addEventListener('click', async (event) => {
+        const button = event.target.closest?.('[data-copy]');
+        if (!button) return;
+        const code = button.closest('.code-frame')?.querySelector('code')?.textContent ?? '';
+        try {
+          await navigator.clipboard.writeText(code);
+          button.textContent = copiedLabel;
+          setTimeout(() => (button.textContent = copyLabel), 1500);
+        } catch {
+          const selection = window.getSelection();
+          const range = document.createRange();
+          const element = button.closest('.code-frame')?.querySelector('code');
+          if (selection && element) {
+            range.selectNodeContents(element);
+            selection.removeAllRanges();
+            selection.addRange(range);
+          }
+        }
+      });
+    </script>
+  </body>
+</html>

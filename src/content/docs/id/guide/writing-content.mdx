@@ -1,0 +1,74 @@
+---
+title: Menulis Konten
+description: Konvensi file dan kontrak frontmatter untuk manusia maupun AI agent.
+category: Penulisan
+order: 20
+keywords: [markdown, mdx, frontmatter, agent, konten]
+---
+
+Setiap halaman adalah file `.md` atau `.mdx`. Gunakan Markdown untuk konten normal dan MDX hanya saat membutuhkan komponen bawaan.
+
+## Konvensi file
+
+Setiap file mengikuti path deterministik:
+
+```text
+src/content/docs/<locale>/<project-id>/<page-slug>.mdx
+```
+
+<FileTree>
+  <File name="src" type="folder" />
+  <File name="content" type="folder" depth={1} />
+  <File name="docs" type="folder" depth={2} />
+  <File name="en" type="folder" depth={3} />
+  <File name="guide" type="folder" depth={4} />
+  <File name="getting-started.mdx" depth={5} description="/docs/guide/getting-started/" />
+  <File name="id" type="folder" depth={3} />
+  <File name="guide" type="folder" depth={4} />
+  <File name="getting-started.mdx" depth={5} description="/id/docs/guide/getting-started/" highlight />
+</FileTree>
+
+Folder proyek harus cocok dengan `id` di `src/config/projects.ts`. Locale default (`en`) tidak memiliki prefix URL.
+
+## Frontmatter
+
+Hanya `title` yang wajib:
+
+```md
+---
+title: Autentikasi
+description: Autentikasi request dengan bearer token.
+category: Panduan
+order: 30
+---
+```
+
+| Field | Tipe | Default | Fungsi |
+| --- | --- | --- | --- |
+| `title` | string | wajib | Heading, label pencarian, judul browser |
+| `description` | string | kosong | Intro dan meta description |
+| `category` | string | `Guides` | Grup sidebar |
+| `order` | number | `999` | Urutan sidebar dan bacaan |
+| `sidebarLabel` | string | `title` | Label sidebar yang lebih pendek |
+| `sidebarBadge` | string | kosong | Tag kecil seperti `GET` |
+| `hidden` | boolean | `false` | Sembunyikan dari navigasi dan pencarian |
+| `draft` | boolean | `false` | Jangan sertakan dalam build produksi |
+| `tableOfContents` | boolean | `true` | Tampilkan table of contents |
+| `keywords` | string[] | `[]` | Istilah pencarian tambahan |
+
+## Utamakan Markdown biasa
+
+Tulis heading, link, daftar, tabel, kutipan, dan kode sebagai Markdown. Tema menangani styling dan anchor.
+
+<Callout type="warning" title="Jangan tambahkan markup tampilan">
+  Hindari `<section class="…">`, heading ID manual, animation delay, dan import komponen. Hal tersebut mengikat konten pada tema dan membuat output agent rapuh.
+</Callout>
+
+## Kontrak penulisan agent
+
+1. Baca `src/content.config.ts` sebelum membuat frontmatter.
+2. Baca `src/config/projects.ts` dan gunakan project ID yang ada.
+3. Simpan file di folder locale yang benar.
+4. Gunakan Markdown biasa secara default.
+5. Gunakan hanya komponen pada halaman Komponen, tanpa import.
+6. Jalankan `npm run check` dan `npm run build` sebelum selesai.

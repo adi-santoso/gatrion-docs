@@ -1,0 +1,14 @@
+---
+/**
+ * Numbered procedure. Pair with `<Step>` children.
+ *
+ *   <Steps>
+ *     <Step title="Install">Run the package manager.</Step>
+ *     <Step title="Configure">Edit the config file.</Step>
+ *   </Steps>
+ */
+---
+
+<div class="not-prose my-7 ml-3 border-l border-zinc-200 dark:border-white/10 [counter-reset:step]">
+  <slot />
+</div>
