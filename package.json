@@ -29,7 +29,8 @@
     "build:only": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "astro": "astro"
+    "astro": "astro",
+    "gen": "node scripts/generate-page.mjs"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
