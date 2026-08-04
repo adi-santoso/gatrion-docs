@@ -184,15 +184,9 @@
 
     @apply prose-strong:font-semibold prose-strong:text-zinc-900 dark:prose-strong:text-white;
 
-    /* Inline code — the typography plugin adds backtick pseudo-elements,
-       which are removed below. */
-    @apply prose-code:rounded-md prose-code:bg-violet-500/10 prose-code:px-1.5;
-    @apply prose-code:py-0.5 prose-code:font-mono prose-code:text-[0.85em];
-    @apply prose-code:font-medium prose-code:text-violet-600;
-    @apply dark:prose-code:text-violet-300;
-
-    /* Fenced code blocks are styled by Shiki; reset the plugin's own styling
-       so the two do not fight. */
+    /* Inline code is styled below, outside this block, so fenced code can be
+       excluded. Fenced code blocks are styled by Shiki; reset the plugin's own
+       styling so the two do not fight. */
     @apply prose-pre:m-0 prose-pre:rounded-none prose-pre:bg-transparent prose-pre:p-0;
 
     @apply prose-blockquote:border-l-2 prose-blockquote:border-violet-500/40;
@@ -203,6 +197,23 @@
 
     @apply prose-img:rounded-xl prose-img:border prose-img:border-zinc-200;
     @apply dark:prose-img:border-white/10;
+  }
+
+  /* Inline code.
+
+     The `prose-code:*` variants are deliberately avoided here. They compile to
+     `.docs-prose :where(code)`, which also matches the `<code>` that Shiki
+     nests inside `<pre>`, and they are emitted after the typography plugin's
+     `pre code` reset. Identical specificity plus later source order means the
+     pill styling wins inside fenced blocks too: the whole snippet gets a
+     violet background and padding, so it reads as permanently highlighted.
+
+     Excluding `pre code` keeps the pill on inline spans only and lets the
+     plugin's reset survive for fenced code. */
+  .docs-prose :where(code):not(:where(pre code)) {
+    @apply rounded-md bg-violet-500/10 px-1.5 py-0.5;
+    @apply font-mono text-[0.85em] font-medium text-violet-600;
+    @apply dark:text-violet-300;
   }
 
   /* The typography plugin wraps inline code in literal backticks. */
