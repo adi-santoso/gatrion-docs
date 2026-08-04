@@ -291,14 +291,16 @@ Root and subdomain deployments keep `base: '/'`.
 
 ## Contributing
 
-Issues and pull requests are welcome. Before opening a pull request:
+Contributions are welcome. See [`CONTRIBUTING.md`](CONTRIBUTING.md) for local setup, the content contract, locale parity rules, and the pull request checklist.
+
+The essentials:
 
 ```bash
 npm run check
 npm run build
 ```
 
-Both must pass. When adding documentation, follow [`AGENTS.md`](AGENTS.md) — it applies to human contributors as much as to AI agents.
+Both must pass before a pull request. When adding documentation, follow [`AGENTS.md`](AGENTS.md) — it applies to human contributors as much as to AI agents.
 
 ## License
 
