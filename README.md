@@ -164,6 +164,27 @@ This keeps agent output short, portable, and mechanically verifiable.
 | `npm run build` | Validate and build the production site |
 | `npm run build:only` | Build without running a separate check first |
 | `npm run preview` | Serve the generated `dist/` directory locally |
+| `npm run gen` | Interactively scaffold a new page in every locale |
+
+## Page generator
+
+```bash
+npm run gen
+```
+
+An interactive, zero-dependency script that scaffolds a new MDX page in every locale listed in `site.config.ts`. It reads project IDs from `src/config/projects.ts` so it never goes out of sync.
+
+Pick a page type and the script writes two files at once (`en` + `id` by default), each with boilerplate matched to the type:
+
+| Type | Boilerplate |
+| --- | --- |
+| `guide` | Prerequisites, `<Steps>`, next steps |
+| `api-endpoint` | `<ApiEndpoint>` blocks, query/body/response tables, error table |
+| `tutorial` | "What you'll build", `<Steps>` with code fences, `<CardGrid>` |
+| `changelog` | `[Unreleased]` + initial release sections, Added/Changed/Fixed |
+| `troubleshooting` | `<Tabs>` per symptom, cause/fix, common error codes table |
+
+Titles are prompted per locale so the page ships with locale parity from the first commit. See `scripts/generate-page.mjs` for the implementation.
 
 ## Project structure
 
