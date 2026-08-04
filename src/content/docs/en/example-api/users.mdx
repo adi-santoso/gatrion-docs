@@ -14,14 +14,13 @@ The Users resource represents an account in the example platform.
 
 ## List users
 
-<Badge variant="success">GET</Badge> `/v1/users`
-
-Returns a paginated list of users.
-
-```bash
-curl "https://api.example.com/v1/users?limit=20" \
-  --header "Authorization: Bearer $API_TOKEN"
-```
+<ApiEndpoint
+  method="GET"
+  url="/v1/users"
+  apiBase="https://api.example.com"
+  queryParams={{ limit: "20" }}
+  headers={{ Authorization: "Bearer $API_TOKEN" }}
+/>
 
 ### Query parameters
 
@@ -49,23 +48,13 @@ curl "https://api.example.com/v1/users?limit=20" \
 
 ## Create a user
 
-<Badge variant="info">POST</Badge> `/v1/users`
-
-```ts
-const response = await fetch('https://api.example.com/v1/users', {
-  method: 'POST',
-  headers: {
-    authorization: `Bearer ${process.env.API_TOKEN}`,
-    'content-type': 'application/json',
-  },
-  body: JSON.stringify({
-    email: 'ada@example.com',
-    name: 'Ada Lovelace',
-  }),
-});
-
-if (!response.ok) throw new Error(`Request failed: ${response.status}`);
-```
+<ApiEndpoint
+  method="POST"
+  url="/v1/users"
+  apiBase="https://api.example.com"
+  headers={{ Authorization: "Bearer $API_TOKEN", "Content-Type": "application/json" }}
+  body={{ email: "ada@example.com", name: "Ada Lovelace" }}
+/>
 
 <Callout type="warning" title="Idempotency">
   Send an `Idempotency-Key` header when retrying a create request. Reusing the key returns the original response instead of creating a duplicate user.

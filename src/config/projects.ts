@@ -56,6 +56,13 @@ export interface ProjectConfig {
 
   /** Used by the hub filter chips. Any string; chips are derived from these. */
   group?: string;
+
+  /**
+   * Base URL used by `<ApiEndpoint>` to resolve relative paths. When a page
+   * passes `url="/v1/users"`, the component prepends this base. Full URLs
+   * (`https://…`) are used verbatim.
+   */
+  apiBaseUrl?: string;
 }
 
 export const projects: ProjectConfig[] = [
@@ -90,6 +97,7 @@ export const projects: ProjectConfig[] = [
     icon: 'server',
     accent: 'cyan',
     group: 'reference',
+    apiBaseUrl: 'https://api.example.com',
   },
 ];
 

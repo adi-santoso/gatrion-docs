@@ -41,6 +41,7 @@ src/content/docs/<locale>/<project-id>/<page-slug>.mdx
 - `Steps` with `Step`: `Step` requires `title`
 - `Tabs` with `Tab`: `Tab` requires `label`
 - `PackageManagerTabs`: required `package`, optional `dev`
+- `ApiEndpoint`: required `method`, `url`; optional `apiBase`, `headers`, `queryParams`, `body`, `targets`
 - `Badge`: `variant="neutral|success|info|warning|danger|accent"`
 - `FileTree` with `File`: `File` requires `name`; optional `type`, `depth`, `description`, `highlight`
 

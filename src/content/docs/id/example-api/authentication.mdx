@@ -1,0 +1,105 @@
+---
+title: Autentikasi
+sidebarLabel: Autentikasi
+description: Terbitkan dan perbarui token sesi untuk contoh API.
+category: Referensi API
+eyebrow: REST API
+order: 5
+sidebarBadge: POST
+sidebarBadgeVariant: info
+keywords: [auth, autentikasi, login, token, refresh, oauth]
+---
+
+Contoh API menggunakan bearer token untuk autentikasi. Token kedaluwarsa setelah satu jam; gunakan endpoint refresh sebelum kedaluwarsa agar tidak perlu memasukkan kredensial ulang.
+
+Token memiliki cakupan penuh dari akun yang menerbitkannya. Cabut sesi kapan saja dengan memanggil endpoint logout menggunakan token yang ingin diinvalidasi.
+
+## Login
+
+Tukar kredensial dengan access token dan refresh token. Access token kedaluwarsa dalam satu jam; refresh token kedaluwarsa dalam tiga puluh hari.
+
+<ApiEndpoint
+  method="POST"
+  url="/v1/auth/login"
+  apiBase="https://api.example.com"
+  headers={{ "Content-Type": "application/json" }}
+  body={{ email: "ada@example.com", password: "your-password" }}
+/>
+
+### Request body
+
+| Nama | Tipe | Wajib | Deskripsi |
+| --- | --- | --- | --- |
+| `email` | string | Ya | Email akun |
+| `password` | string | Ya | Password akun |
+
+### Response
+
+```json
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refresh_token": "rt_01J8Z6M4K2abc",
+  "expires_in": 3600,
+  "token_type": "Bearer"
+}
+```
+
+### Error
+
+| Status | Kode | Arti |
+| --- | --- | --- |
+| `400` | `invalid_request` | Request body tidak valid |
+| `401` | `invalid_credentials` | Email atau password salah |
+| `429` | `rate_limited` | Ulangi setelah durasi `Retry-After` |
+
+## Refresh token
+
+Tukar refresh token yang valid dengan access token baru. Refresh token dirotasi setiap pemanggilan, sehingga hanya yang terakhir diterbitkan yang tetap valid.
+
+<ApiEndpoint
+  method="POST"
+  url="/v1/auth/refresh"
+  apiBase="https://api.example.com"
+  headers={{ "Content-Type": "application/json" }}
+  body={{ refresh_token: "rt_01J8Z6M4K2abc" }}
+/>
+
+### Request body
+
+| Nama | Tipe | Wajib | Deskripsi |
+| --- | --- | --- | --- |
+| `refresh_token` | string | Ya | Token dari login atau refresh sebelumnya |
+
+<Callout type="important" title="Rotasi refresh token">
+  Setiap pemanggilan endpoint ini meminvalidasi refresh token yang dipakai dan mengembalikan token baru. Simpan token baru segera — memakai token lama mengembalikan error `410 token_revoked`.
+</Callout>
+
+### Error
+
+| Status | Kode | Arti |
+| --- | --- | --- |
+| `400` | `invalid_request` | Request body tidak valid |
+| `410` | `token_revoked` | Refresh token sudah dipakai atau dicabut |
+| `410` | `token_expired` | Refresh token kedaluwarsa; login ulang |
+
+## Logout
+
+Invalidasi access token dan refresh token terkait. Token tidak dapat dipakai untuk request berikutnya setelah panggilan ini kembali.
+
+<ApiEndpoint
+  method="POST"
+  url="/v1/auth/logout"
+  apiBase="https://api.example.com"
+  headers={{ Authorization: "Bearer $ACCESS_TOKEN" }}
+/>
+
+<Callout type="tip" title="Pembersihan sisi klien">
+  Selalu hapus token tersimpan di klien setelah logout berhasil, bahkan jika request gagal. Token usang tidak berbahaya di sisi server setelah pencabutan, tetapi menyimpannya dapat membingungkan logika retry.
+</Callout>
+
+### Error
+
+| Status | Kode | Arti |
+| --- | --- | --- |
+| `401` | `unauthorized` | Bearer token tidak ada atau invalid |
+| `429` | `rate_limited` | Ulangi setelah durasi `Retry-After` |

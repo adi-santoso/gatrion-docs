@@ -5,7 +5,7 @@ category: Authoring
 order: 30
 sidebarBadge: New
 sidebarBadgeVariant: info
-keywords: [components, callout, cards, steps, tabs, badge, file tree]
+keywords: [components, callout, cards, steps, tabs, badge, file tree, api]
 ---
 
 Components are globally injected into MDX. Use them directly — **never add import statements to a content file**.
@@ -65,6 +65,30 @@ Tabs support keyboard navigation with the left and right arrow keys.
 ```mdx
 <PackageManagerTabs package="@example/client" dev={false} />
 ```
+
+## API endpoints
+
+Render a request with auto-generated code snippets in seven languages. Snippets are generated at build time by [`httpsnippet`](https://github.com/Kong/httpsnippet) — no client runtime is needed beyond the tab switcher.
+
+<ApiEndpoint
+  method="POST"
+  url="/v1/users"
+  apiBase="https://api.example.com"
+  headers={{ Authorization: "Bearer $TOKEN", "Content-Type": "application/json" }}
+  body={{ name: "Ada Lovelace", email: "ada@example.com" }}
+/>
+
+```mdx
+<ApiEndpoint
+  method="POST"
+  url="/v1/users"
+  apiBase="https://api.example.com"
+  headers={{ Authorization: "Bearer $TOKEN", "Content-Type": "application/json" }}
+  body={{ name: "Ada Lovelace", email: "ada@example.com" }}
+/>
+```
+
+`url` accepts a full URL or a path resolved against `apiBase`. The `targets` prop overrides the default seven tabs (`curl`, `powershell`, `javascript`, `node`, `python`, `go`, `php`).
 
 ## Badges
 

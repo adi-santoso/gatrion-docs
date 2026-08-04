@@ -1,0 +1,105 @@
+---
+title: Authentication
+sidebarLabel: Authentication
+description: Issue and refresh session tokens for the example API.
+category: API Reference
+eyebrow: REST API
+order: 5
+sidebarBadge: POST
+sidebarBadgeVariant: info
+keywords: [auth, authentication, login, token, refresh, oauth]
+---
+
+The Example API uses bearer tokens for authentication. Tokens expire after one hour; use the refresh endpoint before expiry to avoid re-entering credentials.
+
+Tokens carry the full scope of the issuing account. Revoke a session at any time by calling the logout endpoint with the token you wish to invalidate.
+
+## Login
+
+Exchange credentials for an access token and refresh token. The access token expires in one hour; the refresh token expires in thirty days.
+
+<ApiEndpoint
+  method="POST"
+  url="/v1/auth/login"
+  apiBase="https://api.example.com"
+  headers={{ "Content-Type": "application/json" }}
+  body={{ email: "ada@example.com", password: "your-password" }}
+/>
+
+### Request body
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `email` | string | Yes | Account email address |
+| `password` | string | Yes | Account password |
+
+### Response
+
+```json
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refresh_token": "rt_01J8Z6M4K2abc",
+  "expires_in": 3600,
+  "token_type": "Bearer"
+}
+```
+
+### Errors
+
+| Status | Code | Meaning |
+| --- | --- | --- |
+| `400` | `invalid_request` | The request body is malformed |
+| `401` | `invalid_credentials` | Email or password is incorrect |
+| `429` | `rate_limited` | Retry after the duration in `Retry-After` |
+
+## Refresh token
+
+Exchange a valid refresh token for a new access token. The refresh token is rotated on each call, so only the most recently issued one remains valid.
+
+<ApiEndpoint
+  method="POST"
+  url="/v1/auth/refresh"
+  apiBase="https://api.example.com"
+  headers={{ "Content-Type": "application/json" }}
+  body={{ refresh_token: "rt_01J8Z6M4K2abc" }}
+/>
+
+### Request body
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `refresh_token` | string | Yes | Token returned by login or a previous refresh |
+
+<Callout type="important" title="Refresh token rotation">
+  Each call to this endpoint invalidates the refresh token used in the request and returns a new one. Store the new token immediately — reusing the old one returns a `410 token_revoked` error.
+</Callout>
+
+### Errors
+
+| Status | Code | Meaning |
+| --- | --- | --- |
+| `400` | `invalid_request` | The request body is malformed |
+| `410` | `token_revoked` | The refresh token has already been used or revoked |
+| `410` | `token_expired` | The refresh token has expired; log in again |
+
+## Logout
+
+Invalidate an access token and its associated refresh token. The token cannot be used for any subsequent request after this call returns.
+
+<ApiEndpoint
+  method="POST"
+  url="/v1/auth/logout"
+  apiBase="https://api.example.com"
+  headers={{ Authorization: "Bearer $ACCESS_TOKEN" }}
+/>
+
+<Callout type="tip" title="Client-side cleanup">
+  Always delete the stored tokens from the client after a successful logout, even if the request fails. Stale tokens are harmless server-side after revocation, but leaving them in storage can confuse retries.
+</Callout>
+
+### Errors
+
+| Status | Code | Meaning |
+| --- | --- | --- |
+| `401` | `unauthorized` | The bearer token is missing or invalid |
+| `429` | `rate_limited` | Retry after the duration in `Retry-After` |

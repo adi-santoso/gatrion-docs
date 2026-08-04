@@ -5,7 +5,7 @@ category: Penulisan
 order: 30
 sidebarBadge: Baru
 sidebarBadgeVariant: info
-keywords: [komponen, callout, kartu, langkah, tab, badge, file tree]
+keywords: [komponen, callout, kartu, langkah, tab, badge, file tree, api]
 ---
 
 Semua komponen di-inject secara global ke MDX. Gunakan langsung — **jangan menambahkan import ke file konten**.
@@ -51,6 +51,30 @@ Semua komponen di-inject secara global ke MDX. Gunakan langsung — **jangan men
 ## Package manager
 
 <PackageManagerTabs package="@example/client" />
+
+## API endpoint
+
+Tampilkan request dengan cuplikan kode otomatis dalam tujuh bahasa. Cuplikan di-generate saat build oleh [`httpsnippet`](https://github.com/Kong/httpsnippet) — tidak ada runtime klien selain tab switcher.
+
+<ApiEndpoint
+  method="POST"
+  url="/v1/users"
+  apiBase="https://api.example.com"
+  headers={{ Authorization: "Bearer $TOKEN", "Content-Type": "application/json" }}
+  body={{ name: "Ada Lovelace", email: "ada@example.com" }}
+/>
+
+```mdx
+<ApiEndpoint
+  method="POST"
+  url="/v1/users"
+  apiBase="https://api.example.com"
+  headers={{ Authorization: "Bearer $TOKEN", "Content-Type": "application/json" }}
+  body={{ name: "Ada Lovelace", email: "ada@example.com" }}
+/>
+```
+
+`url` menerima URL lengkap atau path yang di-resolve terhadap `apiBase`. Prop `targets` mengganti tujuh tab bawaan (`curl`, `powershell`, `javascript`, `node`, `python`, `go`, `php`).
 
 ## Badge
 

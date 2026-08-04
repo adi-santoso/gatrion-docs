@@ -5,6 +5,7 @@
  * a component here to make it globally available in MDX.
  */
 
+export { default as ApiEndpoint } from './ApiEndpoint.astro';
 export { default as Badge } from './Badge.astro';
 export { default as Callout } from './Callout.astro';
 export { default as Card } from './Card.astro';

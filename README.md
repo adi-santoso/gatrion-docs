@@ -119,6 +119,14 @@ Components are injected globally. Do not import them in content files.
   <Step title="Install">Run `npm install`.</Step>
   <Step title="Develop">Run `npm run dev`.</Step>
 </Steps>
+
+<ApiEndpoint
+  method="POST"
+  url="/v1/users"
+  apiBase="https://api.example.com"
+  headers={{ Authorization: "Bearer $TOKEN", "Content-Type": "application/json" }}
+  body={{ name: "Ada Lovelace", email: "ada@example.com" }}
+/>
 ```
 
 Included components:
@@ -128,6 +136,7 @@ Included components:
 - `Steps` and `Step`
 - `Tabs` and `Tab`
 - `PackageManagerTabs`
+- `ApiEndpoint`: multi-language request snippets (`curl`, `PowerShell`, `JavaScript`, `Node.js`, `Python`, `Go`, `PHP`) generated at build time via [`httpsnippet`](https://github.com/Kong/httpsnippet)
 - `Badge`
 - `FileTree` and `File`
 

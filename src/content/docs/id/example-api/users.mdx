@@ -14,14 +14,13 @@ Resource Users merepresentasikan akun dalam platform contoh.
 
 ## Daftar user
 
-<Badge variant="success">GET</Badge> `/v1/users`
-
-Mengembalikan daftar user dengan pagination.
-
-```bash
-curl "https://api.example.com/v1/users?limit=20" \
-  --header "Authorization: Bearer $API_TOKEN"
-```
+<ApiEndpoint
+  method="GET"
+  url="/v1/users"
+  apiBase="https://api.example.com"
+  queryParams={{ limit: "20" }}
+  headers={{ Authorization: "Bearer $API_TOKEN" }}
+/>
 
 ### Query parameter
 
@@ -49,18 +48,13 @@ curl "https://api.example.com/v1/users?limit=20" \
 
 ## Buat user
 
-<Badge variant="info">POST</Badge> `/v1/users`
-
-```ts
-const response = await fetch('https://api.example.com/v1/users', {
-  method: 'POST',
-  headers: {
-    authorization: `Bearer ${process.env.API_TOKEN}`,
-    'content-type': 'application/json',
-  },
-  body: JSON.stringify({ email: 'ada@example.com', name: 'Ada Lovelace' }),
-});
-```
+<ApiEndpoint
+  method="POST"
+  url="/v1/users"
+  apiBase="https://api.example.com"
+  headers={{ Authorization: "Bearer $API_TOKEN", "Content-Type": "application/json" }}
+  body={{ email: "ada@example.com", name: "Ada Lovelace" }}
+/>
 
 <Callout type="warning" title="Idempotensi">
   Kirim header `Idempotency-Key` saat mengulang create request agar tidak membuat user duplikat.

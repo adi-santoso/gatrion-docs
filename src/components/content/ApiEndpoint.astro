@@ -1,0 +1,243 @@
+---
+/**
+ * ApiEndpoint — declarative API request examples with multi-language snippets.
+ *
+ *   <ApiEndpoint
+ *     method="POST"
+ *     url="/v1/users"
+ *     apiBase="https://api.example.com"
+ *     headers={{ Authorization: "Bearer $TOKEN", "Content-Type": "application/json" }}
+ *     body={{ name: "Ada", email: "ada@example.com" }}
+ *   />
+ *
+ * Snippets are generated at build time by `httpsnippet`; no client runtime is
+ * needed beyond the tab switcher and copy button. Output is informational
+ * only — there is no "try it" or live request execution.
+ */
+
+import { Code } from 'astro:components';
+import { HTTPSnippet, type TargetId } from 'httpsnippet';
+import type { CodeLanguage } from 'astro';
+
+type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS';
+
+interface Props {
+  /** HTTP verb. */
+  method: HttpMethod;
+  /**
+   * Full URL (`https://api.example.com/v1/users`) or path (`/v1/users`).
+   * Paths are resolved against `apiBase`.
+   */
+  url: string;
+  /** Base prepended to path `url` values. Ignored for full URLs. */
+  apiBase?: string;
+  /** Request headers. */
+  headers?: Record<string, string>;
+  /** Query parameters appended to the URL. */
+  queryParams?: Record<string, string>;
+  /** Request body. Objects are JSON-serialised; strings are used verbatim. */
+  body?: string | Record<string, unknown>;
+  /**
+   * Language tabs to render, in order. Defaults to all seven.
+   * Keys are `httpsnippet` target/client pairs.
+   */
+  targets?: TargetKey[];
+}
+
+type TargetKey =
+  | 'curl'
+  | 'powershell'
+  | 'javascript'
+  | 'node'
+  | 'python'
+  | 'go'
+  | 'php';
+
+/** httpsnippet target + client + Shiki language + tab label. */
+interface TargetDef {
+  target: TargetId;
+  client: string;
+  lang: CodeLanguage;
+  label: string;
+}
+
+const TARGET_MAP: Record<TargetKey, TargetDef> = {
+  curl: { target: 'shell', client: 'curl', lang: 'bash', label: 'curl' },
+  powershell: { target: 'powershell', client: 'webrequest', lang: 'powershell', label: 'PowerShell' },
+  javascript: { target: 'javascript', client: 'fetch', lang: 'javascript', label: 'JavaScript' },
+  node: { target: 'node', client: 'fetch', lang: 'javascript', label: 'Node.js' },
+  python: { target: 'python', client: 'requests', lang: 'python', label: 'Python' },
+  go: { target: 'go', client: 'native', lang: 'go', label: 'Go' },
+  php: { target: 'php', client: 'curl', lang: 'php', label: 'PHP' },
+};
+
+const {
+  method,
+  url,
+  apiBase = '',
+  headers = {},
+  queryParams = {},
+  body,
+  targets = ['curl', 'powershell', 'javascript', 'node', 'python', 'go', 'php'] as TargetKey[],
+} = Astro.props;
+
+/** Method pill colour, matching Badge variants. */
+const METHOD_STYLES: Record<HttpMethod, string> = {
+  GET: 'bg-emerald-500/10 text-emerald-600 ring-emerald-500/20 dark:text-emerald-400',
+  POST: 'bg-sky-500/10 text-sky-600 ring-sky-500/20 dark:text-sky-400',
+  PUT: 'bg-amber-500/10 text-amber-600 ring-amber-500/20 dark:text-amber-400',
+  PATCH: 'bg-violet-500/10 text-violet-600 ring-violet-500/20 dark:text-violet-400',
+  DELETE: 'bg-rose-500/10 text-rose-600 ring-rose-500/20 dark:text-rose-400',
+  HEAD: 'bg-zinc-500/10 text-zinc-600 ring-zinc-500/15 dark:text-zinc-300',
+  OPTIONS: 'bg-zinc-500/10 text-zinc-600 ring-zinc-500/15 dark:text-zinc-300',
+};
+
+/** Resolve a full URL from a path + base. Full URLs pass through unchanged. */
+function resolveUrl(raw: string, base: string): string {
+  if (/^https?:\/\//i.test(raw)) return raw;
+  if (!base) return raw;
+  const trimmedBase = base.replace(/\/+$/, '');
+  const path = raw.startsWith('/') ? raw : `/${raw}`;
+  return `${trimmedBase}${path}`;
+}
+
+const fullUrl = resolveUrl(url, apiBase);
+
+/** Build the HAR request object httpsnippet expects. */
+const harRequest: Record<string, unknown> = {
+  method,
+  url: fullUrl,
+  headers: Object.entries(headers).map(([name, value]) => ({ name, value: String(value) })),
+};
+
+if (Object.keys(queryParams).length > 0) {
+  harRequest.queryString = Object.entries(queryParams).map(([name, value]) => ({
+    name,
+    value: String(value),
+  }));
+}
+
+if (body !== undefined) {
+  const text = typeof body === 'string' ? body : JSON.stringify(body, null, 2);
+  harRequest.postData = { mimeType: 'application/json', text };
+}
+
+const snippet = new HTTPSnippet(harRequest as any);
+
+const targetDefs = targets.map((key) => TARGET_MAP[key]).filter(Boolean);
+
+/** Generate each snippet at build time. Falls back to a comment on failure. */
+const snippets = targetDefs.map((def) => {
+  try {
+    const code = snippet.convert(def.target, def.client);
+    return { ...def, code: typeof code === 'string' ? code : String(code) };
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
+    return { ...def, code: `// snippet generation failed: ${msg}` };
+  }
+});
+---
+
+<div class="not-prose my-6 overflow-hidden rounded-2xl border border-zinc-200 bg-[#f7f7f8] dark:border-white/[0.08] dark:bg-[#0d0d10]" data-api-endpoint>
+  <div class="flex flex-wrap items-center gap-3 border-b border-zinc-200 px-4 py-3 dark:border-white/[0.07]">
+    <span class:list={['inline-flex rounded-md px-2 py-0.5 font-mono text-[11px] font-bold ring-1 ring-inset', METHOD_STYLES[method]]}>{method}</span>
+    <code class="break-all font-mono text-[13px] text-zinc-700 dark:text-zinc-200">{fullUrl}</code>
+    <button type="button" data-api-copy-url class="ml-auto shrink-0 rounded-lg px-2.5 py-1.5 text-[11px] font-medium text-zinc-400 transition hover:bg-zinc-200/70 hover:text-zinc-900 dark:hover:bg-white/[0.06] dark:hover:text-white">
+      Copy URL
+    </button>
+  </div>
+  <div class="flex items-center border-b border-zinc-200 px-3 dark:border-white/[0.07]">
+    {snippets.map((s, index) => (
+      <button type="button" class:list={['api-tab px-3 py-2.5 font-mono text-[12px] text-zinc-400 transition', index === 0 && 'api-active']} data-api-index={index}>
+        {s.label}
+      </button>
+    ))}
+    <button type="button" data-api-copy class="ml-auto rounded-lg px-2.5 py-1.5 text-[11px] font-medium text-zinc-400 transition hover:bg-zinc-200/70 hover:text-zinc-900 dark:hover:bg-white/[0.06] dark:hover:text-white">
+      Copy
+    </button>
+  </div>
+  {snippets.map((s, index) => (
+    <div class:list={['api-panel', index !== 0 && 'hidden']} data-api-panel={index}>
+      <Code code={s.code} lang={s.lang} themes={{ light: 'vitesse-light', dark: 'vitesse-dark' }} />
+    </div>
+  ))}
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-api-endpoint]').forEach((root) => {
+    if (root.dataset.ready) return;
+    root.dataset.ready = 'true';
+
+    const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-api-index]'));
+    const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-api-panel]'));
+
+    const activate = (index: number) => {
+      tabs.forEach((tab, i) => tab.classList.toggle('api-active', i === index));
+      panels.forEach((panel, i) => panel.classList.toggle('hidden', i !== index));
+      root.dataset.active = String(index);
+    };
+
+    tabs.forEach((tab, index) => tab.addEventListener('click', () => activate(index)));
+
+    const copyButton = root.querySelector<HTMLButtonElement>('[data-api-copy]');
+    copyButton?.addEventListener('click', async (event) => {
+      const button = event.currentTarget as HTMLButtonElement;
+      const active = Number(root.dataset.active ?? 0);
+      const codeEl = panels[active]?.querySelector('code');
+      const text = codeEl?.textContent ?? '';
+      try {
+        await navigator.clipboard.writeText(text);
+        const original = button.textContent;
+        button.textContent = 'Copied';
+        setTimeout(() => (button.textContent = original), 1500);
+      } catch {
+        const selection = window.getSelection();
+        if (selection && codeEl) {
+          const range = document.createRange();
+          range.selectNodeContents(codeEl);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        }
+      }
+    });
+
+    const copyUrlButton = root.querySelector<HTMLButtonElement>('[data-api-copy-url]');
+    copyUrlButton?.addEventListener('click', async (event) => {
+      const button = event.currentTarget as HTMLButtonElement;
+      const url = root.querySelector<HTMLElement>('[data-api-endpoint] code')?.textContent ?? '';
+      try {
+        await navigator.clipboard.writeText(url);
+        const original = button.textContent;
+        button.textContent = 'Copied';
+        setTimeout(() => (button.textContent = original), 1500);
+      } catch {
+        // Clipboard may be denied on insecure origins; nothing useful to fall
+        // back to for a URL, so leave it silently.
+      }
+    });
+  });
+</script>
+
+<style is:global>
+  .api-active {
+    color: rgb(124 58 237);
+    box-shadow: inset 0 -2px rgb(124 58 237);
+  }
+  :global([data-theme='dark']) .api-active {
+    color: rgb(196 181 253);
+    box-shadow: inset 0 -2px rgb(139 92 246);
+  }
+  /* The Astro <Code> component renders its own <pre>; reset the frame so it
+     sits flush inside the endpoint card. */
+  [data-api-panel] > figure {
+    margin: 0 !important;
+  }
+  [data-api-panel] > figure > figcaption {
+    display: none;
+  }
+  [data-api-panel] > figure > pre {
+    border: 0;
+    border-radius: 0;
+    margin: 0;
+  }
+</style>
