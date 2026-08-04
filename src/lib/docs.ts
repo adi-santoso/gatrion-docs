@@ -11,6 +11,7 @@
  */
 
 import { getCollection, type CollectionEntry } from 'astro:content';
+import { execSync } from 'node:child_process';
 import { DEFAULT_LOCALE, type Locale } from '../../site.config';
 import { isLocale, docPath } from '../i18n';
 import { getProject, type ProjectConfig } from '../config/projects';
@@ -298,4 +299,37 @@ export async function searchIndex(locale: Locale, projectName: (id: string) => s
       description: p.description,
       keywords: p.entry.data.keywords.join(' '),
     }));
+}
+
+/* ---------------------------------------------------------------------------
+ * Last updated
+ *
+ * Returns the ISO date of the most recent git commit that touched a content
+ * file. Runs `git log` once per unique file path and caches the result.
+ *
+ * Returns `null` when git is unavailable (e.g. a fresh clone on a platform
+ * without git, or a tarball export), so callers should treat the timestamp
+ * as optional.
+ * ------------------------------------------------------------------------- */
+
+const lastUpdatedCache = new Map<string, string | null>();
+
+export function lastUpdated(entryId: string): string | null {
+  if (lastUpdatedCache.has(entryId)) return lastUpdatedCache.get(entryId) ?? null;
+
+  const filePath = `src/content/docs/${entryId}.mdx`;
+
+  try {
+    const date = execSync(
+      `git log -1 --format=%cI --follow -- "${filePath}"`,
+      { encoding: 'utf8', timeout: 5000, stdio: ['pipe', 'pipe', 'pipe'] },
+    ).trim();
+
+    const result = date || null;
+    lastUpdatedCache.set(entryId, result);
+    return result;
+  } catch {
+    lastUpdatedCache.set(entryId, null);
+    return null;
+  }
 }

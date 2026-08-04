@@ -30,7 +30,8 @@
     "preview": "astro preview",
     "check": "astro check",
     "astro": "astro",
-    "gen": "node scripts/generate-page.mjs"
+    "gen": "node scripts/generate-page.mjs",
+    "gen:project": "node scripts/generate-project.mjs"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",

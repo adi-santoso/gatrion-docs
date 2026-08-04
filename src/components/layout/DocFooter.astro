@@ -1,12 +1,16 @@
 ---
 import { site } from '../../../site.config';
 import Icon from '../ui/Icon.astro';
-import type { DocPage } from '../../lib/docs';
+import { lastUpdated, type DocPage } from '../../lib/docs';
 import type { TranslateFn } from '../../i18n';
 
-interface Props { prev: DocPage | null; next: DocPage | null; sourcePath: string; t: TranslateFn }
-const { prev, next, sourcePath, t } = Astro.props;
+interface Props { prev: DocPage | null; next: DocPage | null; sourcePath: string; entryId: string; t: TranslateFn }
+const { prev, next, sourcePath, entryId, t } = Astro.props;
 const editHref = site.links.editBase ? `${site.links.editBase}${sourcePath}` : null;
+const updatedAt = lastUpdated(entryId);
+const formattedDate = updatedAt
+  ? new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: 'numeric' }).format(new Date(updatedAt))
+  : null;
 ---
 
 <footer class="mt-14 border-t border-zinc-200 pt-6 dark:border-white/[0.06]">
@@ -25,7 +29,10 @@ const editHref = site.links.editBase ? `${site.links.editBase}${sourcePath}` : n
     ) : <span />}
   </nav>
   <div class="mt-8 flex items-center justify-between text-xs text-zinc-400">
-    <span>© {new Date().getFullYear()} {site.copyright}</span>
+    <span>
+      © {new Date().getFullYear()} {site.copyright}
+      {formattedDate && <span class="ml-2 text-zinc-400">· {t('page.lastUpdated')}: <time datetime={updatedAt}>{formattedDate}</time></span>}
+    </span>
     {editHref && <a href={editHref} target="_blank" rel="noreferrer" class="flex items-center gap-1.5 transition hover:text-violet-500"><Icon name="pencil" class="h-3.5 w-3.5" />{t('page.editThisPage')}</a>}
   </div>
 </footer>

@@ -1,0 +1,11 @@
+# Redirects — supported by Netlify and Cloudflare Pages.
+# Vercel uses vercel.json instead, but also reads this file as a fallback.
+#
+# Format: /old-path/  /new-path/  status
+# Status: 301 (permanent) or 302 (temporary)
+#
+# Examples:
+# /docs/old-slug/    /docs/new-slug/    301
+# /id/docs/old-slug/ /id/docs/new-slug/ 301
+
+# Add your redirects below. Remove the examples before deploying.

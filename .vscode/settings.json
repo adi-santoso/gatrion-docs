@@ -1,0 +1,20 @@
+{
+  "[mdx]": {
+    "editor.wordBasedSuggestions": "off"
+  },
+  "[markdown]": {
+    "editor.wordBasedSuggestions": "off"
+  },
+  "[yaml]": {
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2,
+    "editor.autoIndent": "full"
+  },
+  "editor.formatOnSave": true,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "tailwindCSS.experimental.classRegex": [
+    ["class:list\\[?([^\\]]*)\\]?", "class:list"]
+  ]
+}

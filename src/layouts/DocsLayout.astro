@@ -62,7 +62,7 @@ const tocHeadings = page.entry.data.tableOfContents ? headings : [];
         <article class="docs-prose mt-10 animate-fade-up [animation-delay:.1s]">
           <Content components={mdxComponents} />
         </article>
-        <DocFooter prev={neighbours.prev} next={neighbours.next} {sourcePath} {t} />
+        <DocFooter prev={neighbours.prev} next={neighbours.next} {sourcePath} entryId={page.entry.id} {t} />
       </div>
     </main>
     <TableOfContents headings={tocHeadings} {t} />

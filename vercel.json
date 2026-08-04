@@ -4,6 +4,13 @@
   "outputDirectory": "dist",
   "framework": "astro",
   "trailingSlash": true,
+  "redirects": [
+    {
+      "source": "/docs/old-slug/",
+      "destination": "/docs/new-slug/",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/_astro/(.*)",

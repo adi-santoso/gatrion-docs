@@ -165,6 +165,7 @@ This keeps agent output short, portable, and mechanically verifiable.
 | `npm run build:only` | Build without running a separate check first |
 | `npm run preview` | Serve the generated `dist/` directory locally |
 | `npm run gen` | Interactively scaffold a new page in every locale |
+| `npm run gen:project` | Interactively scaffold a new project and its index page |
 
 ## Page generator
 
@@ -185,6 +186,35 @@ Pick a page type and the script writes two files at once (`en` + `id` by default
 | `troubleshooting` | `<Tabs>` per symptom, cause/fix, common error codes table |
 
 Titles are prompted per locale so the page ships with locale parity from the first commit. See `scripts/generate-page.mjs` for the implementation.
+
+## Project generator
+
+```bash
+npm run gen:project
+```
+
+Adds a new entry to `src/config/projects.ts` and creates a starter index page in every locale. Prompts for the project ID, display name, description, version, status, icon, accent colour, group, and optional API base URL. See `scripts/generate-project.mjs` for the implementation.
+
+## Editor integration
+
+A `.vscode/` workspace is included with recommended extensions, editor settings, and MDX snippets:
+
+| File | Purpose |
+| --- | --- |
+| `.vscode/extensions.json` | Recommends Astro, MDX, YAML, and Tailwind extensions |
+| `.vscode/settings.json` | Editor preferences for Markdown, MDX, YAML, and Tailwind |
+| `.vscode/snippets.json` | Snippets for frontmatter and every built-in component |
+
+Open the folder in VS Code and accept the extension recommendations to get IntelliSense for frontmatter and component props.
+
+## Redirects
+
+When a page slug changes, add a redirect so the old URL does not return a 404:
+
+- **Vercel** — edit `vercel.json`, add an entry to the `redirects` array.
+- **Netlify and Cloudflare Pages** — edit `public/_redirects`, one redirect per line.
+
+Both files ship with commented examples. Use `301` for permanent moves and `302` for temporary ones.
 
 ## Project structure
 
