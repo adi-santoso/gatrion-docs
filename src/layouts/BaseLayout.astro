@@ -3,8 +3,8 @@ import '@fontsource-variable/plus-jakarta-sans';
 import '@fontsource-variable/jetbrains-mono';
 import '../styles/globals.css';
 
-import { site } from '../../site.config';
-import { asset, langTag, type Locale } from '../i18n';
+import { site, DEFAULT_LOCALE, LOCALES } from '../../site.config';
+import { asset, langTag, switchLocalePath, type Locale } from '../i18n';
 
 interface Props {
   title: string;
@@ -13,11 +13,43 @@ interface Props {
   pathname: string;
   image?: string;
   noindex?: boolean;
+  /**
+   * Locales in which this page exists. Defaults to every configured locale,
+   * which is correct for the hub and other fully translated routes. Content
+   * pages pass the subset they actually have so no alternate 404s.
+   */
+  alternates?: readonly Locale[];
 }
 
-const { title, description = site.description, locale, pathname, image, noindex = false } = Astro.props;
+const {
+  title,
+  description = site.description,
+  locale,
+  pathname,
+  image,
+  noindex = false,
+  alternates = LOCALES,
+} = Astro.props;
 const canonical = new URL(pathname.replace(site.base.replace(/\/$/, ''), '') || '/', site.url);
 const socialImage = image ? new URL(image, site.url) : undefined;
+
+/**
+ * `hreflang` alternates. Emitted only when the page exists in more than one
+ * locale, since a self-referencing single alternate carries no signal.
+ *
+ * `x-default` points at the default locale, telling search engines which URL to
+ * serve when no language matches the user.
+ */
+const alternateLinks =
+  alternates.length > 1
+    ? alternates.map((item) => ({
+        hreflang: langTag(item),
+        href: new URL(switchLocalePath(pathname, item), site.url).href,
+      }))
+    : [];
+const defaultHref = alternates.includes(DEFAULT_LOCALE)
+  ? new URL(switchLocalePath(pathname, DEFAULT_LOCALE), site.url).href
+  : null;
 ---
 
 <!doctype html>
@@ -30,12 +62,22 @@ const socialImage = image ? new URL(image, site.url) : undefined;
     {noindex && <meta name="robots" content="noindex" />}
     <link rel="icon" type="image/svg+xml" href={asset('favicon.svg')} />
     <link rel="canonical" href={canonical} />
+    {alternateLinks.map((alt) => (
+      <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />
+    ))}
+    {alternateLinks.length > 0 && defaultHref && (
+      <link rel="alternate" hreflang="x-default" href={defaultHref} />
+    )}
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={`${site.title}${site.titleAccent}`} />
+    <meta property="og:locale" content={langTag(locale)} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     {socialImage && <meta property="og:image" content={socialImage} />}
     <meta name="twitter:card" content={socialImage ? 'summary_large_image' : 'summary'} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
     <title>{title}</title>
 
     <!-- Runs before first paint to prevent a light/dark flash. -->

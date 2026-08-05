@@ -11,8 +11,9 @@
  */
 
 import { getCollection, type CollectionEntry } from 'astro:content';
-import { execSync } from 'node:child_process';
-import { DEFAULT_LOCALE, type Locale } from '../../site.config';
+import { execFileSync } from 'node:child_process';
+import { existsSync } from 'node:fs';
+import { DEFAULT_LOCALE, LOCALES, type Locale } from '../../site.config';
 import { isLocale, docPath } from '../i18n';
 import { getProject, type ProjectConfig } from '../config/projects';
 
@@ -221,6 +222,23 @@ export async function neighboursOf(
   };
 }
 
+/**
+ * The locales in which a given page actually exists.
+ *
+ * Used to emit `hreflang` alternates, which must only point at URLs that
+ * resolve. A page translated into some but not all locales gets alternates for
+ * exactly the locales it has.
+ */
+export async function localesForPage(projectId: string, slug: string): Promise<Locale[]> {
+  const all = await loadDocs();
+  const found = all
+    .filter((p) => p.projectId === projectId && p.slug === slug)
+    .map((p) => p.locale);
+
+  // Preserve LOCALES declaration order rather than collection order.
+  return LOCALES.filter((locale) => found.includes(locale));
+}
+
 /* ---------------------------------------------------------------------------
  * Hub
  * ------------------------------------------------------------------------- */
@@ -302,6 +320,37 @@ export async function searchIndex(locale: Locale, projectName: (id: string) => s
 }
 
 /* ---------------------------------------------------------------------------
+ * Source files
+ *
+ * The collection id carries no extension, but the loader accepts both `.md`
+ * and `.mdx`. Anything that needs a real path — the git timestamp, the "Edit
+ * this page" link — has to resolve the extension rather than assume one.
+ * ------------------------------------------------------------------------- */
+
+/** Content extensions accepted by the loader in `src/content.config.ts`. */
+const CONTENT_EXTENSIONS = ['.mdx', '.md'] as const;
+
+const CONTENT_ROOT = 'src/content/docs';
+
+const sourcePathCache = new Map<string, string | null>();
+
+/**
+ * The path of a page's source file relative to `src/content/docs/`, including
+ * its real extension (`guide/intro.md`). Returns `null` if no file matches.
+ */
+export function sourcePathFor(entryId: string): string | null {
+  if (sourcePathCache.has(entryId)) return sourcePathCache.get(entryId) ?? null;
+
+  const match =
+    CONTENT_EXTENSIONS.map((ext) => `${entryId}${ext}`).find((candidate) =>
+      existsSync(`${CONTENT_ROOT}/${candidate}`),
+    ) ?? null;
+
+  sourcePathCache.set(entryId, match);
+  return match;
+}
+
+/* ---------------------------------------------------------------------------
  * Last updated
  *
  * Returns the ISO date of the most recent git commit that touched a content
@@ -317,11 +366,18 @@ const lastUpdatedCache = new Map<string, string | null>();
 export function lastUpdated(entryId: string): string | null {
   if (lastUpdatedCache.has(entryId)) return lastUpdatedCache.get(entryId) ?? null;
 
-  const filePath = `src/content/docs/${entryId}.mdx`;
+  const source = sourcePathFor(entryId);
+
+  if (!source) {
+    lastUpdatedCache.set(entryId, null);
+    return null;
+  }
 
   try {
-    const date = execSync(
-      `git log -1 --format=%cI --follow -- "${filePath}"`,
+    // execFileSync avoids a shell, so paths never need manual quoting.
+    const date = execFileSync(
+      'git',
+      ['log', '-1', '--format=%cI', '--follow', '--', `${CONTENT_ROOT}/${source}`],
       { encoding: 'utf8', timeout: 5000, stdio: ['pipe', 'pipe', 'pipe'] },
     ).trim();
 

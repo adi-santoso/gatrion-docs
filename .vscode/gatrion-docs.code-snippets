@@ -1,0 +1,101 @@
+{
+  "Page frontmatter": {
+    "scope": "mdx",
+    "prefix": "frontmatter",
+    "body": [
+      "---",
+      "title: ${1:Page title}",
+      "description: ${2:One or two sentences describing the page.}",
+      "category: ${3:Guides}",
+      "order: ${4:30}",
+      "keywords: [${5:search, aliases}]",
+      "---"
+    ],
+    "description": "Standard frontmatter block for a docs page"
+  },
+  "ApiEndpoint": {
+    "scope": "mdx",
+    "prefix": "api",
+    "body": [
+      "<ApiEndpoint",
+      "  method=\"${1:GET|POST|PUT|PATCH|DELETE}\"",
+      "  url=\"${2:/v1/resource}\"",
+      "  apiBase=\"${3:https://api.example.com}\"",
+      "  headers={{ ${4:Authorization}: \"Bearer \\$TOKEN\" }}",
+      "/>"
+    ],
+    "description": "ApiEndpoint component with method, url, apiBase, headers"
+  },
+  "Callout": {
+    "scope": "mdx",
+    "prefix": "callout",
+    "body": [
+      "<Callout type=\"${1|note,tip,important,warning,caution|}\" title=\"${2:Optional title}\">",
+      "  $3",
+      "</Callout>"
+    ],
+    "description": "Callout component with type and title"
+  },
+  "Steps": {
+    "scope": "mdx",
+    "prefix": "steps",
+    "body": [
+      "<Steps>",
+      "  <Step title=\"${1:First step}\">",
+      "    $2",
+      "  </Step>",
+      "  <Step title=\"${3:Second step}\">",
+      "    $4",
+      "  </Step>",
+      "</Steps>"
+    ],
+    "description": "Steps component with two Step children"
+  },
+  "Tabs": {
+    "scope": "mdx",
+    "prefix": "tabs",
+    "body": [
+      "<Tabs>",
+      "  <Tab label=\"${1:First tab}\">",
+      "    $2",
+      "  </Tab>",
+      "  <Tab label=\"${3:Second tab}\">",
+      "    $4",
+      "  </Tab>",
+      "</Tabs>"
+    ],
+    "description": "Tabs component with two Tab children"
+  },
+  "CardGrid": {
+    "scope": "mdx",
+    "prefix": "cardgrid",
+    "body": [
+      "<CardGrid cols={${1:2|3}}>",
+      "  <Card title=\"${2:Card title}\" href=\"${3:/docs/}\">",
+      "    $4",
+      "  </Card>",
+      "</CardGrid>"
+    ],
+    "description": "CardGrid with one Card"
+  },
+  "FileTree": {
+    "scope": "mdx",
+    "prefix": "filetree",
+    "body": [
+      "<FileTree>",
+      "  <File name=\"${1:file.ts}\" description=\"${2:Description}\" />",
+      "</FileTree>"
+    ],
+    "description": "FileTree with one File"
+  },
+  "Badge": {
+    "scope": "mdx",
+    "prefix": "badge",
+    "body": [
+      "<Badge variant=\"${1|neutral,success,info,warning,danger,accent|}\">",
+      "  $2",
+      "</Badge>"
+    ],
+    "description": "Badge component with variant"
+  }
+}

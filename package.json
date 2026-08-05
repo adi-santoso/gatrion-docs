@@ -28,7 +28,8 @@
     "build": "astro check && astro build",
     "build:only": "astro build",
     "preview": "astro preview",
-    "check": "astro check",
+    "check": "astro check && npm run check:parity",
+    "check:parity": "node scripts/check-locale-parity.mjs",
     "astro": "astro",
     "gen": "node scripts/generate-page.mjs",
     "gen:project": "node scripts/generate-project.mjs"

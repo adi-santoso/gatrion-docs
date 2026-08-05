@@ -2,14 +2,21 @@
 import { site } from '../../../site.config';
 import Icon from '../ui/Icon.astro';
 import { lastUpdated, type DocPage } from '../../lib/docs';
-import type { TranslateFn } from '../../i18n';
+import { langTag, type Locale, type TranslateFn } from '../../i18n';
 
-interface Props { prev: DocPage | null; next: DocPage | null; sourcePath: string; entryId: string; t: TranslateFn }
-const { prev, next, sourcePath, entryId, t } = Astro.props;
-const editHref = site.links.editBase ? `${site.links.editBase}${sourcePath}` : null;
+interface Props {
+  prev: DocPage | null;
+  next: DocPage | null;
+  sourcePath: string | null;
+  entryId: string;
+  locale: Locale;
+  t: TranslateFn;
+}
+const { prev, next, sourcePath, entryId, locale, t } = Astro.props;
+const editHref = site.links.editBase && sourcePath ? `${site.links.editBase}${sourcePath}` : null;
 const updatedAt = lastUpdated(entryId);
 const formattedDate = updatedAt
-  ? new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: 'numeric' }).format(new Date(updatedAt))
+  ? new Intl.DateTimeFormat(langTag(locale), { year: 'numeric', month: 'short', day: 'numeric' }).format(new Date(updatedAt))
   : null;
 ---
 

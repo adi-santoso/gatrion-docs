@@ -81,7 +81,7 @@ The project ID must exist in `src/config/projects.ts`. Adding a file automatical
 
 ### Minimal page
 
-```md
+````md
 ---
 title: Authentication
 description: Authenticate API requests with bearer tokens.
@@ -96,7 +96,7 @@ Use the CLI to create a token:
 ```bash
 example auth token create
 ```
-```
+````
 
 Only `title` is required. The full schema is documented in `src/content.config.ts` and in the included **Writing Content** page.
 
@@ -160,7 +160,8 @@ This keeps agent output short, portable, and mechanically verifiable.
 | Command | Purpose |
 | --- | --- |
 | `npm run dev` | Start the local development server |
-| `npm run check` | Validate Astro, TypeScript, and content schemas |
+| `npm run check` | Validate Astro, TypeScript, content schemas, and locale parity |
+| `npm run check:parity` | Verify every page slug exists in all configured locales |
 | `npm run build` | Validate and build the production site |
 | `npm run build:only` | Build without running a separate check first |
 | `npm run preview` | Serve the generated `dist/` directory locally |
@@ -203,7 +204,7 @@ A `.vscode/` workspace is included with recommended extensions, editor settings,
 | --- | --- |
 | `.vscode/extensions.json` | Recommends Astro, MDX, YAML, and Tailwind extensions |
 | `.vscode/settings.json` | Editor preferences for Markdown, MDX, YAML, and Tailwind |
-| `.vscode/snippets.json` | Snippets for frontmatter and every built-in component |
+| `.vscode/gatrion-docs.code-snippets` | Snippets for frontmatter and every built-in component |
 
 Open the folder in VS Code and accept the extension recommendations to get IntelliSense for frontmatter and component props.
 
@@ -243,6 +244,8 @@ Both files ship with commented examples. Use `301` for permanent moves and `302`
 2. Add its name and HTML language tag in `src/i18n/ui.ts`.
 3. Add a translation object in `src/i18n/ui.ts`. Missing strings fall back to English.
 4. Add content under `src/content/docs/<locale>/`.
+
+Every page slug must exist in every locale. `npm run check:parity` enforces this and is part of `npm run check`, so a missing translation fails the build and CI.
 
 ## Deployment
 

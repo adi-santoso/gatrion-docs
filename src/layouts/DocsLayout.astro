@@ -11,7 +11,7 @@ import * as mdxComponents from '../components/content';
 import { site } from '../../site.config';
 import { DEFAULT_LOCALE, localizedPath, useTranslations, type Locale } from '../i18n';
 import { accentFor, getProject, localised } from '../config/projects';
-import { neighboursOf, projectSummaries, searchIndex, sidebarFor, type DocPage } from '../lib/docs';
+import { localesForPage, neighboursOf, projectSummaries, searchIndex, sidebarFor, sourcePathFor, type DocPage } from '../lib/docs';
 
 interface Props {
   page: DocPage;
@@ -37,11 +37,12 @@ const pages = await searchIndex(locale, (id) => {
 const projectName = localised(project.name, locale, DEFAULT_LOCALE);
 const title = `${page.title} · ${site.title}/${site.titleAccent}`;
 const accent = accentFor(project);
-const sourcePath = `${page.entry.id}.mdx`;
+const sourcePath = sourcePathFor(page.entry.id);
+const alternates = await localesForPage(page.projectId, page.slug);
 const tocHeadings = page.entry.data.tableOfContents ? headings : [];
 ---
 
-<BaseLayout {title} description={page.description} {locale} {pathname}>
+<BaseLayout {title} description={page.description} {locale} {pathname} {alternates}>
   <Header {locale} {pathname} {t} docs />
   <div class="mx-auto flex max-w-[1440px]">
     <Sidebar {project} {groups} {summaries} {locale} {t} />
@@ -62,7 +63,7 @@ const tocHeadings = page.entry.data.tableOfContents ? headings : [];
         <article class="docs-prose mt-10 animate-fade-up [animation-delay:.1s]">
           <Content components={mdxComponents} />
         </article>
-        <DocFooter prev={neighbours.prev} next={neighbours.next} {sourcePath} entryId={page.entry.id} {t} />
+        <DocFooter prev={neighbours.prev} next={neighbours.next} {sourcePath} entryId={page.entry.id} {locale} {t} />
       </div>
     </main>
     <TableOfContents headings={tocHeadings} {t} />

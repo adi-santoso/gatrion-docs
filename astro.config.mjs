@@ -13,7 +13,20 @@ export default defineConfig({
   site: site.url,
   base: site.base,
 
-  integrations: [mdx(), sitemap()],
+  integrations: [
+    mdx(),
+    /**
+     * `i18n` makes the sitemap emit `xhtml:link` alternates between locales,
+     * matching the `hreflang` tags in BaseLayout. `defaultLocale` must be a key
+     * of `locales`, and each value is the tag written to the sitemap.
+     */
+    sitemap({
+      i18n: {
+        defaultLocale: DEFAULT_LOCALE,
+        locales: Object.fromEntries(LOCALES.map((locale) => [locale, locale])),
+      },
+    }),
+  ],
 
   i18n: {
     locales: [...LOCALES],
