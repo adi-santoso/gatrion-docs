@@ -41,6 +41,13 @@ export interface SidebarItem {
   badge?: string;
   badgeVariant: 'neutral' | 'success' | 'info' | 'warning' | 'danger';
   isCurrent: boolean;
+  /** Nested children, present when other pages live under this slug. */
+  children?: SidebarItem[];
+  /**
+   * Whether the node should render expanded on first paint. True for every
+   * ancestor of the current page, so the active path is always visible.
+   */
+  defaultExpanded?: boolean;
 }
 
 export interface SidebarGroup {
@@ -171,6 +178,12 @@ export async function docsForProject(
 /**
  * Builds the sidebar for a project.
  *
+ * Pages are grouped by `category` (the sidebar group heading). Within a group,
+ * pages whose slug is a prefix of another become a parent node and the longer
+ * slug becomes its child, so nested files like `guide/getting-started.mdx` and
+ * `guide/getting-started/installation.mdx` render as a collapsible subtree
+ * instead of a flat list.
+ *
  * Groups appear in the order of their lowest-ordered member, so controlling
  * `order` on pages is enough to control group sequence too.
  */
@@ -181,23 +194,15 @@ export async function sidebarFor(
 ): Promise<SidebarGroup[]> {
   const pages = await docsForProject(locale, projectId);
 
-  const groups = new Map<string, { minOrder: number; items: SidebarItem[] }>();
+  const groups = new Map<string, { minOrder: number; items: SidebarItem[]; pages: DocPage[] }>();
 
   for (const page of pages) {
     const existing = groups.get(page.category);
-    const item: SidebarItem = {
-      label: page.sidebarLabel,
-      href: page.href,
-      badge: page.entry.data.sidebarBadge,
-      badgeVariant: page.entry.data.sidebarBadgeVariant,
-      isCurrent: page.href === currentHref,
-    };
-
     if (existing) {
-      existing.items.push(item);
+      existing.pages.push(page);
       existing.minOrder = Math.min(existing.minOrder, page.order);
     } else {
-      groups.set(page.category, { minOrder: page.order, items: [item] });
+      groups.set(page.category, { minOrder: page.order, items: [], pages: [page] });
     }
   }
 
@@ -205,7 +210,72 @@ export async function sidebarFor(
     .sort(([aTitle, a], [bTitle, b]) =>
       a.minOrder !== b.minOrder ? a.minOrder - b.minOrder : aTitle.localeCompare(bTitle),
     )
-    .map(([title, group]) => ({ title, items: group.items }));
+    .map(([title, group]) => ({ title, items: buildTree(group.pages, currentHref) }));
+}
+
+/**
+ * Builds a tree of sidebar items from the flat page list of one group.
+ *
+ * A page is a child of another when its slug starts with `<parent-slug>/`.
+ * Only one level of nesting is surfaced this way, which keeps the sidebar
+ * readable; deeper nesting flattens into the nearest parent.
+ */
+function buildTree(pages: DocPage[], currentHref: string): SidebarItem[] {
+  const sorted = [...pages].sort(byOrderThenTitle);
+
+  // First pass: create a node for every page, keyed by slug. Doing this before
+  // linking means a child that sorts before its parent still finds it.
+  const itemBySlug = new Map<string, SidebarItem>();
+  for (const page of sorted) {
+    itemBySlug.set(page.slug, {
+      label: page.sidebarLabel,
+      href: page.href,
+      badge: page.entry.data.sidebarBadge,
+      badgeVariant: page.entry.data.sidebarBadgeVariant,
+      isCurrent: page.href === currentHref,
+    });
+  }
+
+  // Second pass: link children to parents. A page whose slug nests under
+  // another becomes that node's child; otherwise it is a root.
+  const roots: SidebarItem[] = [];
+  for (const page of sorted) {
+    const item = itemBySlug.get(page.slug)!;
+    const parentSlug = parentSlugOf(page.slug);
+    const parent = parentSlug ? itemBySlug.get(parentSlug) : undefined;
+
+    if (parent) {
+      (parent.children ??= []).push(item);
+    } else {
+      roots.push(item);
+    }
+  }
+
+  // Mark every ancestor of the current page as expanded so the active path
+  // is visible without requiring a click.
+  const markExpanded = (items: SidebarItem[]) => {
+    for (const item of items) {
+      if (item.isCurrent || (item.children && hasCurrentDescendant(item))) {
+        item.defaultExpanded = true;
+      }
+      if (item.children) markExpanded(item.children);
+    }
+  };
+  markExpanded(roots);
+
+  return roots;
+}
+
+/** Returns the parent slug for nesting, or `null` for a top-level page. */
+function parentSlugOf(slug: string): string | null {
+  const idx = slug.lastIndexOf('/');
+  return idx === -1 ? null : slug.slice(0, idx);
+}
+
+/** True when the item (or any descendant) is the current page. */
+function hasCurrentDescendant(item: SidebarItem): boolean {
+  if (item.isCurrent) return true;
+  return item.children?.some(hasCurrentDescendant) ?? false;
 }
 
 /** Neighbouring pages within the same project, for the prev/next footer. */

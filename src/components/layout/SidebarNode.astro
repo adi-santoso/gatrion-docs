@@ -1,0 +1,43 @@
+---
+import type { SidebarItem } from '../../lib/docs';
+import Icon from '../ui/Icon.astro';
+import SidebarNode from './SidebarNode.astro';
+
+interface Props {
+  item: SidebarItem;
+  depth?: number;
+  badgeStyles: Record<string, string>;
+}
+
+const { item, depth = 0, badgeStyles } = Astro.props;
+const hasChildren = Array.isArray(item.children) && item.children.length > 0;
+---
+
+<li>
+  {hasChildren ? (
+    <button
+      type="button"
+      data-collapsible-trigger
+      aria-expanded={item.defaultExpanded ? 'true' : 'false'}
+      class:list={[
+        'flex w-full items-center gap-2 rounded-lg px-3 py-[7px] text-left transition',
+        item.isCurrent ? 'bg-violet-500/10 font-semibold text-violet-600 dark:text-violet-300' : 'text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-white/[0.05] dark:hover:text-white',
+      ]}
+    >
+      <Icon name="chevron-down" class="h-3 w-3 shrink-0 text-zinc-400 transition-transform duration-200" />
+      <span class="min-w-0 flex-1 truncate">{item.label}</span>
+      {item.badge && <span class:list={['shrink-0 rounded-md px-1.5 py-px font-mono text-[10px] font-bold', badgeStyles[item.badgeVariant]]}>{item.badge}</span>}
+    </button>
+    <ul data-collapsible-content class:list={['mt-1 space-y-px border-l border-zinc-100 ml-4 pl-2', !item.defaultExpanded && 'hidden']}>
+      {item.children!.map((child) => (
+        <SidebarNode item={child} depth={depth + 1} {badgeStyles} />
+      ))}
+    </ul>
+  ) : (
+    <a href={item.href} aria-current={item.isCurrent ? 'page' : undefined} class:list={['flex items-center gap-2 rounded-lg px-3 py-[7px] transition', item.isCurrent ? 'bg-violet-500/10 font-semibold text-violet-600 dark:text-violet-300' : 'text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-white/[0.05] dark:hover:text-white']}>
+      {item.isCurrent && <span class="h-1 w-1 shrink-0 rounded-full bg-violet-500"></span>}
+      <span class="min-w-0 flex-1 truncate">{item.label}</span>
+      {item.badge && <span class:list={['rounded-md px-1.5 py-px font-mono text-[10px] font-bold', badgeStyles[item.badgeVariant]]}>{item.badge}</span>}
+    </a>
+  )}
+</li>

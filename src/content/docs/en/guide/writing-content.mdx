@@ -60,6 +60,18 @@ order: 30
 | `tableOfContents` | boolean | `true` | Show the right-hand table of contents |
 | `keywords` | string[] | `[]` | Extra search terms |
 
+## Nested pages
+
+Pages whose slug nests under another become its children in the sidebar. A file at `guide/getting-started/installation.mdx` renders as a collapsible child of `guide/getting-started.mdx`.
+
+```text
+src/content/docs/en/guide/getting-started.mdx            # parent
+src/content/docs/en/guide/getting-started/installation.mdx  # child
+src/content/docs/en/guide/getting-started/quickstart.mdx    # child
+```
+
+Both the parent and its children must share the same `category` to land in the same sidebar group. The active path auto-expands so the current page is always visible; the reader's fold choices persist across navigation.
+
 ## Plain Markdown first
 
 Write headings, links, lists, tables, blockquotes, and code as Markdown. The theme handles styling and anchors.

@@ -79,6 +79,12 @@
   }
 }
 
+/* Sidebar collapsible chevrons rotate with their trigger's expanded state.
+   Driven by aria-expanded so JS only has to toggle that one attribute. */
+[data-collapsible-trigger][aria-expanded='false'] svg {
+  transform: rotate(-90deg);
+}
+
 /* --------------------------------------------------------------------------
    2. Base
    -------------------------------------------------------------------------- */

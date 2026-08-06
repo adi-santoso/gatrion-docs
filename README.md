@@ -79,6 +79,8 @@ The English file is served at `/docs/guide/getting-started/`; the Indonesian fil
 
 The project ID must exist in `src/config/projects.ts`. Adding a file automatically adds its route, sidebar entry, search result, table of contents, and previous/next position.
 
+Pages whose slug nests under another become collapsible children in the sidebar. A file at `guide/getting-started/installation.mdx` renders as a child of `guide/getting-started.mdx`, so deep documentation trees stay readable. The active path auto-expands and the reader's fold choices persist across navigation.
+
 ### Minimal page
 
 ````md

@@ -20,6 +20,7 @@ src/content/docs/<locale>/<project-id>/<page-slug>.mdx
 - Use lowercase kebab-case for project IDs and page slugs.
 - The project ID must exist in `src/config/projects.ts`.
 - Do not edit route files, sidebar components, or search data when adding a page. They are generated.
+- A page whose slug nests under another (e.g. `guide/getting-started/installation`) becomes a collapsible child of the parent in the sidebar. Both pages must share the same `category`.
 
 ## Content contract
 

@@ -56,6 +56,18 @@ order: 30
 | `tableOfContents` | boolean | `true` | Tampilkan table of contents |
 | `keywords` | string[] | `[]` | Istilah pencarian tambahan |
 
+## Halaman bersarang
+
+Halaman yang slug-nya bersarang di bawah halaman lain menjadi child-nya di sidebar. File di `guide/getting-started/installation.mdx` akan tampil sebagai child yang bisa di-collapse dari `guide/getting-started.mdx`.
+
+```text
+src/content/docs/id/guide/getting-started.mdx               # parent
+src/content/docs/id/guide/getting-started/installation.mdx  # child
+src/content/docs/id/guide/getting-started/quickstart.mdx    # child
+```
+
+Parent dan child harus memiliki `category` yang sama agar masuk dalam grup sidebar yang sama. Jalur aktif otomatis ter-expand sehingga halaman saat ini selalu terlihat; pilihan fold pembaca tetap tersimpan saat berpindah halaman.
+
 ## Utamakan Markdown biasa
 
 Tulis heading, link, daftar, tabel, kutipan, dan kode sebagai Markdown. Tema menangani styling dan anchor.
